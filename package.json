@@ -1,0 +1,37 @@
+{
+  "name": "kinvey-angular-lib",
+  "version": "1.6.6",
+  "description": "Kinvey JavaScript Library for PhoneGap/Cordova.",
+  "homepage": "http://www.kinvey.com",
+  "bugs": {
+    "url": "http://support.kinvey.com",
+    "email": "support@kinvey.com"
+  },
+  "licenses": [
+    {
+      "type": "Apache-2.0",
+      "url": "https://raw.github.com/Kinvey/kinvey-phonegap-lib/master/LICENSE.txt"
+    }
+  ],
+  "author": "Kinvey, Inc.",
+  "contributors": [
+    "Thomas Conner <thomas@kinvey.com>"
+  ],
+  "main": "./kinvey.min.js",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:Kinvey/kinvey-phonegap-lib"
+  },
+  "scripts": {},
+  "dependencies": {},
+  "devDependencies": {},
+  "engines": {
+    "node": ">=4.0"
+  },
+  "keywords": [
+    "Kinvey",
+    "JavaScript",
+    "PhoneGap",
+    "Cordova"
+  ]
+}
