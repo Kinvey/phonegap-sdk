@@ -18,7 +18,7 @@ npm install kinvey-phonegap@beta --save
 or
 
 ```bash
-bower install kinvey-phonegap#3.0.0-beta.5 --save
+bower install kinvey-phonegap#3.0.0-beta.7 --save
 ```
 
 ### 3. Configure the library
