@@ -1,5 +1,5 @@
 {
-  "name": "kinvey-phonegap",
+  "name": "kinvey-phonegap-sdk",
   "version": "3.0.0-beta.8",
   "description": "Kinvey JavaScript Library for PhoneGap/Cordova.",
   "homepage": "https://www.kinvey.com",
