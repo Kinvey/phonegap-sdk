@@ -10,7 +10,7 @@
   "licenses": [
     {
       "type": "Apache-2.0",
-      "url": "https://raw.github.com/Kinvey/kinvey-phonegap-lib/master/LICENSE"
+      "url": "https://raw.github.com/Kinvey/kinvey-phonegap-sdk/master/LICENSE"
     }
   ],
   "author": "Kinvey, Inc.",
