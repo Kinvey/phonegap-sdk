@@ -1,7 +1,7 @@
 {
   "name": "kinvey-phonegap-sdk",
-  "version": "3.0.0-beta.8",
-  "description": "Kinvey JavaScript SDK for PhoneGap/Cordova.",
+  "version": "3.0.0-beta.12",
+  "description": "Kinvey JavaScript SDK for PhoneGap/Cordova applications.",
   "homepage": "http://www.kinvey.com",
   "bugs": {
     "url": "http://support.kinvey.com",
@@ -24,11 +24,12 @@
   },
   "scripts": {},
   "dependencies": {
-    "kinvey-sdk-core": "3.0.0-beta.8",
-    "lodash": "^4.3.0"
+    "kinvey-javascript-sdk-core": "3.0.0-beta.12",
+    "lodash": "^4.3.0",
+    "parse-headers": "^2.0.1"
   },
   "devDependencies": {
-    "babel-eslint": "^5.0.0",
+    "babel-eslint": "6.0.0-beta.6",
     "babel-preset-es2015": "^6.0.0",
     "babel-preset-stage-2": "^6.0.15",
     "babelify": "^7.2.0",
@@ -66,7 +67,8 @@
   ],
   "browserify": {
     "transform": [["babelify", {
-      "presets": ["es2015", "stage-2"]
+      "presets": ["es2015", "stage-2"],
+      "ignore": "/\/node_modules\/(?!kinvey-javascript-sdk-core\/)/"
     }]]
   }
 }
