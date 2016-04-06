@@ -5,19 +5,19 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.Push = undefined;
 
-var _errors = require('kinvey-javascript-sdk-core/src/errors');
+var _errors = require('kinvey-javascript-sdk-core/build/errors');
 
 var _events = require('events');
 
-var _dataStore = require('kinvey-javascript-sdk-core/src/stores/dataStore');
+var _dataStore = require('kinvey-javascript-sdk-core/build/stores/dataStore');
 
-var _enums = require('kinvey-javascript-sdk-core/src/enums');
+var _enums = require('kinvey-javascript-sdk-core/build/enums');
 
-var _user = require('kinvey-javascript-sdk-core/src/user');
+var _user = require('kinvey-javascript-sdk-core/build/user');
 
-var _client = require('kinvey-javascript-sdk-core/src/client');
+var _client = require('kinvey-javascript-sdk-core/build/client');
 
-var _query = require('kinvey-javascript-sdk-core/src/query');
+var _query = require('kinvey-javascript-sdk-core/build/query');
 
 var _utils = require('./utils');
 
