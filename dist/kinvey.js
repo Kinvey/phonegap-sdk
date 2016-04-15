@@ -13791,6 +13791,7 @@ var Client = exports.Client = function () {
      * @type {SyncManager}
      */
     this.syncManager = new _sync.SyncManager();
+    this.syncManager.client = this;
   }
 
   _createClass(Client, [{
