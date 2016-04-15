@@ -7,6 +7,8 @@ exports.PopupAdapter = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _utils = require('./utils');
+
 var _bind = require('lodash/bind');
 
 var _bind2 = _interopRequireDefault(_bind);
@@ -35,13 +37,35 @@ var PopupAdapter = exports.PopupAdapter = function () {
       };
 
       var promise = new Promise(function (resolve, reject) {
-        _this.popup = global.open(_this.url, '_blank', 'location=yes');
+        if ((0, _utils.isBrowser)()) {
+          _this.popup = global.open(_this.url, '_blank', 'toolbar=no,location=no');
 
-        if (_this.popup) {
-          _this.popup.addEventListener('loadstart', _this.eventListeners.loadHandler);
-          _this.popup.addEventListener('exit', _this.eventListeners.closeHandler);
+          if (_this.popup) {
+            _this.interval = setInterval(function () {
+              if (_this.popup.closed) {
+                _this.closeHandler();
+              } else {
+                try {
+                  _this.loadHandler({
+                    url: _this.popup.location.href
+                  });
+                } catch (e) {
+                  // catch any errors due to cross domain issues
+                }
+              }
+            }, 100);
+          } else {
+            return reject(new Error('The popup was blocked.'));
+          }
         } else {
-          return reject(new Error('The popup was blocked.'));
+          _this.popup = global.open(_this.url, '_blank', 'location=yes');
+
+          if (_this.popup) {
+            _this.popup.addEventListener('loadstart', _this.eventListeners.loadHandler);
+            _this.popup.addEventListener('exit', _this.eventListeners.closeHandler);
+          } else {
+            return reject(new Error('The popup was blocked.'));
+          }
         }
 
         return resolve(_this);
@@ -72,6 +96,7 @@ var PopupAdapter = exports.PopupAdapter = function () {
   }, {
     key: 'closeHandler',
     value: function closeHandler() {
+      clearTimeout(this.interval);
       this.popup.removeEventListener('loadstart', this.eventListeners.loadHandler);
       this.popup.removeEventListener('exit', this.eventListeners.closeHander);
       this.emit('closed');
