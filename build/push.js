@@ -131,12 +131,13 @@ var Push = exports.Push = function () {
           }
 
           var user = _user.User.getActiveUser();
+          var client = _client.Client.sharedInstance();
           var request = new _network.NetworkRequest({
             method: _enums.HttpMethod.POST,
             url: _url2.default.format({
-              protocol: _client.sharedClientInstance.protocol,
-              host: _client.sharedClientInstance.host,
-              pathname: '/' + pushNamespace + '/' + _client.sharedClientInstance.appKey + '/register-device'
+              protocol: client.protocol,
+              host: client.host,
+              pathname: '/' + pushNamespace + '/' + client.appKey + '/register-device'
             }),
             properties: options.properties,
             authType: user ? _enums.AuthType.Session : _enums.AuthType.Master,
@@ -181,12 +182,13 @@ var Push = exports.Push = function () {
         }
 
         var user = _user.User.getActiveUser();
+        var client = _client.Client.sharedInstance();
         var request = new _network.NetworkRequest({
           method: _enums.HttpMethod.POST,
           url: _url2.default.format({
-            protocol: _client.sharedClientInstance.protocol,
-            host: _client.sharedClientInstance.host,
-            pathname: '/' + pushNamespace + '/' + _client.sharedClientInstance.appKey + '/unregister-device'
+            protocol: client.protocol,
+            host: client.host,
+            pathname: '/' + pushNamespace + '/' + client.appKey + '/unregister-device'
           }),
           properties: options.properties,
           authType: user ? _enums.AuthType.Session : _enums.AuthType.Master,
