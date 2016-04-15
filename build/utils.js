@@ -10,7 +10,7 @@ var device = global.device || {};
 
 function isBrowser() {
   var platform = device.platform;
-  return platform === 'browser';
+  return platform === 'browser' || !platform;
 }
 
 function isiOS() {

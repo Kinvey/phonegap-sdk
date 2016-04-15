@@ -13,6 +13,8 @@ var _package = require('../package.json');
 
 var _package2 = _interopRequireDefault(_package);
 
+var _utils = require('./utils');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -29,11 +31,36 @@ var DeviceAdapter = exports.DeviceAdapter = function () {
   _createClass(DeviceAdapter, [{
     key: 'toJSON',
     value: function toJSON() {
+      if ((0, _utils.isBrowser)()) {
+        var userAgent = global.navigator.userAgent.toLowerCase();
+        var rChrome = /(chrome)\/([\w]+)/;
+        var rFirefox = /(firefox)\/([\w.]+)/;
+        var rIE = /(msie) ([\w.]+)/i;
+        var rOpera = /(opera)(?:.*version)?[ \/]([\w.]+)/;
+        var rSafari = /(safari)\/([\w.]+)/;
+        var browser = rChrome.exec(userAgent) || rFirefox.exec(userAgent) || rIE.exec(userAgent) || rOpera.exec(userAgent) || rSafari.exec(userAgent) || [];
+
+        return {
+          environment: 'phonegap',
+          library: {
+            name: 'phonegap'
+          },
+          os: {
+            name: browser[1],
+            version: browser[2]
+          },
+          sdk: {
+            name: _package2.default.name,
+            version: _package2.default.version
+          }
+        };
+      }
+
       return {
         device: {
           model: global.device.model
         },
-        environment: 'titanium',
+        environment: 'phonegap',
         library: {
           name: 'phonegap',
           version: global.device.cordova
@@ -53,7 +80,7 @@ var DeviceAdapter = exports.DeviceAdapter = function () {
   return DeviceAdapter;
 }();
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../package.json":303}],2:[function(require,module,exports){
+},{"../package.json":303,"./utils":6}],2:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -494,7 +521,7 @@ var device = global.device || {};
 
 function isBrowser() {
   var platform = device.platform;
-  return platform === 'browser';
+  return platform === 'browser' || !platform;
 }
 
 function isiOS() {
