@@ -347,10 +347,13 @@ var Push = exports.Push = {
   removeAllListeners: function removeAllListeners() {
     return emitter.removeAllListeners(notificationEvent);
   },
+  isSupported: function isSupported() {
+    return (0, _utils.isiOS)() || (0, _utils.isAndroid)();
+  },
   init: function init() {
     var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
-    if (!(0, _utils.isiOS)() && !(0, _utils.isAndroid)()) {
+    if (!Push.isSupported()) {
       return Promise.reject(new _errors.KinveyError('Kinvey currently only supports ' + 'push notifications on iOS and Android platforms.'));
     }
 
@@ -428,7 +431,7 @@ var Push = exports.Push = {
   unregister: function unregister() {
     var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
-    if (!(0, _utils.isiOS)() && !(0, _utils.isAndroid)()) {
+    if (!Push.isSupported()) {
       return Promise.reject(new _errors.KinveyError('Kinvey currently only supports ' + 'push notifications on iOS and Android platforms.'));
     }
 
@@ -487,18 +490,20 @@ Object.defineProperty(exports, "__esModule", {
 exports.isBrowser = isBrowser;
 exports.isiOS = isiOS;
 exports.isAndroid = isAndroid;
+var device = global.device || {};
+
 function isBrowser() {
-  var platform = global.device.platform;
+  var platform = device.platform;
   return platform === 'browser';
 }
 
 function isiOS() {
-  var platform = global.device.platform;
+  var platform = device.platform;
   return platform === 'iOS';
 }
 
 function isAndroid() {
-  var platform = global.device.platform;
+  var platform = device.platform;
   return platform === 'Android';
 }
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})

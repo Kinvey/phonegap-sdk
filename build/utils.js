@@ -6,17 +6,19 @@ Object.defineProperty(exports, "__esModule", {
 exports.isBrowser = isBrowser;
 exports.isiOS = isiOS;
 exports.isAndroid = isAndroid;
+var device = global.device || {};
+
 function isBrowser() {
-  var platform = global.device.platform;
+  var platform = device.platform;
   return platform === 'browser';
 }
 
 function isiOS() {
-  var platform = global.device.platform;
+  var platform = device.platform;
   return platform === 'iOS';
 }
 
 function isAndroid() {
-  var platform = global.device.platform;
+  var platform = device.platform;
   return platform === 'Android';
 }
