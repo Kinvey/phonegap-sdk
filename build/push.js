@@ -15,6 +15,8 @@ var _enums = require('kinvey-javascript-sdk-core/build/enums');
 
 var _user = require('kinvey-javascript-sdk-core/build/user');
 
+var _network = require('kinvey-javascript-sdk-core/build/requests/network');
+
 var _client = require('kinvey-javascript-sdk-core/build/client');
 
 var _query = require('kinvey-javascript-sdk-core/build/query');
@@ -24,6 +26,10 @@ var _utils = require('./utils');
 var _assign = require('lodash/assign');
 
 var _assign2 = _interopRequireDefault(_assign);
+
+var _url = require('url');
+
+var _url2 = _interopRequireDefault(_url);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -51,7 +57,7 @@ var Push = exports.Push = {
   init: function init() {
     var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
-    if (!(0, _utils.isiOS)() || !(0, _utils.isAndroid)()) {
+    if (!(0, _utils.isiOS)() && !(0, _utils.isAndroid)()) {
       return Promise.reject(new _errors.KinveyError('Kinvey currently only supports ' + 'push notifications on iOS and Android platforms.'));
     }
 
@@ -93,16 +99,21 @@ var Push = exports.Push = {
       }
 
       var store = _dataStore.DataStore.getInstance(deviceCollectionName, _dataStore.DataStoreType.Sync);
+      store.disableSync();
       return store.findById(deviceId).then(function (entity) {
-        if (options.force !== true && entity.registered) {
-          throw new _errors.KinveyError('Device is already registered. To force registration ' + 'please set options.force to true.');
+        if (options.force !== true) {
+          return entity;
         }
-      }).then(function () {
+
         var user = _user.User.getActiveUser();
         var client = _client.Client.sharedInstance();
-        return client.executeNetworkRequest({
+        var request = new _network.NetworkRequest({
           method: _enums.HttpMethod.POST,
-          pathname: '/' + pushNamespace + '/' + client.appKey + '/register-device',
+          url: _url2.default.format({
+            protocol: client.protocol,
+            host: client.host,
+            pathname: '/' + pushNamespace + '/' + client.appKey + '/register-device'
+          }),
           properties: options.properties,
           auth: user ? client.sessionAuth() : client.masterAuth(),
           data: {
@@ -113,9 +124,8 @@ var Push = exports.Push = {
           },
           timeout: options.timeout
         });
-      }).then(function (response) {
-        return store.save({ _id: deviceId, registered: true }).then(function () {
-          return response.data;
+        return request.execute().then(function () {
+          return store.save({ _id: deviceId, registered: true });
         });
       });
     });
@@ -125,11 +135,12 @@ var Push = exports.Push = {
   unregister: function unregister() {
     var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
-    if (!(0, _utils.isiOS)() || !(0, _utils.isAndroid)()) {
+    if (!(0, _utils.isiOS)() && !(0, _utils.isAndroid)()) {
       return Promise.reject(new _errors.KinveyError('Kinvey currently only supports ' + 'push notifications on iOS and Android platforms.'));
     }
 
     var store = _dataStore.DataStore.getInstance(deviceCollectionName, _dataStore.DataStoreType.Sync);
+    store.disableSync();
     var query = new _query.Query();
     query.equalsTo('registered', true);
     var promise = store.find(query).then(function (data) {
@@ -145,11 +156,15 @@ var Push = exports.Push = {
 
       var user = _user.User.getActiveUser();
       var client = _client.Client.sharedInstance();
-      return client.executeNetworkRequest({
+      var request = new _network.NetworkRequest({
         method: _enums.HttpMethod.POST,
+        url: _url2.default.format({
+          protocol: client.protocol,
+          host: client.host,
+          pathname: '/' + pushNamespace + '/' + client.appKey + '/unregister-device'
+        }),
         properties: options.properties,
         auth: user ? client.sessionAuth() : client.masterAuth(),
-        pathname: '/' + pushNamespace + '/' + client.appKey + '/unregister-device',
         data: {
           platform: global.device.platform,
           framework: 'phonegap',
@@ -157,7 +172,8 @@ var Push = exports.Push = {
           userId: user ? null : options.userId
         },
         timeout: options.timeout
-      }).then(function (response) {
+      });
+      return request.execute().then(function (response) {
         return store.removeById(deviceId).then(function () {
           return response.data;
         });
