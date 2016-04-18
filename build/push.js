@@ -125,8 +125,14 @@ var Push = exports.Push = function () {
 
         var store = _datastore.DataStore.getInstance(deviceCollectionName, _datastore.DataStoreType.Sync);
         store.disableSync();
-        return store.findById(deviceId).then(function (entity) {
-          if (options.force !== true) {
+        return store.findById(deviceId).catch(function (error) {
+          if (error instanceof _errors.NotFoundError) {
+            return undefined;
+          }
+
+          throw error;
+        }).then(function (entity) {
+          if (entity && options.force !== true) {
             return entity;
           }
 
