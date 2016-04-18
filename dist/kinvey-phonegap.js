@@ -7840,7 +7840,7 @@
 /* 127 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
+	/* WEBPACK VAR INJECTION */(function(process, global) {'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
@@ -7875,7 +7875,7 @@
 
 	var activeUserCollectionName = process.env.KINVEY_ACTIVE_USER_COLLECTION_NAME || 'kinvey_activeUser';
 	var activeSocialIdentityTokenCollectionName = process.env.KINVEY_ACTIVE_SOCIAL_IDENTITY_TOKEN_COLLECTION_NAME || 'kinvey_activeSocialIdentityToken';
-	var _sharedInstance = null;
+	global.Kinvey = global.Kinvey || {};
 
 	/**
 	 * The Client class stores information regarding your application. You can create mutiple clients
@@ -8052,7 +8052,7 @@
 	    key: 'init',
 	    value: function init(options) {
 	      var client = new Client(options);
-	      _sharedInstance = client;
+	      global.Kinvey.sharedClientInstance = client;
 	      return client;
 	    }
 
@@ -8067,17 +8067,17 @@
 	  }, {
 	    key: 'sharedInstance',
 	    value: function sharedInstance() {
-	      if (!_sharedInstance) {
+	      if (!global.Kinvey.sharedClientInstance) {
 	        throw new _errors.KinveyError('You have not initialized the library. ' + 'Please call Kinvey.init() to initialize the library.');
 	      }
 
-	      return _sharedInstance;
+	      return global.Kinvey.sharedClientInstance;
 	    }
 	  }]);
 
 	  return Client;
 	}();
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), (function() { return this; }())))
 
 /***/ },
 /* 128 */
@@ -35854,9 +35854,21 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _push = __webpack_require__(305);
-
 	var _errors = __webpack_require__(7);
+
+	var _events = __webpack_require__(263);
+
+	var _datastore = __webpack_require__(240);
+
+	var _enums = __webpack_require__(129);
+
+	var _user = __webpack_require__(259);
+
+	var _network = __webpack_require__(224);
+
+	var _client = __webpack_require__(127);
+
+	var _query = __webpack_require__(14);
 
 	var _utils = __webpack_require__(274);
 
@@ -35864,30 +35876,57 @@
 
 	var _assign2 = _interopRequireDefault(_assign);
 
+	var _url = __webpack_require__(214);
+
+	var _url2 = _interopRequireDefault(_url);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
+	var pushNamespace = process.env.KINVEY_PUSH_NAMESPACE || 'push';
 	var notificationEvent = process.env.KINVEY_NOTIFICATION_EVENT || 'notification';
+	var deviceCollectionName = process.env.KINVEY_DEVICE_COLLECTION_NAME || 'kinvey_device';
+	var emitter = new _events.EventEmitter();
 
-	var Push = exports.Push = function (_CorePush) {
-	  _inherits(Push, _CorePush);
-
+	var Push = exports.Push = function () {
 	  function Push() {
 	    _classCallCheck(this, Push);
-
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(Push).apply(this, arguments));
 	  }
 
-	  _createClass(Push, [{
-	    key: 'getDeviceId',
-	    value: function getDeviceId() {
-	      var _this2 = this;
-
+	  _createClass(Push, null, [{
+	    key: 'listeners',
+	    value: function listeners() {
+	      return emitter.listeners(notificationEvent);
+	    }
+	  }, {
+	    key: 'onNotification',
+	    value: function onNotification(listener) {
+	      return emitter.on(notificationEvent, listener);
+	    }
+	  }, {
+	    key: 'onceNotification',
+	    value: function onceNotification(listener) {
+	      return emitter.once(notificationEvent, listener);
+	    }
+	  }, {
+	    key: 'removeListener',
+	    value: function removeListener(listener) {
+	      return emitter.removeListener(notificationEvent, listener);
+	    }
+	  }, {
+	    key: 'removeAllListeners',
+	    value: function removeAllListeners() {
+	      return emitter.removeAllListeners(notificationEvent);
+	    }
+	  }, {
+	    key: 'isSupported',
+	    value: function isSupported() {
+	      return (0, _utils.isiOS)() || (0, _utils.isAndroid)();
+	    }
+	  }, {
+	    key: 'register',
+	    value: function register() {
 	      var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
 	      if (!Push.isSupported()) {
@@ -35902,7 +35941,8 @@
 	          alert: true,
 	          badge: true,
 	          sound: true
-	        }
+	        },
+	        force: false
 	      }, options);
 
 	      var promise = new Promise(function (resolve, reject) {
@@ -35917,7 +35957,7 @@
 	        });
 
 	        push.on('notification', function (data) {
-	          _this2.emit(notificationEvent, data);
+	          Push.emit(notificationEvent, data);
 	        });
 
 	        push.on('error', function (error) {
@@ -35925,132 +35965,16 @@
 	        });
 
 	        return push;
-	      });
-
-	      return promise;
-	    }
-	  }], [{
-	    key: 'isSupported',
-	    value: function isSupported() {
-	      return (0, _utils.isiOS)() || (0, _utils.isAndroid)();
-	    }
-	  }]);
-
-	  return Push;
-	}(_push.Push);
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), (function() { return this; }())))
-
-/***/ },
-/* 305 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(process, global) {'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.Push = undefined;
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _babybird = __webpack_require__(3);
-
-	var _babybird2 = _interopRequireDefault(_babybird);
-
-	var _datastore = __webpack_require__(240);
-
-	var _network = __webpack_require__(224);
-
-	var _client = __webpack_require__(127);
-
-	var _enums = __webpack_require__(129);
-
-	var _errors = __webpack_require__(7);
-
-	var _events = __webpack_require__(263);
-
-	var _user = __webpack_require__(259);
-
-	var _query = __webpack_require__(14);
-
-	var _url = __webpack_require__(214);
-
-	var _url2 = _interopRequireDefault(_url);
-
-	var _assign = __webpack_require__(114);
-
-	var _assign2 = _interopRequireDefault(_assign);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var pushNamespace = process.env.KINVEY_PUSH_NAMESPACE || 'push';
-	var notificationEvent = process.env.KINVEY_NOTIFICATION_EVENT || 'notification';
-	var deviceCollectionName = process.env.KINVEY_DEVICE_COLLECTION_NAME || 'kinvey_device';
-	var _sharedInstance = null;
-
-	var Push = exports.Push = function (_EventEmitter) {
-	  _inherits(Push, _EventEmitter);
-
-	  function Push() {
-	    _classCallCheck(this, Push);
-
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(Push).apply(this, arguments));
-	  }
-
-	  _createClass(Push, [{
-	    key: 'onNotification',
-	    value: function onNotification(listener) {
-	      return this.on(notificationEvent, listener);
-	    }
-	  }, {
-	    key: 'onceNotification',
-	    value: function onceNotification(listener) {
-	      return this.once(notificationEvent, listener);
-	    }
-	  }, {
-	    key: 'isSupported',
-	    value: function isSupported() {
-	      return false;
-	    }
-	  }, {
-	    key: 'getDeviceId',
-	    value: function getDeviceId() {
-	      return _babybird2.default.reject(new Error('method not supported'));
-	    }
-	  }], [{
-	    key: 'isSupported',
-	    value: function isSupported() {
-	      return false;
-	    }
-	  }, {
-	    key: 'register',
-	    value: function register() {
-	      var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-	      if (!Push.isSupported()) {
-	        return _babybird2.default.reject(new _errors.KinveyError('Kinvey currently only supports ' + 'push notifications on iOS and Android platforms.'));
-	      }
-
-	      options = (0, _assign2.default)({
-	        force: false
-	      }, options);
-
-	      var promise = _sharedInstance.getDeviceId().then(function (deviceId) {
+	      }).then(function (deviceId) {
 	        if (!deviceId) {
 	          throw new _errors.KinveyError('Unable to retrieve the device id to register this device for push notifications.');
 	        }
 
 	        var store = _datastore.DataStore.getInstance(deviceCollectionName, _datastore.DataStoreType.Sync);
 	        store.disableSync();
-	        return store.findById(deviceId).then(function () {
+	        return store.findById(deviceId).then(function (entity) {
 	          if (options.force !== true) {
-	            return _sharedInstance;
+	            return entity;
 	          }
 
 	          var user = _user.User.getActiveUser();
@@ -36074,8 +35998,6 @@
 	          });
 	          return request.execute().then(function () {
 	            return store.save({ _id: deviceId, registered: true });
-	          }).then(function () {
-	            return _sharedInstance;
 	          });
 	        });
 	      });
@@ -36088,7 +36010,7 @@
 	      var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
 	      if (!Push.isSupported()) {
-	        return _babybird2.default.reject(new _errors.KinveyError('Kinvey currently only supports ' + 'push notifications on iOS and Android platforms.'));
+	        return Promise.reject(new _errors.KinveyError('Kinvey currently only supports ' + 'push notifications on iOS and Android platforms.'));
 	      }
 
 	      var store = _datastore.DataStore.getInstance(deviceCollectionName, _datastore.DataStoreType.Sync);
@@ -36125,29 +36047,19 @@
 	          },
 	          timeout: options.timeout
 	        });
-	        return request.execute().then(function () {
+	        return request.execute().then(function (response) {
 	          return store.removeById(deviceId).then(function () {
-	            return _sharedInstance;
+	            return response.data;
 	          });
 	        });
 	      });
 
 	      return promise;
 	    }
-	  }, {
-	    key: 'sharedInstance',
-	    value: function sharedInstance() {
-	      return _sharedInstance;
-	    }
 	  }]);
 
 	  return Push;
-	}(_events.EventEmitter);
-
-	// Initialize the shared instance
-
-
-	_sharedInstance = new Push();
+	}();
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), (function() { return this; }())))
 
 /***/ }

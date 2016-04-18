@@ -7,9 +7,21 @@ exports.Push = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _push = require('kinvey-javascript-sdk-core/build/push');
-
 var _errors = require('kinvey-javascript-sdk-core/build/errors');
+
+var _events = require('events');
+
+var _datastore = require('kinvey-javascript-sdk-core/build/stores/datastore');
+
+var _enums = require('kinvey-javascript-sdk-core/build/enums');
+
+var _user = require('kinvey-javascript-sdk-core/build/user');
+
+var _network = require('kinvey-javascript-sdk-core/build/requests/network');
+
+var _client = require('kinvey-javascript-sdk-core/build/client');
+
+var _query = require('kinvey-javascript-sdk-core/build/query');
 
 var _utils = require('./utils');
 
@@ -17,30 +29,57 @@ var _assign = require('lodash/assign');
 
 var _assign2 = _interopRequireDefault(_assign);
 
+var _url = require('url');
+
+var _url2 = _interopRequireDefault(_url);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
+var pushNamespace = process.env.KINVEY_PUSH_NAMESPACE || 'push';
 var notificationEvent = process.env.KINVEY_NOTIFICATION_EVENT || 'notification';
+var deviceCollectionName = process.env.KINVEY_DEVICE_COLLECTION_NAME || 'kinvey_device';
+var emitter = new _events.EventEmitter();
 
-var Push = exports.Push = function (_CorePush) {
-  _inherits(Push, _CorePush);
-
+var Push = exports.Push = function () {
   function Push() {
     _classCallCheck(this, Push);
-
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(Push).apply(this, arguments));
   }
 
-  _createClass(Push, [{
-    key: 'getDeviceId',
-    value: function getDeviceId() {
-      var _this2 = this;
-
+  _createClass(Push, null, [{
+    key: 'listeners',
+    value: function listeners() {
+      return emitter.listeners(notificationEvent);
+    }
+  }, {
+    key: 'onNotification',
+    value: function onNotification(listener) {
+      return emitter.on(notificationEvent, listener);
+    }
+  }, {
+    key: 'onceNotification',
+    value: function onceNotification(listener) {
+      return emitter.once(notificationEvent, listener);
+    }
+  }, {
+    key: 'removeListener',
+    value: function removeListener(listener) {
+      return emitter.removeListener(notificationEvent, listener);
+    }
+  }, {
+    key: 'removeAllListeners',
+    value: function removeAllListeners() {
+      return emitter.removeAllListeners(notificationEvent);
+    }
+  }, {
+    key: 'isSupported',
+    value: function isSupported() {
+      return (0, _utils.isiOS)() || (0, _utils.isAndroid)();
+    }
+  }, {
+    key: 'register',
+    value: function register() {
       var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
       if (!Push.isSupported()) {
@@ -55,7 +94,8 @@ var Push = exports.Push = function (_CorePush) {
           alert: true,
           badge: true,
           sound: true
-        }
+        },
+        force: false
       }, options);
 
       var promise = new Promise(function (resolve, reject) {
@@ -70,7 +110,7 @@ var Push = exports.Push = function (_CorePush) {
         });
 
         push.on('notification', function (data) {
-          _this2.emit(notificationEvent, data);
+          Push.emit(notificationEvent, data);
         });
 
         push.on('error', function (error) {
@@ -78,16 +118,98 @@ var Push = exports.Push = function (_CorePush) {
         });
 
         return push;
+      }).then(function (deviceId) {
+        if (!deviceId) {
+          throw new _errors.KinveyError('Unable to retrieve the device id to register this device for push notifications.');
+        }
+
+        var store = _datastore.DataStore.getInstance(deviceCollectionName, _datastore.DataStoreType.Sync);
+        store.disableSync();
+        return store.findById(deviceId).then(function (entity) {
+          if (options.force !== true) {
+            return entity;
+          }
+
+          var user = _user.User.getActiveUser();
+          var client = _client.Client.sharedInstance();
+          var request = new _network.NetworkRequest({
+            method: _enums.HttpMethod.POST,
+            url: _url2.default.format({
+              protocol: client.protocol,
+              host: client.host,
+              pathname: '/' + pushNamespace + '/' + client.appKey + '/register-device'
+            }),
+            properties: options.properties,
+            authType: user ? _enums.AuthType.Session : _enums.AuthType.Master,
+            data: {
+              platform: global.device.platform,
+              framework: 'phonegap',
+              deviceId: deviceId,
+              userId: user ? null : options.userId
+            },
+            timeout: options.timeout
+          });
+          return request.execute().then(function () {
+            return store.save({ _id: deviceId, registered: true });
+          });
+        });
       });
 
       return promise;
     }
-  }], [{
-    key: 'isSupported',
-    value: function isSupported() {
-      return (0, _utils.isiOS)() || (0, _utils.isAndroid)();
+  }, {
+    key: 'unregister',
+    value: function unregister() {
+      var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+      if (!Push.isSupported()) {
+        return Promise.reject(new _errors.KinveyError('Kinvey currently only supports ' + 'push notifications on iOS and Android platforms.'));
+      }
+
+      var store = _datastore.DataStore.getInstance(deviceCollectionName, _datastore.DataStoreType.Sync);
+      store.disableSync();
+      var query = new _query.Query();
+      query.equalsTo('registered', true);
+      var promise = store.find(query).then(function (data) {
+        if (data.length === 1) {
+          return data[0]._id;
+        }
+
+        return undefined;
+      }).then(function (deviceId) {
+        if (!deviceId) {
+          throw new _errors.KinveyError('This device has not been registered.');
+        }
+
+        var user = _user.User.getActiveUser();
+        var client = _client.Client.sharedInstance();
+        var request = new _network.NetworkRequest({
+          method: _enums.HttpMethod.POST,
+          url: _url2.default.format({
+            protocol: client.protocol,
+            host: client.host,
+            pathname: '/' + pushNamespace + '/' + client.appKey + '/unregister-device'
+          }),
+          properties: options.properties,
+          authType: user ? _enums.AuthType.Session : _enums.AuthType.Master,
+          data: {
+            platform: global.device.platform,
+            framework: 'phonegap',
+            deviceId: deviceId,
+            userId: user ? null : options.userId
+          },
+          timeout: options.timeout
+        });
+        return request.execute().then(function (response) {
+          return store.removeById(deviceId).then(function () {
+            return response.data;
+          });
+        });
+      });
+
+      return promise;
     }
   }]);
 
   return Push;
-}(_push.Push);
+}();
