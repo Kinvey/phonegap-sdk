@@ -106,7 +106,7 @@ var Push = exports.Push = function () {
         var push = global.PushNotification.init(options);
 
         push.on('registration', function (data) {
-          resolve(data);
+          resolve(data.registrationId);
         });
 
         push.on('notification', function (data) {
