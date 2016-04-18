@@ -44,6 +44,7 @@ gulp.task('bundle', ['build'], function() {
   return browserify({
     debug: false, // turns on/off source mapping
     entries: './build/index.js',
+    fullPaths: true,
     standalone: 'Kinvey'
   })
     .bundle()

@@ -1,4 +1,4 @@
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.Kinvey = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.Kinvey = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/build/device.js":[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -80,7 +80,7 @@ var DeviceAdapter = exports.DeviceAdapter = function () {
   return DeviceAdapter;
 }();
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../package.json":302,"./utils":6}],2:[function(require,module,exports){
+},{"../package.json":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/package.json","./utils":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/build/utils.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/build/http.js":[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -170,7 +170,7 @@ var HttpMiddleware = exports.HttpMiddleware = function (_KinveyMiddleware) {
 
   return HttpMiddleware;
 }(_middleware.KinveyMiddleware);
-},{"kinvey-javascript-sdk-core/build/rack/middleware":36,"parse-headers":280}],3:[function(require,module,exports){
+},{"kinvey-javascript-sdk-core/build/rack/middleware":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/rack/middleware.js","parse-headers":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/parse-headers/parse-headers.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/build/index.js":[function(require,module,exports){
 'use strict';
 
 var _kinveyJavascriptSdkCore = require('kinvey-javascript-sdk-core');
@@ -206,7 +206,7 @@ _kinveyJavascriptSdkCore.Kinvey.Push = _push.Push;
 
 // Export
 module.exports = _kinveyJavascriptSdkCore.Kinvey;
-},{"./device":1,"./http":2,"./popup":4,"./push":5,"kinvey-javascript-sdk-core":30,"kinvey-javascript-sdk-core/build/rack/middleware/serialize":39,"kinvey-javascript-sdk-core/build/rack/rack":45,"kinvey-javascript-sdk-core/build/utils/device":60,"kinvey-javascript-sdk-core/build/utils/popup":62}],4:[function(require,module,exports){
+},{"./device":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/build/device.js","./http":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/build/http.js","./popup":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/build/popup.js","./push":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/build/push.js","kinvey-javascript-sdk-core":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/kinvey.js","kinvey-javascript-sdk-core/build/rack/middleware/serialize":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/rack/middleware/serialize.js","kinvey-javascript-sdk-core/build/rack/rack":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/rack/rack.js","kinvey-javascript-sdk-core/build/utils/device":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/utils/device.js","kinvey-javascript-sdk-core/build/utils/popup":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/utils/popup.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/build/popup.js":[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -316,7 +316,7 @@ var PopupAdapter = exports.PopupAdapter = function () {
   return PopupAdapter;
 }();
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./utils":6,"lodash/bind":232}],5:[function(require,module,exports){
+},{"./utils":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/build/utils.js","lodash/bind":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/bind.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/build/push.js":[function(require,module,exports){
 (function (process,global){
 'use strict';
 
@@ -534,7 +534,7 @@ var Push = exports.Push = function () {
   return Push;
 }();
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./utils":6,"_process":282,"events":14,"kinvey-javascript-sdk-core/build/client":26,"kinvey-javascript-sdk-core/build/enums":28,"kinvey-javascript-sdk-core/build/errors":29,"kinvey-javascript-sdk-core/build/query":34,"kinvey-javascript-sdk-core/build/requests/network":48,"kinvey-javascript-sdk-core/build/stores/datastore":53,"kinvey-javascript-sdk-core/build/user":59,"lodash/assign":231,"url":298}],6:[function(require,module,exports){
+},{"./utils":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/build/utils.js","_process":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/process/browser.js","events":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/events/events.js","kinvey-javascript-sdk-core/build/client":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/client.js","kinvey-javascript-sdk-core/build/enums":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/enums.js","kinvey-javascript-sdk-core/build/errors":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/errors.js","kinvey-javascript-sdk-core/build/query":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/query.js","kinvey-javascript-sdk-core/build/requests/network":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/requests/network.js","kinvey-javascript-sdk-core/build/stores/datastore":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/stores/datastore.js","kinvey-javascript-sdk-core/build/user":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/user.js","lodash/assign":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/assign.js","url":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/url/url.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/build/utils.js":[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -561,7 +561,7 @@ function isAndroid() {
   return platform === 'Android';
 }
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],7:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/append-query/index.js":[function(require,module,exports){
 var querystring = require('querystring')
   , extend = require('extend')
   , url = require('url')
@@ -602,7 +602,7 @@ function serialize(obj, prefix) {
   return str.join('&')
 }
 
-},{"extend":15,"querystring":293,"url":298}],8:[function(require,module,exports){
+},{"extend":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/extend/index.js","querystring":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/querystring-es3/index.js","url":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/url/url.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/asap/browser-raw.js":[function(require,module,exports){
 (function (global){
 "use strict";
 
@@ -826,7 +826,7 @@ rawAsap.makeRequestCallFromTimer = makeRequestCallFromTimer;
 // https://github.com/tildeio/rsvp.js/blob/cddf7232546a9cf858524b75cde6f9edf72620a7/lib/rsvp/asap.js
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],9:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/babybird/lib/promise-extra.js":[function(require,module,exports){
 (function (global){
 /* Add Promise.all and Promise.race implementations. */
 'use strict';
@@ -1250,7 +1250,7 @@ module.exports = function(
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"is-arguments":22}],10:[function(require,module,exports){
+},{"is-arguments":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/is-arguments/index.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/babybird/lib/promise.js":[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -1864,7 +1864,7 @@ require('./promise-extra.js')(
 module.exports = Promise;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./promise-extra.js":9,"asap/raw":8}],11:[function(require,module,exports){
+},{"./promise-extra.js":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/babybird/lib/promise-extra.js","asap/raw":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/asap/browser-raw.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/base64-js/lib/b64.js":[function(require,module,exports){
 'use strict'
 
 exports.toByteArray = toByteArray
@@ -1975,7 +1975,7 @@ function fromByteArray (uint8) {
   return parts.join('')
 }
 
-},{}],12:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/buffer/index.js":[function(require,module,exports){
 (function (global){
 /*!
  * The buffer module from node.js, for the browser.
@@ -3435,14 +3435,14 @@ function blitBuffer (src, dst, offset, length) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"base64-js":11,"ieee754":19,"isarray":13}],13:[function(require,module,exports){
+},{"base64-js":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/base64-js/lib/b64.js","ieee754":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/ieee754/index.js","isarray":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/buffer/node_modules/isarray/index.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/buffer/node_modules/isarray/index.js":[function(require,module,exports){
 var toString = {}.toString;
 
 module.exports = Array.isArray || function (arr) {
   return toString.call(arr) == '[object Array]';
 };
 
-},{}],14:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/events/events.js":[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -3742,7 +3742,7 @@ function isUndefined(arg) {
   return arg === void 0;
 }
 
-},{}],15:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/extend/index.js":[function(require,module,exports){
 var hasOwn = Object.prototype.hasOwnProperty;
 var toString = Object.prototype.toString;
 var undefined;
@@ -3824,7 +3824,7 @@ module.exports = function extend() {
 };
 
 
-},{}],16:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/fast-memory-cache/lib/memory-cache.js":[function(require,module,exports){
 'use strict';
 
 /**
@@ -3900,7 +3900,7 @@ function createMap() {
 
 module.exports = MemoryCache;
 
-},{}],17:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/for-each/index.js":[function(require,module,exports){
 var isFunction = require('is-function')
 
 module.exports = forEach
@@ -3948,7 +3948,7 @@ function forEachObject(object, iterator, context) {
     }
 }
 
-},{"is-function":23}],18:[function(require,module,exports){
+},{"is-function":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/is-function/index.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/hellojs/dist/hello.all.js":[function(require,module,exports){
 (function (process){
 /*! hellojs v1.12.0 | (c) 2012-2016 Andrew Dodson | MIT https://adodson.com/hello.js/LICENSE */
 // ES5 Object.create
@@ -9781,7 +9781,7 @@ if (typeof module === 'object' && module.exports) {
 }
 
 }).call(this,require('_process'))
-},{"_process":282}],19:[function(require,module,exports){
+},{"_process":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/process/browser.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/ieee754/index.js":[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = nBytes * 8 - mLen - 1
@@ -9867,7 +9867,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],20:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/indexeddbshim/dist/indexeddbshim.js":[function(require,module,exports){
 var idbModules = {  // jshint ignore:line
     util: {
         cleanInterface: false
@@ -13209,7 +13209,7 @@ var idbModules = {  // jshint ignore:line
 }(window, idbModules));
 
 
-},{}],21:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/inherits/inherits_browser.js":[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -13234,7 +13234,7 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],22:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/is-arguments/index.js":[function(require,module,exports){
 'use strict';
 
 var toStr = Object.prototype.toString;
@@ -13263,7 +13263,7 @@ isStandardArguments.isLegacyArguments = isLegacyArguments; // for tests
 
 module.exports = supportsStandardArguments ? isStandardArguments : isLegacyArguments;
 
-},{}],23:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/is-function/index.js":[function(require,module,exports){
 module.exports = isFunction
 
 var toString = Object.prototype.toString
@@ -13280,7 +13280,7 @@ function isFunction (fn) {
       fn === window.prompt))
 };
 
-},{}],24:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/acl.js":[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -13493,7 +13493,7 @@ var Acl = exports.Acl = function () {
   return Acl;
 }();
 }).call(this,require('_process'))
-},{"./errors":29,"_process":282,"lodash/isPlainObject":254}],25:[function(require,module,exports){
+},{"./errors":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/errors.js","_process":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/process/browser.js","lodash/isPlainObject":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isPlainObject.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/aggregation.js":[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -13725,7 +13725,7 @@ var Aggregation = function () {
 }();
 
 exports.Aggregation = Aggregation;
-},{"./errors":29,"./query":34,"lodash/assign":231,"lodash/forEach":238,"lodash/isFunction":248,"lodash/isObject":252,"lodash/isString":256,"lodash/result":271}],26:[function(require,module,exports){
+},{"./errors":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/errors.js","./query":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/query.js","lodash/assign":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/assign.js","lodash/forEach":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/forEach.js","lodash/isFunction":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isFunction.js","lodash/isObject":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isObject.js","lodash/isString":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isString.js","lodash/result":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/result.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/client.js":[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -13973,7 +13973,7 @@ var Client = exports.Client = function () {
   return Client;
 }();
 }).call(this,require('_process'))
-},{"./errors":29,"./sync":58,"_process":282,"local-storage":74,"lodash/assign":231,"lodash/isString":256,"url":298}],27:[function(require,module,exports){
+},{"./errors":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/errors.js","./sync":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/sync.js","_process":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/process/browser.js","local-storage":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/local-storage/local-storage.js","lodash/assign":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/assign.js","lodash/isString":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isString.js","url":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/url/url.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/command.js":[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -14060,7 +14060,7 @@ var Command = exports.Command = function () {
   return Command;
 }();
 }).call(this,require('_process'))
-},{"./client":26,"./enums":28,"./errors":29,"_process":282,"lodash/isString":256}],28:[function(require,module,exports){
+},{"./client":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/client.js","./enums":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/enums.js","./errors":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/errors.js","_process":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/process/browser.js","lodash/isString":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isString.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/enums.js":[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -14145,7 +14145,7 @@ var StatusCode = {
 };
 Object.freeze(StatusCode);
 exports.StatusCode = StatusCode;
-},{}],29:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/errors.js":[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -14199,7 +14199,7 @@ var KinveyError = exports.KinveyError = Error.extend('KinveyError');
 var NetworkConnectionError = exports.NetworkConnectionError = Error.extend('NetworkConnectionError');
 var NotFoundError = exports.NotFoundError = Error.extend('NotFoundError');
 var NoResponseError = exports.NoResponseError = Error.extend('NoResponseError');
-},{"lodash/isFunction":248,"util":301}],30:[function(require,module,exports){
+},{"lodash/isFunction":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isFunction.js","util":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/util/util.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/kinvey.js":[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -14325,7 +14325,7 @@ Kinvey.Sync = _sync.Sync;
 Kinvey.User = _user.User;
 exports.Kinvey = Kinvey;
 }).call(this,require('_process'))
-},{"./aggregation":25,"./client":26,"./command":27,"./enums":28,"./log":31,"./metadata":32,"./query":34,"./requests/network":48,"./stores/datastore":53,"./sync":58,"./user":59,"_process":282,"babybird":10,"url":298}],31:[function(require,module,exports){
+},{"./aggregation":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/aggregation.js","./client":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/client.js","./command":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/command.js","./enums":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/enums.js","./log":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/log.js","./metadata":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/metadata.js","./query":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/query.js","./requests/network":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/requests/network.js","./stores/datastore":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/stores/datastore.js","./sync":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/sync.js","./user":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/user.js","_process":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/process/browser.js","babybird":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/babybird/lib/promise.js","url":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/url/url.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/log.js":[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -14351,7 +14351,7 @@ _loglevel2.default.methodFactory = function methodFactory(methodName, logLevel, 
 
 _loglevel2.default.setLevel(_loglevel2.default.levels.ERROR);
 exports.Log = _loglevel2.default;
-},{"loglevel":279}],32:[function(require,module,exports){
+},{"loglevel":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/loglevel/lib/loglevel.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/metadata.js":[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -14456,7 +14456,7 @@ var Metadata = exports.Metadata = function () {
   return Metadata;
 }();
 }).call(this,require('_process'))
-},{"./errors":29,"_process":282,"lodash/isPlainObject":254}],33:[function(require,module,exports){
+},{"./errors":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/errors.js","_process":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/process/browser.js","lodash/isPlainObject":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isPlainObject.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/mic.js":[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -14757,7 +14757,7 @@ var MobileIdentityConnect = exports.MobileIdentityConnect = function () {
   return MobileIdentityConnect;
 }();
 }).call(this,require('_process'))
-},{"./client":26,"./enums":28,"./errors":29,"./requests/network":48,"./utils/popup":62,"_process":282,"babybird":10,"lodash/isString":256,"path":281,"url":298}],34:[function(require,module,exports){
+},{"./client":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/client.js","./enums":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/enums.js","./errors":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/errors.js","./requests/network":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/requests/network.js","./utils/popup":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/utils/popup.js","_process":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/process/browser.js","babybird":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/babybird/lib/promise.js","lodash/isString":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isString.js","path":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/path-browserify/index.js","url":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/url/url.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/query.js":[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -15443,7 +15443,7 @@ var Query = function () {
 }();
 
 exports.Query = Query;
-},{"./utils/object":61,"lodash/assign":231,"lodash/forEach":238,"lodash/isArray":243,"lodash/isNumber":251,"lodash/isObject":252,"lodash/isRegExp":255,"lodash/isString":256,"sift":294}],35:[function(require,module,exports){
+},{"./utils/object":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/utils/object.js","lodash/assign":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/assign.js","lodash/forEach":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/forEach.js","lodash/isArray":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isArray.js","lodash/isNumber":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isNumber.js","lodash/isObject":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isObject.js","lodash/isRegExp":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isRegExp.js","lodash/isString":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isString.js","sift":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/sift/sift.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/rack/asciiTree.js":[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -15496,7 +15496,7 @@ var AsciiTree = exports.AsciiTree = {
     return result;
   }
 };
-},{}],36:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/rack/middleware.js":[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -15594,7 +15594,7 @@ var KinveyMiddleware = exports.KinveyMiddleware = function (_Middleware) {
 
   return KinveyMiddleware;
 }(Middleware);
-},{"./asciiTree":35,"babybird":10}],37:[function(require,module,exports){
+},{"./asciiTree":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/rack/asciiTree.js","babybird":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/babybird/lib/promise.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/rack/middleware/cache.js":[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -15691,7 +15691,7 @@ var CacheMiddleware = exports.CacheMiddleware = function (_KinveyMiddleware) {
 
   return CacheMiddleware;
 }(_middleware.KinveyMiddleware);
-},{"../../enums":28,"../middleware":36,"../persistence/db":44}],38:[function(require,module,exports){
+},{"../../enums":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/enums.js","../middleware":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/rack/middleware.js","../persistence/db":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/rack/persistence/db.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/rack/middleware/parse.js":[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -15753,7 +15753,7 @@ var ParseMiddleware = exports.ParseMiddleware = function (_KinveyMiddleware) {
 
   return ParseMiddleware;
 }(_middleware.KinveyMiddleware);
-},{"../middleware":36}],39:[function(require,module,exports){
+},{"../middleware":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/rack/middleware.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/rack/middleware/serialize.js":[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -15827,7 +15827,7 @@ var SerializeMiddleware = exports.SerializeMiddleware = function (_KinveyMiddlew
   return SerializeMiddleware;
 }(_middleware.KinveyMiddleware);
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../middleware":36,"lodash/forEach":238}],40:[function(require,module,exports){
+},{"../middleware":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/rack/middleware.js","lodash/forEach":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/forEach.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/rack/persistence/adapters/indexeddb.js":[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -16165,7 +16165,7 @@ var IndexedDB = exports.IndexedDB = function () {
   return IndexedDB;
 }();
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../../../errors":29,"babybird":10,"indexeddbshim":20,"lodash/forEach":238,"lodash/isArray":243,"lodash/isFunction":248,"lodash/isString":256}],41:[function(require,module,exports){
+},{"../../../errors":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/errors.js","babybird":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/babybird/lib/promise.js","indexeddbshim":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/indexeddbshim/dist/indexeddbshim.js","lodash/forEach":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/forEach.js","lodash/isArray":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isArray.js","lodash/isFunction":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isFunction.js","lodash/isString":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isString.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/rack/persistence/adapters/localstorage.js":[function(require,module,exports){
 (function (process,global){
 'use strict';
 
@@ -16322,7 +16322,7 @@ var LocalStorage = exports.LocalStorage = function () {
   return LocalStorage;
 }();
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../../../errors":29,"_process":282,"babybird":10,"lodash/forEach":238,"lodash/keyBy":259,"lodash/merge":265,"lodash/values":277}],42:[function(require,module,exports){
+},{"../../../errors":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/errors.js","_process":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/process/browser.js","babybird":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/babybird/lib/promise.js","lodash/forEach":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/forEach.js","lodash/keyBy":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/keyBy.js","lodash/merge":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/merge.js","lodash/values":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/values.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/rack/persistence/adapters/memory.js":[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -16513,7 +16513,7 @@ var Memory = exports.Memory = function () {
   return Memory;
 }();
 }).call(this,require('_process'))
-},{"../../../errors":29,"_process":282,"babybird":10,"fast-memory-cache":16,"lodash/find":236,"lodash/forEach":238,"lodash/isArray":243,"lodash/isString":256,"lodash/keyBy":259,"lodash/values":277,"promise-queue":283}],43:[function(require,module,exports){
+},{"../../../errors":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/errors.js","_process":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/process/browser.js","babybird":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/babybird/lib/promise.js","fast-memory-cache":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/fast-memory-cache/lib/memory-cache.js","lodash/find":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/find.js","lodash/forEach":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/forEach.js","lodash/isArray":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isArray.js","lodash/isString":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isString.js","lodash/keyBy":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/keyBy.js","lodash/values":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/values.js","promise-queue":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/promise-queue/index.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/rack/persistence/adapters/websql.js":[function(require,module,exports){
 (function (process,global){
 'use strict';
 
@@ -16740,7 +16740,7 @@ var WebSQL = exports.WebSQL = function () {
   return WebSQL;
 }();
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../../../errors":29,"_process":282,"babybird":10,"lodash/forEach":238,"lodash/isArray":243,"lodash/isFunction":248,"lodash/isString":256,"lodash/map":263}],44:[function(require,module,exports){
+},{"../../../errors":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/errors.js","_process":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/process/browser.js","babybird":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/babybird/lib/promise.js","lodash/forEach":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/forEach.js","lodash/isArray":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isArray.js","lodash/isFunction":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isFunction.js","lodash/isString":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isString.js","lodash/map":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/map.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/rack/persistence/db.js":[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -17052,7 +17052,7 @@ var DB = exports.DB = function () {
   return DB;
 }();
 }).call(this,require('_process'))
-},{"../../aggregation":25,"../../errors":29,"../../log":31,"../../query":34,"./adapters/indexeddb":40,"./adapters/localstorage":41,"./adapters/memory":42,"./adapters/websql":43,"_process":282,"babybird":10,"lodash/forEach":238,"lodash/isArray":243,"lodash/isString":256,"lodash/map":263,"lodash/reduce":269,"lodash/result":271}],45:[function(require,module,exports){
+},{"../../aggregation":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/aggregation.js","../../errors":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/errors.js","../../log":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/log.js","../../query":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/query.js","./adapters/indexeddb":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/rack/persistence/adapters/indexeddb.js","./adapters/localstorage":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/rack/persistence/adapters/localstorage.js","./adapters/memory":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/rack/persistence/adapters/memory.js","./adapters/websql":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/rack/persistence/adapters/websql.js","_process":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/process/browser.js","babybird":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/babybird/lib/promise.js","lodash/forEach":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/forEach.js","lodash/isArray":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isArray.js","lodash/isString":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isString.js","lodash/map":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/map.js","lodash/reduce":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/reduce.js","lodash/result":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/result.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/rack/rack.js":[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -17362,7 +17362,7 @@ var NetworkRack = exports.NetworkRack = function (_KinveyRack2) {
 
   return NetworkRack;
 }(KinveyRack);
-},{"./middleware":36,"./middleware/cache":37,"./middleware/parse":38,"./middleware/serialize":39,"babybird":10,"lodash/findIndex":237,"lodash/reduce":269}],46:[function(require,module,exports){
+},{"./middleware":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/rack/middleware.js","./middleware/cache":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/rack/middleware/cache.js","./middleware/parse":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/rack/middleware/parse.js","./middleware/serialize":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/rack/middleware/serialize.js","babybird":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/babybird/lib/promise.js","lodash/findIndex":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/findIndex.js","lodash/reduce":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/reduce.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/requests/deltafetch.js":[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -17579,7 +17579,7 @@ var DeltaFetchRequest = exports.DeltaFetchRequest = function (_KinveyRequest) {
   return DeltaFetchRequest;
 }(_request.KinveyRequest);
 }).call(this,require('_process'))
-},{"../enums":28,"../errors":29,"../query":34,"./local":47,"./network":48,"./request":50,"./response":51,"_process":282,"babybird":10,"lodash/forEach":238,"lodash/keyBy":259,"lodash/reduce":269,"lodash/result":271,"lodash/values":277}],47:[function(require,module,exports){
+},{"../enums":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/enums.js","../errors":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/errors.js","../query":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/query.js","./local":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/requests/local.js","./network":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/requests/network.js","./request":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/requests/request.js","./response":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/requests/response.js","_process":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/process/browser.js","babybird":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/babybird/lib/promise.js","lodash/forEach":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/forEach.js","lodash/keyBy":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/keyBy.js","lodash/reduce":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/reduce.js","lodash/result":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/result.js","lodash/values":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/values.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/requests/local.js":[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -17666,7 +17666,7 @@ var LocalRequest = exports.LocalRequest = function (_KinveyRequest) {
 
   return LocalRequest;
 }(_request.KinveyRequest);
-},{"../errors":29,"../rack/rack":45,"./request":50,"./response":51}],48:[function(require,module,exports){
+},{"../errors":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/errors.js","../rack/rack":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/rack/rack.js","./request":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/requests/request.js","./response":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/requests/response.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/requests/network.js":[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -17856,7 +17856,7 @@ var NetworkRequest = exports.NetworkRequest = function (_KinveyRequest) {
   return NetworkRequest;
 }(_request.KinveyRequest);
 }).call(this,require('_process'))
-},{"../enums":28,"../errors":29,"../rack/rack":45,"./request":50,"./response":51,"_process":282,"url":298}],49:[function(require,module,exports){
+},{"../enums":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/enums.js","../errors":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/errors.js","../rack/rack":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/rack/rack.js","./request":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/requests/request.js","./response":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/requests/response.js","_process":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/process/browser.js","url":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/url/url.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/requests/properties.js":[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -18037,7 +18037,7 @@ var RequestProperties = exports.RequestProperties = function () {
 
   return RequestProperties;
 }();
-},{"../errors":29,"lodash/isPlainObject":254}],50:[function(require,module,exports){
+},{"../errors":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/errors.js","lodash/isPlainObject":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isPlainObject.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/requests/request.js":[function(require,module,exports){
 (function (process,Buffer){
 'use strict';
 
@@ -18648,7 +18648,7 @@ var KinveyRequest = exports.KinveyRequest = function (_Request) {
   return KinveyRequest;
 }(Request);
 }).call(this,require('_process'),require("buffer").Buffer)
-},{"../client":26,"../enums":28,"../rack/rack":45,"../utils/device":60,"../utils/string":63,"./properties":49,"_process":282,"append-query":7,"babybird":10,"buffer":12,"lodash/assign":231,"lodash/forEach":238,"lodash/isEmpty":247,"lodash/isPlainObject":254,"lodash/isString":256,"lodash/result":271,"qs":287,"url":298,"url-pattern":297}],51:[function(require,module,exports){
+},{"../client":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/client.js","../enums":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/enums.js","../rack/rack":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/rack/rack.js","../utils/device":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/utils/device.js","../utils/string":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/utils/string.js","./properties":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/requests/properties.js","_process":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/process/browser.js","append-query":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/append-query/index.js","babybird":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/babybird/lib/promise.js","buffer":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/buffer/index.js","lodash/assign":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/assign.js","lodash/forEach":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/forEach.js","lodash/isEmpty":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isEmpty.js","lodash/isPlainObject":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isPlainObject.js","lodash/isString":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isString.js","lodash/result":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/result.js","qs":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/qs/lib/index.js","url":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/url/url.js","url-pattern":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/url-pattern/lib/url-pattern.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/requests/response.js":[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -18830,7 +18830,7 @@ var Response = exports.Response = function () {
 
   return Response;
 }();
-},{"../enums":28,"../errors":29,"lodash/assign":231,"lodash/forEach":238,"lodash/isPlainObject":254,"lodash/isString":256}],52:[function(require,module,exports){
+},{"../enums":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/enums.js","../errors":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/errors.js","lodash/assign":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/assign.js","lodash/forEach":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/forEach.js","lodash/isPlainObject":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isPlainObject.js","lodash/isString":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isString.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/stores/cachestore.js":[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -19755,7 +19755,7 @@ var CacheStore = function (_NetworkStore) {
 
 exports.CacheStore = CacheStore;
 }).call(this,require('_process'))
-},{"../aggregation":25,"../enums":28,"../errors":29,"../log":31,"../query":34,"../requests/deltafetch":46,"../requests/local":47,"./networkstore":55,"_process":282,"babybird":10,"lodash/assign":231,"lodash/differenceBy":234,"lodash/isArray":243,"lodash/keyBy":259,"lodash/result":271,"url":298}],53:[function(require,module,exports){
+},{"../aggregation":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/aggregation.js","../enums":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/enums.js","../errors":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/errors.js","../log":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/log.js","../query":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/query.js","../requests/deltafetch":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/requests/deltafetch.js","../requests/local":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/requests/local.js","./networkstore":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/stores/networkstore.js","_process":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/process/browser.js","babybird":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/babybird/lib/promise.js","lodash/assign":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/assign.js","lodash/differenceBy":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/differenceBy.js","lodash/isArray":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isArray.js","lodash/keyBy":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/keyBy.js","lodash/result":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/result.js","url":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/url/url.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/stores/datastore.js":[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -19834,7 +19834,7 @@ var DataStore = exports.DataStore = function () {
 
   return DataStore;
 }();
-},{"./cachestore":52,"./filestore":54,"./networkstore":55,"./syncstore":56,"./userstore":57}],54:[function(require,module,exports){
+},{"./cachestore":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/stores/cachestore.js","./filestore":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/stores/filestore.js","./networkstore":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/stores/networkstore.js","./syncstore":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/stores/syncstore.js","./userstore":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/stores/userstore.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/stores/filestore.js":[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -20176,7 +20176,7 @@ var FileStore = exports.FileStore = function (_NetworkStore) {
   return FileStore;
 }(_networkstore.NetworkStore);
 }).call(this,require('_process'))
-},{"../enums":28,"../errors":29,"../requests/network":48,"./networkstore":55,"_process":282,"babybird":10,"lodash/assign":231,"lodash/map":263,"url":298}],55:[function(require,module,exports){
+},{"../enums":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/enums.js","../errors":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/errors.js","../requests/network":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/requests/network.js","./networkstore":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/stores/networkstore.js","_process":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/process/browser.js","babybird":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/babybird/lib/promise.js","lodash/assign":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/assign.js","lodash/map":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/map.js","url":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/url/url.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/stores/networkstore.js":[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -20708,7 +20708,7 @@ var NetworkStore = exports.NetworkStore = function () {
   return NetworkStore;
 }();
 }).call(this,require('_process'))
-},{"../aggregation":25,"../client":26,"../enums":28,"../errors":29,"../log":31,"../query":34,"../requests/network":48,"_process":282,"babybird":10,"lodash/assign":231,"lodash/isString":256,"qs":287,"url":298}],56:[function(require,module,exports){
+},{"../aggregation":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/aggregation.js","../client":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/client.js","../enums":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/enums.js","../errors":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/errors.js","../log":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/log.js","../query":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/query.js","../requests/network":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/requests/network.js","_process":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/process/browser.js","babybird":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/babybird/lib/promise.js","lodash/assign":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/assign.js","lodash/isString":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isString.js","qs":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/qs/lib/index.js","url":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/url/url.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/stores/syncstore.js":[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -21190,7 +21190,7 @@ var SyncStore = exports.SyncStore = function (_CacheStore) {
   return SyncStore;
 }(_cachestore.CacheStore);
 }).call(this,require('_process'))
-},{"../aggregation":25,"../enums":28,"../errors":29,"../log":31,"../query":34,"../requests/local":47,"./cachestore":52,"_process":282,"babybird":10,"url":298}],57:[function(require,module,exports){
+},{"../aggregation":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/aggregation.js","../enums":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/enums.js","../errors":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/errors.js","../log":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/log.js","../query":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/query.js","../requests/local":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/requests/local.js","./cachestore":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/stores/cachestore.js","_process":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/process/browser.js","babybird":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/babybird/lib/promise.js","url":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/url/url.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/stores/userstore.js":[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -21344,7 +21344,7 @@ var UserStore = exports.UserStore = function (_NetworkStore) {
   return UserStore;
 }(_networkstore.NetworkStore);
 }).call(this,require('_process'))
-},{"../enums":28,"../errors":29,"../requests/network":48,"./networkstore":55,"_process":282,"babybird":10,"lodash/isArray":243,"url":298}],58:[function(require,module,exports){
+},{"../enums":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/enums.js","../errors":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/errors.js","../requests/network":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/requests/network.js","./networkstore":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/stores/networkstore.js","_process":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/process/browser.js","babybird":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/babybird/lib/promise.js","lodash/isArray":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isArray.js","url":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/url/url.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/sync.js":[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -21797,7 +21797,7 @@ var SyncManager = exports.SyncManager = function () {
   return SyncManager;
 }();
 }).call(this,require('_process'))
-},{"./enums":28,"./errors":29,"./metadata":32,"./requests/local":47,"./requests/network":48,"_process":282,"async/mapSeries":73,"babybird":10,"lodash/forEach":238,"lodash/isArray":243,"lodash/map":263,"lodash/reduce":269,"url":298}],59:[function(require,module,exports){
+},{"./enums":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/enums.js","./errors":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/errors.js","./metadata":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/metadata.js","./requests/local":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/requests/local.js","./requests/network":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/requests/network.js","_process":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/process/browser.js","async/mapSeries":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/node_modules/async/mapSeries.js","babybird":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/babybird/lib/promise.js","lodash/forEach":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/forEach.js","lodash/isArray":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isArray.js","lodash/map":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/map.js","lodash/reduce":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/reduce.js","url":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/url/url.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/user.js":[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -22838,7 +22838,7 @@ var User = exports.User = function () {
   return User;
 }();
 }).call(this,require('_process'))
-},{"./acl":24,"./client":26,"./enums":28,"./errors":29,"./metadata":32,"./mic":33,"./query":34,"./requests/network":48,"./stores/datastore":53,"_process":282,"babybird":10,"hellojs":18,"lodash/assign":231,"lodash/isObject":252,"lodash/result":271,"url":298}],60:[function(require,module,exports){
+},{"./acl":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/acl.js","./client":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/client.js","./enums":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/enums.js","./errors":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/errors.js","./metadata":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/metadata.js","./mic":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/mic.js","./query":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/query.js","./requests/network":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/requests/network.js","./stores/datastore":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/stores/datastore.js","_process":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/process/browser.js","babybird":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/babybird/lib/promise.js","hellojs":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/hellojs/dist/hello.all.js","lodash/assign":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/assign.js","lodash/isObject":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isObject.js","lodash/result":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/result.js","url":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/url/url.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/utils/device.js":[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -22872,7 +22872,7 @@ var Device = exports.Device = function () {
 }();
 
 Device.use = (0, _object.use)(['toJSON']);
-},{"./object":61}],61:[function(require,module,exports){
+},{"./object":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/utils/object.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/utils/object.js":[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -22940,7 +22940,7 @@ function use(nsInterface) {
     });
   };
 }
-},{"lodash/forEach":238,"lodash/isFunction":248}],62:[function(require,module,exports){
+},{"lodash/forEach":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/forEach.js","lodash/isFunction":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isFunction.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/utils/popup.js":[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -23009,7 +23009,7 @@ var Popup = exports.Popup = function (_EventEmitter) {
 }(_events.EventEmitter);
 
 Popup.use = (0, _object.use)(['open', 'close', 'loadHandler', 'clickHandler', 'closeHandler']);
-},{"./object":61,"events":14}],63:[function(require,module,exports){
+},{"./object":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/utils/object.js","events":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/events/events.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/build/utils/string.js":[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -23045,7 +23045,7 @@ function randomString(size) {
 
   return '' + prefix + (0, _uid2.default)(size);
 }
-},{"uid":296}],64:[function(require,module,exports){
+},{"uid":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/uid/index.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/node_modules/async/internal/doLimit.js":[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -23058,7 +23058,7 @@ function doLimit(fn, limit) {
     };
 }
 module.exports = exports['default'];
-},{}],65:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/node_modules/async/internal/doParallelLimit.js":[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -23078,7 +23078,7 @@ function doParallelLimit(fn) {
     };
 }
 module.exports = exports['default'];
-},{"./eachOfLimit":66}],66:[function(require,module,exports){
+},{"./eachOfLimit":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/node_modules/async/internal/eachOfLimit.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/node_modules/async/internal/eachOfLimit.js":[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -23145,7 +23145,7 @@ function _eachOfLimit(limit) {
     };
 }
 module.exports = exports['default'];
-},{"./iterator":68,"./once":70,"./onlyOnce":71,"lodash/noop":266}],67:[function(require,module,exports){
+},{"./iterator":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/node_modules/async/internal/iterator.js","./once":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/node_modules/async/internal/once.js","./onlyOnce":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/node_modules/async/internal/onlyOnce.js","lodash/noop":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/noop.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/node_modules/async/internal/getIterator.js":[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -23159,7 +23159,7 @@ exports.default = function (coll) {
 var iteratorSymbol = typeof Symbol === 'function' && Symbol.iterator;
 
 module.exports = exports['default'];
-},{}],68:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/node_modules/async/internal/iterator.js":[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -23211,7 +23211,7 @@ function iterator(coll) {
     };
 }
 module.exports = exports['default'];
-},{"./getIterator":67,"lodash/isArrayLike":244,"lodash/keys":260}],69:[function(require,module,exports){
+},{"./getIterator":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/node_modules/async/internal/getIterator.js","lodash/isArrayLike":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isArrayLike.js","lodash/keys":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/keys.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/node_modules/async/internal/map.js":[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -23251,7 +23251,7 @@ function _asyncMap(eachfn, arr, iteratee, callback) {
     });
 }
 module.exports = exports['default'];
-},{"./getIterator":67,"./once":70,"lodash/isArrayLike":244,"lodash/noop":266}],70:[function(require,module,exports){
+},{"./getIterator":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/node_modules/async/internal/getIterator.js","./once":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/node_modules/async/internal/once.js","lodash/isArrayLike":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isArrayLike.js","lodash/noop":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/noop.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/node_modules/async/internal/once.js":[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -23266,7 +23266,7 @@ function once(fn) {
     };
 }
 module.exports = exports['default'];
-},{}],71:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/node_modules/async/internal/onlyOnce.js":[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -23281,7 +23281,7 @@ function onlyOnce(fn) {
     };
 }
 module.exports = exports['default'];
-},{}],72:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/node_modules/async/mapLimit.js":[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -23300,7 +23300,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 exports.default = (0, _doParallelLimit2.default)(_map2.default);
 module.exports = exports['default'];
-},{"./internal/doParallelLimit":65,"./internal/map":69}],73:[function(require,module,exports){
+},{"./internal/doParallelLimit":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/node_modules/async/internal/doParallelLimit.js","./internal/map":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/node_modules/async/internal/map.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/node_modules/async/mapSeries.js":[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -23319,7 +23319,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 exports.default = (0, _doLimit2.default)(_mapLimit2.default, 1);
 module.exports = exports['default'];
-},{"./internal/doLimit":64,"./mapLimit":72}],74:[function(require,module,exports){
+},{"./internal/doLimit":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/node_modules/async/internal/doLimit.js","./mapLimit":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/kinvey-javascript-sdk-core/node_modules/async/mapLimit.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/local-storage/local-storage.js":[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -23365,7 +23365,7 @@ accessor.off = tracking.off;
 module.exports = accessor;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./stub":75,"./tracking":76}],75:[function(require,module,exports){
+},{"./stub":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/local-storage/stub.js","./tracking":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/local-storage/tracking.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/local-storage/stub.js":[function(require,module,exports){
 'use strict';
 
 var ms = {};
@@ -23399,7 +23399,7 @@ module.exports = {
   clear: clear
 };
 
-},{}],76:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/local-storage/tracking.js":[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -23456,7 +23456,7 @@ module.exports = {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],77:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_DataView.js":[function(require,module,exports){
 var getNative = require('./_getNative'),
     root = require('./_root');
 
@@ -23465,7 +23465,7 @@ var DataView = getNative(root, 'DataView');
 
 module.exports = DataView;
 
-},{"./_getNative":183,"./_root":220}],78:[function(require,module,exports){
+},{"./_getNative":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_getNative.js","./_root":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_root.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_Hash.js":[function(require,module,exports){
 var nativeCreate = require('./_nativeCreate');
 
 /** Used for built-in method references. */
@@ -23485,7 +23485,7 @@ Hash.prototype = nativeCreate ? nativeCreate(null) : objectProto;
 
 module.exports = Hash;
 
-},{"./_nativeCreate":216}],79:[function(require,module,exports){
+},{"./_nativeCreate":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_nativeCreate.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_LazyWrapper.js":[function(require,module,exports){
 var baseCreate = require('./_baseCreate'),
     baseLodash = require('./_baseLodash');
 
@@ -23515,7 +23515,7 @@ LazyWrapper.prototype.constructor = LazyWrapper;
 
 module.exports = LazyWrapper;
 
-},{"./_baseCreate":113,"./_baseLodash":132}],80:[function(require,module,exports){
+},{"./_baseCreate":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseCreate.js","./_baseLodash":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseLodash.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_LodashWrapper.js":[function(require,module,exports){
 var baseCreate = require('./_baseCreate'),
     baseLodash = require('./_baseLodash');
 
@@ -23539,7 +23539,7 @@ LodashWrapper.prototype.constructor = LodashWrapper;
 
 module.exports = LodashWrapper;
 
-},{"./_baseCreate":113,"./_baseLodash":132}],81:[function(require,module,exports){
+},{"./_baseCreate":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseCreate.js","./_baseLodash":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseLodash.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_Map.js":[function(require,module,exports){
 var getNative = require('./_getNative'),
     root = require('./_root');
 
@@ -23548,7 +23548,7 @@ var Map = getNative(root, 'Map');
 
 module.exports = Map;
 
-},{"./_getNative":183,"./_root":220}],82:[function(require,module,exports){
+},{"./_getNative":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_getNative.js","./_root":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_root.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_MapCache.js":[function(require,module,exports){
 var mapClear = require('./_mapClear'),
     mapDelete = require('./_mapDelete'),
     mapGet = require('./_mapGet'),
@@ -23582,7 +23582,7 @@ MapCache.prototype.set = mapSet;
 
 module.exports = MapCache;
 
-},{"./_mapClear":207,"./_mapDelete":208,"./_mapGet":209,"./_mapHas":210,"./_mapSet":211}],83:[function(require,module,exports){
+},{"./_mapClear":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_mapClear.js","./_mapDelete":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_mapDelete.js","./_mapGet":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_mapGet.js","./_mapHas":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_mapHas.js","./_mapSet":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_mapSet.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_Promise.js":[function(require,module,exports){
 var getNative = require('./_getNative'),
     root = require('./_root');
 
@@ -23591,7 +23591,7 @@ var Promise = getNative(root, 'Promise');
 
 module.exports = Promise;
 
-},{"./_getNative":183,"./_root":220}],84:[function(require,module,exports){
+},{"./_getNative":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_getNative.js","./_root":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_root.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_Reflect.js":[function(require,module,exports){
 var root = require('./_root');
 
 /** Built-in value references. */
@@ -23599,7 +23599,7 @@ var Reflect = root.Reflect;
 
 module.exports = Reflect;
 
-},{"./_root":220}],85:[function(require,module,exports){
+},{"./_root":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_root.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_Set.js":[function(require,module,exports){
 var getNative = require('./_getNative'),
     root = require('./_root');
 
@@ -23608,7 +23608,7 @@ var Set = getNative(root, 'Set');
 
 module.exports = Set;
 
-},{"./_getNative":183,"./_root":220}],86:[function(require,module,exports){
+},{"./_getNative":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_getNative.js","./_root":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_root.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_SetCache.js":[function(require,module,exports){
 var MapCache = require('./_MapCache'),
     cachePush = require('./_cachePush');
 
@@ -23635,7 +23635,7 @@ SetCache.prototype.push = cachePush;
 
 module.exports = SetCache;
 
-},{"./_MapCache":82,"./_cachePush":147}],87:[function(require,module,exports){
+},{"./_MapCache":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_MapCache.js","./_cachePush":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_cachePush.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_Stack.js":[function(require,module,exports){
 var stackClear = require('./_stackClear'),
     stackDelete = require('./_stackDelete'),
     stackGet = require('./_stackGet'),
@@ -23669,7 +23669,7 @@ Stack.prototype.set = stackSet;
 
 module.exports = Stack;
 
-},{"./_stackClear":223,"./_stackDelete":224,"./_stackGet":225,"./_stackHas":226,"./_stackSet":227}],88:[function(require,module,exports){
+},{"./_stackClear":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_stackClear.js","./_stackDelete":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_stackDelete.js","./_stackGet":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_stackGet.js","./_stackHas":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_stackHas.js","./_stackSet":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_stackSet.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_Symbol.js":[function(require,module,exports){
 var root = require('./_root');
 
 /** Built-in value references. */
@@ -23677,7 +23677,7 @@ var Symbol = root.Symbol;
 
 module.exports = Symbol;
 
-},{"./_root":220}],89:[function(require,module,exports){
+},{"./_root":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_root.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_Uint8Array.js":[function(require,module,exports){
 var root = require('./_root');
 
 /** Built-in value references. */
@@ -23685,7 +23685,7 @@ var Uint8Array = root.Uint8Array;
 
 module.exports = Uint8Array;
 
-},{"./_root":220}],90:[function(require,module,exports){
+},{"./_root":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_root.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_WeakMap.js":[function(require,module,exports){
 var getNative = require('./_getNative'),
     root = require('./_root');
 
@@ -23694,7 +23694,7 @@ var WeakMap = getNative(root, 'WeakMap');
 
 module.exports = WeakMap;
 
-},{"./_getNative":183,"./_root":220}],91:[function(require,module,exports){
+},{"./_getNative":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_getNative.js","./_root":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_root.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_addMapEntry.js":[function(require,module,exports){
 /**
  * Adds the key-value `pair` to `map`.
  *
@@ -23711,7 +23711,7 @@ function addMapEntry(map, pair) {
 
 module.exports = addMapEntry;
 
-},{}],92:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_addSetEntry.js":[function(require,module,exports){
 /**
  * Adds `value` to `set`.
  *
@@ -23727,7 +23727,7 @@ function addSetEntry(set, value) {
 
 module.exports = addSetEntry;
 
-},{}],93:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_apply.js":[function(require,module,exports){
 /**
  * A faster alternative to `Function#apply`, this function invokes `func`
  * with the `this` binding of `thisArg` and the arguments of `args`.
@@ -23751,7 +23751,7 @@ function apply(func, thisArg, args) {
 
 module.exports = apply;
 
-},{}],94:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_arrayAggregator.js":[function(require,module,exports){
 /**
  * A specialized version of `baseAggregator` for arrays.
  *
@@ -23775,7 +23775,7 @@ function arrayAggregator(array, setter, iteratee, accumulator) {
 
 module.exports = arrayAggregator;
 
-},{}],95:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_arrayEach.js":[function(require,module,exports){
 /**
  * A specialized version of `_.forEach` for arrays without support for
  * iteratee shorthands.
@@ -23799,7 +23799,7 @@ function arrayEach(array, iteratee) {
 
 module.exports = arrayEach;
 
-},{}],96:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_arrayIncludes.js":[function(require,module,exports){
 var baseIndexOf = require('./_baseIndexOf');
 
 /**
@@ -23817,7 +23817,7 @@ function arrayIncludes(array, value) {
 
 module.exports = arrayIncludes;
 
-},{"./_baseIndexOf":125}],97:[function(require,module,exports){
+},{"./_baseIndexOf":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseIndexOf.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_arrayIncludesWith.js":[function(require,module,exports){
 /**
  * This function is like `arrayIncludes` except that it accepts a comparator.
  *
@@ -23841,7 +23841,7 @@ function arrayIncludesWith(array, value, comparator) {
 
 module.exports = arrayIncludesWith;
 
-},{}],98:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_arrayMap.js":[function(require,module,exports){
 /**
  * A specialized version of `_.map` for arrays without support for iteratee
  * shorthands.
@@ -23864,7 +23864,7 @@ function arrayMap(array, iteratee) {
 
 module.exports = arrayMap;
 
-},{}],99:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_arrayPush.js":[function(require,module,exports){
 /**
  * Appends the elements of `values` to `array`.
  *
@@ -23886,7 +23886,7 @@ function arrayPush(array, values) {
 
 module.exports = arrayPush;
 
-},{}],100:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_arrayReduce.js":[function(require,module,exports){
 /**
  * A specialized version of `_.reduce` for arrays without support for
  * iteratee shorthands.
@@ -23914,7 +23914,7 @@ function arrayReduce(array, iteratee, accumulator, initAccum) {
 
 module.exports = arrayReduce;
 
-},{}],101:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_arraySome.js":[function(require,module,exports){
 /**
  * A specialized version of `_.some` for arrays without support for iteratee
  * shorthands.
@@ -23939,7 +23939,7 @@ function arraySome(array, predicate) {
 
 module.exports = arraySome;
 
-},{}],102:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_assignMergeValue.js":[function(require,module,exports){
 var eq = require('./eq');
 
 /**
@@ -23960,7 +23960,7 @@ function assignMergeValue(object, key, value) {
 
 module.exports = assignMergeValue;
 
-},{"./eq":235}],103:[function(require,module,exports){
+},{"./eq":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/eq.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_assignValue.js":[function(require,module,exports){
 var eq = require('./eq');
 
 /** Used for built-in method references. */
@@ -23989,7 +23989,7 @@ function assignValue(object, key, value) {
 
 module.exports = assignValue;
 
-},{"./eq":235}],104:[function(require,module,exports){
+},{"./eq":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/eq.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_assocDelete.js":[function(require,module,exports){
 var assocIndexOf = require('./_assocIndexOf');
 
 /** Used for built-in method references. */
@@ -24022,7 +24022,7 @@ function assocDelete(array, key) {
 
 module.exports = assocDelete;
 
-},{"./_assocIndexOf":107}],105:[function(require,module,exports){
+},{"./_assocIndexOf":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_assocIndexOf.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_assocGet.js":[function(require,module,exports){
 var assocIndexOf = require('./_assocIndexOf');
 
 /**
@@ -24040,7 +24040,7 @@ function assocGet(array, key) {
 
 module.exports = assocGet;
 
-},{"./_assocIndexOf":107}],106:[function(require,module,exports){
+},{"./_assocIndexOf":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_assocIndexOf.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_assocHas.js":[function(require,module,exports){
 var assocIndexOf = require('./_assocIndexOf');
 
 /**
@@ -24057,7 +24057,7 @@ function assocHas(array, key) {
 
 module.exports = assocHas;
 
-},{"./_assocIndexOf":107}],107:[function(require,module,exports){
+},{"./_assocIndexOf":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_assocIndexOf.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_assocIndexOf.js":[function(require,module,exports){
 var eq = require('./eq');
 
 /**
@@ -24080,7 +24080,7 @@ function assocIndexOf(array, key) {
 
 module.exports = assocIndexOf;
 
-},{"./eq":235}],108:[function(require,module,exports){
+},{"./eq":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/eq.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_assocSet.js":[function(require,module,exports){
 var assocIndexOf = require('./_assocIndexOf');
 
 /**
@@ -24102,7 +24102,7 @@ function assocSet(array, key, value) {
 
 module.exports = assocSet;
 
-},{"./_assocIndexOf":107}],109:[function(require,module,exports){
+},{"./_assocIndexOf":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_assocIndexOf.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseAggregator.js":[function(require,module,exports){
 var baseEach = require('./_baseEach');
 
 /**
@@ -24125,7 +24125,7 @@ function baseAggregator(collection, setter, iteratee, accumulator) {
 
 module.exports = baseAggregator;
 
-},{"./_baseEach":115}],110:[function(require,module,exports){
+},{"./_baseEach":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseEach.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseAssign.js":[function(require,module,exports){
 var copyObject = require('./_copyObject'),
     keys = require('./keys');
 
@@ -24144,7 +24144,7 @@ function baseAssign(object, source) {
 
 module.exports = baseAssign;
 
-},{"./_copyObject":160,"./keys":260}],111:[function(require,module,exports){
+},{"./_copyObject":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_copyObject.js","./keys":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/keys.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseCastPath.js":[function(require,module,exports){
 var isArray = require('./isArray'),
     stringToPath = require('./_stringToPath');
 
@@ -24161,7 +24161,7 @@ function baseCastPath(value) {
 
 module.exports = baseCastPath;
 
-},{"./_stringToPath":228,"./isArray":243}],112:[function(require,module,exports){
+},{"./_stringToPath":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_stringToPath.js","./isArray":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isArray.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseClone.js":[function(require,module,exports){
 var Stack = require('./_Stack'),
     arrayEach = require('./_arrayEach'),
     assignValue = require('./_assignValue'),
@@ -24302,7 +24302,7 @@ function baseClone(value, isDeep, isFull, customizer, key, object, stack) {
 
 module.exports = baseClone;
 
-},{"./_Stack":87,"./_arrayEach":95,"./_assignValue":103,"./_baseAssign":110,"./_cloneBuffer":150,"./_copyArray":159,"./_copySymbols":162,"./_getAllKeys":178,"./_getTag":187,"./_initCloneArray":195,"./_initCloneByTag":196,"./_initCloneObject":197,"./_isHostObject":198,"./isArray":243,"./isBuffer":246,"./isObject":252,"./keys":260}],113:[function(require,module,exports){
+},{"./_Stack":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_Stack.js","./_arrayEach":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_arrayEach.js","./_assignValue":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_assignValue.js","./_baseAssign":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseAssign.js","./_cloneBuffer":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_cloneBuffer.js","./_copyArray":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_copyArray.js","./_copySymbols":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_copySymbols.js","./_getAllKeys":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_getAllKeys.js","./_getTag":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_getTag.js","./_initCloneArray":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_initCloneArray.js","./_initCloneByTag":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_initCloneByTag.js","./_initCloneObject":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_initCloneObject.js","./_isHostObject":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_isHostObject.js","./isArray":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isArray.js","./isBuffer":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isBuffer.js","./isObject":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isObject.js","./keys":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/keys.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseCreate.js":[function(require,module,exports){
 var isObject = require('./isObject');
 
 /** Built-in value references. */
@@ -24322,7 +24322,7 @@ function baseCreate(proto) {
 
 module.exports = baseCreate;
 
-},{"./isObject":252}],114:[function(require,module,exports){
+},{"./isObject":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isObject.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseDifference.js":[function(require,module,exports){
 var SetCache = require('./_SetCache'),
     arrayIncludes = require('./_arrayIncludes'),
     arrayIncludesWith = require('./_arrayIncludesWith'),
@@ -24390,7 +24390,7 @@ function baseDifference(array, values, iteratee, comparator) {
 
 module.exports = baseDifference;
 
-},{"./_SetCache":86,"./_arrayIncludes":96,"./_arrayIncludesWith":97,"./_arrayMap":98,"./_baseUnary":144,"./_cacheHas":146}],115:[function(require,module,exports){
+},{"./_SetCache":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_SetCache.js","./_arrayIncludes":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_arrayIncludes.js","./_arrayIncludesWith":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_arrayIncludesWith.js","./_arrayMap":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_arrayMap.js","./_baseUnary":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseUnary.js","./_cacheHas":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_cacheHas.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseEach.js":[function(require,module,exports){
 var baseForOwn = require('./_baseForOwn'),
     createBaseEach = require('./_createBaseEach');
 
@@ -24406,7 +24406,7 @@ var baseEach = createBaseEach(baseForOwn);
 
 module.exports = baseEach;
 
-},{"./_baseForOwn":120,"./_createBaseEach":166}],116:[function(require,module,exports){
+},{"./_baseForOwn":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseForOwn.js","./_createBaseEach":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_createBaseEach.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseFind.js":[function(require,module,exports){
 /**
  * The base implementation of methods like `_.find` and `_.findKey`, without
  * support for iteratee shorthands, which iterates over `collection` using
@@ -24433,7 +24433,7 @@ function baseFind(collection, predicate, eachFunc, retKey) {
 
 module.exports = baseFind;
 
-},{}],117:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseFindIndex.js":[function(require,module,exports){
 /**
  * The base implementation of `_.findIndex` and `_.findLastIndex` without
  * support for iteratee shorthands.
@@ -24458,7 +24458,7 @@ function baseFindIndex(array, predicate, fromRight) {
 
 module.exports = baseFindIndex;
 
-},{}],118:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseFlatten.js":[function(require,module,exports){
 var arrayPush = require('./_arrayPush'),
     isArguments = require('./isArguments'),
     isArray = require('./isArray'),
@@ -24499,7 +24499,7 @@ function baseFlatten(array, depth, isStrict, result) {
 
 module.exports = baseFlatten;
 
-},{"./_arrayPush":99,"./isArguments":242,"./isArray":243,"./isArrayLikeObject":245}],119:[function(require,module,exports){
+},{"./_arrayPush":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_arrayPush.js","./isArguments":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isArguments.js","./isArray":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isArray.js","./isArrayLikeObject":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isArrayLikeObject.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseFor.js":[function(require,module,exports){
 var createBaseFor = require('./_createBaseFor');
 
 /**
@@ -24517,7 +24517,7 @@ var baseFor = createBaseFor();
 
 module.exports = baseFor;
 
-},{"./_createBaseFor":167}],120:[function(require,module,exports){
+},{"./_createBaseFor":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_createBaseFor.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseForOwn.js":[function(require,module,exports){
 var baseFor = require('./_baseFor'),
     keys = require('./keys');
 
@@ -24535,7 +24535,7 @@ function baseForOwn(object, iteratee) {
 
 module.exports = baseForOwn;
 
-},{"./_baseFor":119,"./keys":260}],121:[function(require,module,exports){
+},{"./_baseFor":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseFor.js","./keys":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/keys.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseGet.js":[function(require,module,exports){
 var baseCastPath = require('./_baseCastPath'),
     isKey = require('./_isKey');
 
@@ -24561,7 +24561,7 @@ function baseGet(object, path) {
 
 module.exports = baseGet;
 
-},{"./_baseCastPath":111,"./_isKey":201}],122:[function(require,module,exports){
+},{"./_baseCastPath":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseCastPath.js","./_isKey":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_isKey.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseGetAllKeys.js":[function(require,module,exports){
 var arrayPush = require('./_arrayPush'),
     isArray = require('./isArray');
 
@@ -24585,7 +24585,7 @@ function baseGetAllKeys(object, keysFunc, symbolsFunc) {
 
 module.exports = baseGetAllKeys;
 
-},{"./_arrayPush":99,"./isArray":243}],123:[function(require,module,exports){
+},{"./_arrayPush":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_arrayPush.js","./isArray":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isArray.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseHas.js":[function(require,module,exports){
 var getPrototype = require('./_getPrototype');
 
 /** Used for built-in method references. */
@@ -24612,7 +24612,7 @@ function baseHas(object, key) {
 
 module.exports = baseHas;
 
-},{"./_getPrototype":185}],124:[function(require,module,exports){
+},{"./_getPrototype":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_getPrototype.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseHasIn.js":[function(require,module,exports){
 /**
  * The base implementation of `_.hasIn` without support for deep paths.
  *
@@ -24627,7 +24627,7 @@ function baseHasIn(object, key) {
 
 module.exports = baseHasIn;
 
-},{}],125:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseIndexOf.js":[function(require,module,exports){
 var indexOfNaN = require('./_indexOfNaN');
 
 /**
@@ -24656,7 +24656,7 @@ function baseIndexOf(array, value, fromIndex) {
 
 module.exports = baseIndexOf;
 
-},{"./_indexOfNaN":194}],126:[function(require,module,exports){
+},{"./_indexOfNaN":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_indexOfNaN.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseIsEqual.js":[function(require,module,exports){
 var baseIsEqualDeep = require('./_baseIsEqualDeep'),
     isObject = require('./isObject'),
     isObjectLike = require('./isObjectLike');
@@ -24688,7 +24688,7 @@ function baseIsEqual(value, other, customizer, bitmask, stack) {
 
 module.exports = baseIsEqual;
 
-},{"./_baseIsEqualDeep":127,"./isObject":252,"./isObjectLike":253}],127:[function(require,module,exports){
+},{"./_baseIsEqualDeep":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseIsEqualDeep.js","./isObject":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isObject.js","./isObjectLike":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isObjectLike.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseIsEqualDeep.js":[function(require,module,exports){
 var Stack = require('./_Stack'),
     equalArrays = require('./_equalArrays'),
     equalByTag = require('./_equalByTag'),
@@ -24772,7 +24772,7 @@ function baseIsEqualDeep(object, other, equalFunc, customizer, bitmask, stack) {
 
 module.exports = baseIsEqualDeep;
 
-},{"./_Stack":87,"./_equalArrays":175,"./_equalByTag":176,"./_equalObjects":177,"./_getTag":187,"./_isHostObject":198,"./isArray":243,"./isTypedArray":258}],128:[function(require,module,exports){
+},{"./_Stack":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_Stack.js","./_equalArrays":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_equalArrays.js","./_equalByTag":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_equalByTag.js","./_equalObjects":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_equalObjects.js","./_getTag":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_getTag.js","./_isHostObject":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_isHostObject.js","./isArray":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isArray.js","./isTypedArray":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isTypedArray.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseIsMatch.js":[function(require,module,exports){
 var Stack = require('./_Stack'),
     baseIsEqual = require('./_baseIsEqual');
 
@@ -24836,7 +24836,7 @@ function baseIsMatch(object, source, matchData, customizer) {
 
 module.exports = baseIsMatch;
 
-},{"./_Stack":87,"./_baseIsEqual":126}],129:[function(require,module,exports){
+},{"./_Stack":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_Stack.js","./_baseIsEqual":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseIsEqual.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseIteratee.js":[function(require,module,exports){
 var baseMatches = require('./_baseMatches'),
     baseMatchesProperty = require('./_baseMatchesProperty'),
     identity = require('./identity'),
@@ -24869,7 +24869,7 @@ function baseIteratee(value) {
 
 module.exports = baseIteratee;
 
-},{"./_baseMatches":134,"./_baseMatchesProperty":135,"./identity":241,"./isArray":243,"./property":268}],130:[function(require,module,exports){
+},{"./_baseMatches":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseMatches.js","./_baseMatchesProperty":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseMatchesProperty.js","./identity":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/identity.js","./isArray":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isArray.js","./property":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/property.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseKeys.js":[function(require,module,exports){
 /* Built-in method references for those with the same name as other `lodash` methods. */
 var nativeKeys = Object.keys;
 
@@ -24887,7 +24887,7 @@ function baseKeys(object) {
 
 module.exports = baseKeys;
 
-},{}],131:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseKeysIn.js":[function(require,module,exports){
 var Reflect = require('./_Reflect'),
     iteratorToArray = require('./_iteratorToArray');
 
@@ -24925,7 +24925,7 @@ if (enumerate && !propertyIsEnumerable.call({ 'valueOf': 1 }, 'valueOf')) {
 
 module.exports = baseKeysIn;
 
-},{"./_Reflect":84,"./_iteratorToArray":206}],132:[function(require,module,exports){
+},{"./_Reflect":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_Reflect.js","./_iteratorToArray":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_iteratorToArray.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseLodash.js":[function(require,module,exports){
 /**
  * The function whose prototype chain sequence wrappers inherit from.
  *
@@ -24937,7 +24937,7 @@ function baseLodash() {
 
 module.exports = baseLodash;
 
-},{}],133:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseMap.js":[function(require,module,exports){
 var baseEach = require('./_baseEach'),
     isArrayLike = require('./isArrayLike');
 
@@ -24961,7 +24961,7 @@ function baseMap(collection, iteratee) {
 
 module.exports = baseMap;
 
-},{"./_baseEach":115,"./isArrayLike":244}],134:[function(require,module,exports){
+},{"./_baseEach":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseEach.js","./isArrayLike":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isArrayLike.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseMatches.js":[function(require,module,exports){
 var baseIsMatch = require('./_baseIsMatch'),
     getMatchData = require('./_getMatchData'),
     matchesStrictComparable = require('./_matchesStrictComparable');
@@ -24985,7 +24985,7 @@ function baseMatches(source) {
 
 module.exports = baseMatches;
 
-},{"./_baseIsMatch":128,"./_getMatchData":182,"./_matchesStrictComparable":213}],135:[function(require,module,exports){
+},{"./_baseIsMatch":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseIsMatch.js","./_getMatchData":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_getMatchData.js","./_matchesStrictComparable":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_matchesStrictComparable.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseMatchesProperty.js":[function(require,module,exports){
 var baseIsEqual = require('./_baseIsEqual'),
     get = require('./get'),
     hasIn = require('./hasIn'),
@@ -25019,7 +25019,7 @@ function baseMatchesProperty(path, srcValue) {
 
 module.exports = baseMatchesProperty;
 
-},{"./_baseIsEqual":126,"./_isKey":201,"./_isStrictComparable":205,"./_matchesStrictComparable":213,"./get":239,"./hasIn":240}],136:[function(require,module,exports){
+},{"./_baseIsEqual":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseIsEqual.js","./_isKey":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_isKey.js","./_isStrictComparable":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_isStrictComparable.js","./_matchesStrictComparable":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_matchesStrictComparable.js","./get":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/get.js","./hasIn":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/hasIn.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseMerge.js":[function(require,module,exports){
 var Stack = require('./_Stack'),
     arrayEach = require('./_arrayEach'),
     assignMergeValue = require('./_assignMergeValue'),
@@ -25071,7 +25071,7 @@ function baseMerge(object, source, srcIndex, customizer, stack) {
 
 module.exports = baseMerge;
 
-},{"./_Stack":87,"./_arrayEach":95,"./_assignMergeValue":102,"./_baseMergeDeep":137,"./isArray":243,"./isObject":252,"./isTypedArray":258,"./keysIn":261}],137:[function(require,module,exports){
+},{"./_Stack":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_Stack.js","./_arrayEach":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_arrayEach.js","./_assignMergeValue":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_assignMergeValue.js","./_baseMergeDeep":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseMergeDeep.js","./isArray":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isArray.js","./isObject":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isObject.js","./isTypedArray":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isTypedArray.js","./keysIn":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/keysIn.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseMergeDeep.js":[function(require,module,exports){
 var assignMergeValue = require('./_assignMergeValue'),
     baseClone = require('./_baseClone'),
     copyArray = require('./_copyArray'),
@@ -25156,7 +25156,7 @@ function baseMergeDeep(object, source, key, srcIndex, mergeFunc, customizer, sta
 
 module.exports = baseMergeDeep;
 
-},{"./_assignMergeValue":102,"./_baseClone":112,"./_copyArray":159,"./isArguments":242,"./isArray":243,"./isArrayLikeObject":245,"./isFunction":248,"./isObject":252,"./isPlainObject":254,"./isTypedArray":258,"./toPlainObject":275}],138:[function(require,module,exports){
+},{"./_assignMergeValue":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_assignMergeValue.js","./_baseClone":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseClone.js","./_copyArray":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_copyArray.js","./isArguments":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isArguments.js","./isArray":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isArray.js","./isArrayLikeObject":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isArrayLikeObject.js","./isFunction":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isFunction.js","./isObject":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isObject.js","./isPlainObject":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isPlainObject.js","./isTypedArray":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isTypedArray.js","./toPlainObject":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/toPlainObject.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseProperty.js":[function(require,module,exports){
 /**
  * The base implementation of `_.property` without support for deep paths.
  *
@@ -25172,7 +25172,7 @@ function baseProperty(key) {
 
 module.exports = baseProperty;
 
-},{}],139:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_basePropertyDeep.js":[function(require,module,exports){
 var baseGet = require('./_baseGet');
 
 /**
@@ -25190,7 +25190,7 @@ function basePropertyDeep(path) {
 
 module.exports = basePropertyDeep;
 
-},{"./_baseGet":121}],140:[function(require,module,exports){
+},{"./_baseGet":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseGet.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseReduce.js":[function(require,module,exports){
 /**
  * The base implementation of `_.reduce` and `_.reduceRight`, without support
  * for iteratee shorthands, which iterates over `collection` using `eachFunc`.
@@ -25215,7 +25215,7 @@ function baseReduce(collection, iteratee, accumulator, initAccum, eachFunc) {
 
 module.exports = baseReduce;
 
-},{}],141:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseSetData.js":[function(require,module,exports){
 var identity = require('./identity'),
     metaMap = require('./_metaMap');
 
@@ -25234,7 +25234,7 @@ var baseSetData = !metaMap ? identity : function(func, data) {
 
 module.exports = baseSetData;
 
-},{"./_metaMap":215,"./identity":241}],142:[function(require,module,exports){
+},{"./_metaMap":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_metaMap.js","./identity":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/identity.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseTimes.js":[function(require,module,exports){
 /**
  * The base implementation of `_.times` without support for iteratee shorthands
  * or max array length checks.
@@ -25256,7 +25256,7 @@ function baseTimes(n, iteratee) {
 
 module.exports = baseTimes;
 
-},{}],143:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseToPairs.js":[function(require,module,exports){
 var arrayMap = require('./_arrayMap');
 
 /**
@@ -25276,7 +25276,7 @@ function baseToPairs(object, props) {
 
 module.exports = baseToPairs;
 
-},{"./_arrayMap":98}],144:[function(require,module,exports){
+},{"./_arrayMap":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_arrayMap.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseUnary.js":[function(require,module,exports){
 /**
  * The base implementation of `_.unary` without support for storing wrapper metadata.
  *
@@ -25292,7 +25292,7 @@ function baseUnary(func) {
 
 module.exports = baseUnary;
 
-},{}],145:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseValues.js":[function(require,module,exports){
 var arrayMap = require('./_arrayMap');
 
 /**
@@ -25313,7 +25313,7 @@ function baseValues(object, props) {
 
 module.exports = baseValues;
 
-},{"./_arrayMap":98}],146:[function(require,module,exports){
+},{"./_arrayMap":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_arrayMap.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_cacheHas.js":[function(require,module,exports){
 var isKeyable = require('./_isKeyable');
 
 /** Used to stand-in for `undefined` hash values. */
@@ -25340,7 +25340,7 @@ function cacheHas(cache, value) {
 
 module.exports = cacheHas;
 
-},{"./_isKeyable":202}],147:[function(require,module,exports){
+},{"./_isKeyable":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_isKeyable.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_cachePush.js":[function(require,module,exports){
 var isKeyable = require('./_isKeyable');
 
 /** Used to stand-in for `undefined` hash values. */
@@ -25369,7 +25369,7 @@ function cachePush(value) {
 
 module.exports = cachePush;
 
-},{"./_isKeyable":202}],148:[function(require,module,exports){
+},{"./_isKeyable":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_isKeyable.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_checkGlobal.js":[function(require,module,exports){
 /**
  * Checks if `value` is a global object.
  *
@@ -25383,7 +25383,7 @@ function checkGlobal(value) {
 
 module.exports = checkGlobal;
 
-},{}],149:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_cloneArrayBuffer.js":[function(require,module,exports){
 var Uint8Array = require('./_Uint8Array');
 
 /**
@@ -25401,7 +25401,7 @@ function cloneArrayBuffer(arrayBuffer) {
 
 module.exports = cloneArrayBuffer;
 
-},{"./_Uint8Array":89}],150:[function(require,module,exports){
+},{"./_Uint8Array":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_Uint8Array.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_cloneBuffer.js":[function(require,module,exports){
 /**
  * Creates a clone of  `buffer`.
  *
@@ -25421,7 +25421,7 @@ function cloneBuffer(buffer, isDeep) {
 
 module.exports = cloneBuffer;
 
-},{}],151:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_cloneDataView.js":[function(require,module,exports){
 var cloneArrayBuffer = require('./_cloneArrayBuffer');
 
 /**
@@ -25439,7 +25439,7 @@ function cloneDataView(dataView, isDeep) {
 
 module.exports = cloneDataView;
 
-},{"./_cloneArrayBuffer":149}],152:[function(require,module,exports){
+},{"./_cloneArrayBuffer":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_cloneArrayBuffer.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_cloneMap.js":[function(require,module,exports){
 var addMapEntry = require('./_addMapEntry'),
     arrayReduce = require('./_arrayReduce'),
     mapToArray = require('./_mapToArray');
@@ -25460,7 +25460,7 @@ function cloneMap(map, isDeep, cloneFunc) {
 
 module.exports = cloneMap;
 
-},{"./_addMapEntry":91,"./_arrayReduce":100,"./_mapToArray":212}],153:[function(require,module,exports){
+},{"./_addMapEntry":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_addMapEntry.js","./_arrayReduce":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_arrayReduce.js","./_mapToArray":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_mapToArray.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_cloneRegExp.js":[function(require,module,exports){
 /** Used to match `RegExp` flags from their coerced string values. */
 var reFlags = /\w*$/;
 
@@ -25479,7 +25479,7 @@ function cloneRegExp(regexp) {
 
 module.exports = cloneRegExp;
 
-},{}],154:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_cloneSet.js":[function(require,module,exports){
 var addSetEntry = require('./_addSetEntry'),
     arrayReduce = require('./_arrayReduce'),
     setToArray = require('./_setToArray');
@@ -25500,7 +25500,7 @@ function cloneSet(set, isDeep, cloneFunc) {
 
 module.exports = cloneSet;
 
-},{"./_addSetEntry":92,"./_arrayReduce":100,"./_setToArray":222}],155:[function(require,module,exports){
+},{"./_addSetEntry":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_addSetEntry.js","./_arrayReduce":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_arrayReduce.js","./_setToArray":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_setToArray.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_cloneSymbol.js":[function(require,module,exports){
 var Symbol = require('./_Symbol');
 
 /** Used to convert symbols to primitives and strings. */
@@ -25520,7 +25520,7 @@ function cloneSymbol(symbol) {
 
 module.exports = cloneSymbol;
 
-},{"./_Symbol":88}],156:[function(require,module,exports){
+},{"./_Symbol":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_Symbol.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_cloneTypedArray.js":[function(require,module,exports){
 var cloneArrayBuffer = require('./_cloneArrayBuffer');
 
 /**
@@ -25538,7 +25538,7 @@ function cloneTypedArray(typedArray, isDeep) {
 
 module.exports = cloneTypedArray;
 
-},{"./_cloneArrayBuffer":149}],157:[function(require,module,exports){
+},{"./_cloneArrayBuffer":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_cloneArrayBuffer.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_composeArgs.js":[function(require,module,exports){
 /* Built-in method references for those with the same name as other `lodash` methods. */
 var nativeMax = Math.max;
 
@@ -25579,7 +25579,7 @@ function composeArgs(args, partials, holders, isCurried) {
 
 module.exports = composeArgs;
 
-},{}],158:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_composeArgsRight.js":[function(require,module,exports){
 /* Built-in method references for those with the same name as other `lodash` methods. */
 var nativeMax = Math.max;
 
@@ -25622,7 +25622,7 @@ function composeArgsRight(args, partials, holders, isCurried) {
 
 module.exports = composeArgsRight;
 
-},{}],159:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_copyArray.js":[function(require,module,exports){
 /**
  * Copies the values of `source` to `array`.
  *
@@ -25644,7 +25644,7 @@ function copyArray(source, array) {
 
 module.exports = copyArray;
 
-},{}],160:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_copyObject.js":[function(require,module,exports){
 var copyObjectWith = require('./_copyObjectWith');
 
 /**
@@ -25662,7 +25662,7 @@ function copyObject(source, props, object) {
 
 module.exports = copyObject;
 
-},{"./_copyObjectWith":161}],161:[function(require,module,exports){
+},{"./_copyObjectWith":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_copyObjectWith.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_copyObjectWith.js":[function(require,module,exports){
 var assignValue = require('./_assignValue');
 
 /**
@@ -25696,7 +25696,7 @@ function copyObjectWith(source, props, object, customizer) {
 
 module.exports = copyObjectWith;
 
-},{"./_assignValue":103}],162:[function(require,module,exports){
+},{"./_assignValue":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_assignValue.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_copySymbols.js":[function(require,module,exports){
 var copyObject = require('./_copyObject'),
     getSymbols = require('./_getSymbols');
 
@@ -25714,7 +25714,7 @@ function copySymbols(source, object) {
 
 module.exports = copySymbols;
 
-},{"./_copyObject":160,"./_getSymbols":186}],163:[function(require,module,exports){
+},{"./_copyObject":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_copyObject.js","./_getSymbols":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_getSymbols.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_countHolders.js":[function(require,module,exports){
 /**
  * Gets the number of `placeholder` occurrences in `array`.
  *
@@ -25737,7 +25737,7 @@ function countHolders(array, placeholder) {
 
 module.exports = countHolders;
 
-},{}],164:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_createAggregator.js":[function(require,module,exports){
 var arrayAggregator = require('./_arrayAggregator'),
     baseAggregator = require('./_baseAggregator'),
     baseIteratee = require('./_baseIteratee'),
@@ -25762,7 +25762,7 @@ function createAggregator(setter, initializer) {
 
 module.exports = createAggregator;
 
-},{"./_arrayAggregator":94,"./_baseAggregator":109,"./_baseIteratee":129,"./isArray":243}],165:[function(require,module,exports){
+},{"./_arrayAggregator":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_arrayAggregator.js","./_baseAggregator":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseAggregator.js","./_baseIteratee":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseIteratee.js","./isArray":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isArray.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_createAssigner.js":[function(require,module,exports){
 var isIterateeCall = require('./_isIterateeCall'),
     rest = require('./rest');
 
@@ -25801,7 +25801,7 @@ function createAssigner(assigner) {
 
 module.exports = createAssigner;
 
-},{"./_isIterateeCall":200,"./rest":270}],166:[function(require,module,exports){
+},{"./_isIterateeCall":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_isIterateeCall.js","./rest":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/rest.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_createBaseEach.js":[function(require,module,exports){
 var isArrayLike = require('./isArrayLike');
 
 /**
@@ -25835,7 +25835,7 @@ function createBaseEach(eachFunc, fromRight) {
 
 module.exports = createBaseEach;
 
-},{"./isArrayLike":244}],167:[function(require,module,exports){
+},{"./isArrayLike":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isArrayLike.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_createBaseFor.js":[function(require,module,exports){
 /**
  * Creates a base function for methods like `_.forIn` and `_.forOwn`.
  *
@@ -25862,7 +25862,7 @@ function createBaseFor(fromRight) {
 
 module.exports = createBaseFor;
 
-},{}],168:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_createBaseWrapper.js":[function(require,module,exports){
 var createCtorWrapper = require('./_createCtorWrapper'),
     root = require('./_root');
 
@@ -25893,7 +25893,7 @@ function createBaseWrapper(func, bitmask, thisArg) {
 
 module.exports = createBaseWrapper;
 
-},{"./_createCtorWrapper":169,"./_root":220}],169:[function(require,module,exports){
+},{"./_createCtorWrapper":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_createCtorWrapper.js","./_root":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_root.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_createCtorWrapper.js":[function(require,module,exports){
 var baseCreate = require('./_baseCreate'),
     isObject = require('./isObject');
 
@@ -25932,7 +25932,7 @@ function createCtorWrapper(Ctor) {
 
 module.exports = createCtorWrapper;
 
-},{"./_baseCreate":113,"./isObject":252}],170:[function(require,module,exports){
+},{"./_baseCreate":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseCreate.js","./isObject":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isObject.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_createCurryWrapper.js":[function(require,module,exports){
 var apply = require('./_apply'),
     createCtorWrapper = require('./_createCtorWrapper'),
     createHybridWrapper = require('./_createHybridWrapper'),
@@ -25981,7 +25981,7 @@ function createCurryWrapper(func, bitmask, arity) {
 
 module.exports = createCurryWrapper;
 
-},{"./_apply":93,"./_createCtorWrapper":169,"./_createHybridWrapper":171,"./_createRecurryWrapper":173,"./_getPlaceholder":184,"./_replaceHolders":219,"./_root":220}],171:[function(require,module,exports){
+},{"./_apply":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_apply.js","./_createCtorWrapper":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_createCtorWrapper.js","./_createHybridWrapper":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_createHybridWrapper.js","./_createRecurryWrapper":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_createRecurryWrapper.js","./_getPlaceholder":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_getPlaceholder.js","./_replaceHolders":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_replaceHolders.js","./_root":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_root.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_createHybridWrapper.js":[function(require,module,exports){
 var composeArgs = require('./_composeArgs'),
     composeArgsRight = require('./_composeArgsRight'),
     countHolders = require('./_countHolders'),
@@ -26076,7 +26076,7 @@ function createHybridWrapper(func, bitmask, thisArg, partials, holders, partials
 
 module.exports = createHybridWrapper;
 
-},{"./_composeArgs":157,"./_composeArgsRight":158,"./_countHolders":163,"./_createCtorWrapper":169,"./_createRecurryWrapper":173,"./_getPlaceholder":184,"./_reorder":218,"./_replaceHolders":219,"./_root":220}],172:[function(require,module,exports){
+},{"./_composeArgs":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_composeArgs.js","./_composeArgsRight":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_composeArgsRight.js","./_countHolders":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_countHolders.js","./_createCtorWrapper":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_createCtorWrapper.js","./_createRecurryWrapper":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_createRecurryWrapper.js","./_getPlaceholder":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_getPlaceholder.js","./_reorder":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_reorder.js","./_replaceHolders":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_replaceHolders.js","./_root":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_root.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_createPartialWrapper.js":[function(require,module,exports){
 var apply = require('./_apply'),
     createCtorWrapper = require('./_createCtorWrapper'),
     root = require('./_root');
@@ -26122,7 +26122,7 @@ function createPartialWrapper(func, bitmask, thisArg, partials) {
 
 module.exports = createPartialWrapper;
 
-},{"./_apply":93,"./_createCtorWrapper":169,"./_root":220}],173:[function(require,module,exports){
+},{"./_apply":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_apply.js","./_createCtorWrapper":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_createCtorWrapper.js","./_root":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_root.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_createRecurryWrapper.js":[function(require,module,exports){
 var copyArray = require('./_copyArray'),
     isLaziable = require('./_isLaziable'),
     setData = require('./_setData');
@@ -26182,7 +26182,7 @@ function createRecurryWrapper(func, bitmask, wrapFunc, placeholder, thisArg, par
 
 module.exports = createRecurryWrapper;
 
-},{"./_copyArray":159,"./_isLaziable":203,"./_setData":221}],174:[function(require,module,exports){
+},{"./_copyArray":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_copyArray.js","./_isLaziable":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_isLaziable.js","./_setData":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_setData.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_createWrapper.js":[function(require,module,exports){
 var baseSetData = require('./_baseSetData'),
     createBaseWrapper = require('./_createBaseWrapper'),
     createCurryWrapper = require('./_createCurryWrapper'),
@@ -26289,7 +26289,7 @@ function createWrapper(func, bitmask, thisArg, partials, holders, argPos, ary, a
 
 module.exports = createWrapper;
 
-},{"./_baseSetData":141,"./_createBaseWrapper":168,"./_createCurryWrapper":170,"./_createHybridWrapper":171,"./_createPartialWrapper":172,"./_getData":179,"./_mergeData":214,"./_setData":221,"./toInteger":272}],175:[function(require,module,exports){
+},{"./_baseSetData":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseSetData.js","./_createBaseWrapper":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_createBaseWrapper.js","./_createCurryWrapper":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_createCurryWrapper.js","./_createHybridWrapper":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_createHybridWrapper.js","./_createPartialWrapper":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_createPartialWrapper.js","./_getData":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_getData.js","./_mergeData":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_mergeData.js","./_setData":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_setData.js","./toInteger":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/toInteger.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_equalArrays.js":[function(require,module,exports){
 var arraySome = require('./_arraySome');
 
 /** Used to compose bitmasks for comparison styles. */
@@ -26368,7 +26368,7 @@ function equalArrays(array, other, equalFunc, customizer, bitmask, stack) {
 
 module.exports = equalArrays;
 
-},{"./_arraySome":101}],176:[function(require,module,exports){
+},{"./_arraySome":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_arraySome.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_equalByTag.js":[function(require,module,exports){
 var Symbol = require('./_Symbol'),
     Uint8Array = require('./_Uint8Array'),
     equalArrays = require('./_equalArrays'),
@@ -26484,7 +26484,7 @@ function equalByTag(object, other, tag, equalFunc, customizer, bitmask, stack) {
 
 module.exports = equalByTag;
 
-},{"./_Symbol":88,"./_Uint8Array":89,"./_equalArrays":175,"./_mapToArray":212,"./_setToArray":222}],177:[function(require,module,exports){
+},{"./_Symbol":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_Symbol.js","./_Uint8Array":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_Uint8Array.js","./_equalArrays":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_equalArrays.js","./_mapToArray":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_mapToArray.js","./_setToArray":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_setToArray.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_equalObjects.js":[function(require,module,exports){
 var baseHas = require('./_baseHas'),
     keys = require('./keys');
 
@@ -26569,7 +26569,7 @@ function equalObjects(object, other, equalFunc, customizer, bitmask, stack) {
 
 module.exports = equalObjects;
 
-},{"./_baseHas":123,"./keys":260}],178:[function(require,module,exports){
+},{"./_baseHas":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseHas.js","./keys":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/keys.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_getAllKeys.js":[function(require,module,exports){
 var baseGetAllKeys = require('./_baseGetAllKeys'),
     getSymbols = require('./_getSymbols'),
     keys = require('./keys');
@@ -26587,7 +26587,7 @@ function getAllKeys(object) {
 
 module.exports = getAllKeys;
 
-},{"./_baseGetAllKeys":122,"./_getSymbols":186,"./keys":260}],179:[function(require,module,exports){
+},{"./_baseGetAllKeys":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseGetAllKeys.js","./_getSymbols":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_getSymbols.js","./keys":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/keys.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_getData.js":[function(require,module,exports){
 var metaMap = require('./_metaMap'),
     noop = require('./noop');
 
@@ -26604,7 +26604,7 @@ var getData = !metaMap ? noop : function(func) {
 
 module.exports = getData;
 
-},{"./_metaMap":215,"./noop":266}],180:[function(require,module,exports){
+},{"./_metaMap":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_metaMap.js","./noop":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/noop.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_getFuncName.js":[function(require,module,exports){
 var realNames = require('./_realNames');
 
 /** Used for built-in method references. */
@@ -26637,7 +26637,7 @@ function getFuncName(func) {
 
 module.exports = getFuncName;
 
-},{"./_realNames":217}],181:[function(require,module,exports){
+},{"./_realNames":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_realNames.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_getLength.js":[function(require,module,exports){
 var baseProperty = require('./_baseProperty');
 
 /**
@@ -26655,7 +26655,7 @@ var getLength = baseProperty('length');
 
 module.exports = getLength;
 
-},{"./_baseProperty":138}],182:[function(require,module,exports){
+},{"./_baseProperty":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseProperty.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_getMatchData.js":[function(require,module,exports){
 var isStrictComparable = require('./_isStrictComparable'),
     toPairs = require('./toPairs');
 
@@ -26678,7 +26678,7 @@ function getMatchData(object) {
 
 module.exports = getMatchData;
 
-},{"./_isStrictComparable":205,"./toPairs":274}],183:[function(require,module,exports){
+},{"./_isStrictComparable":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_isStrictComparable.js","./toPairs":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/toPairs.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_getNative.js":[function(require,module,exports){
 var isNative = require('./isNative');
 
 /**
@@ -26696,7 +26696,7 @@ function getNative(object, key) {
 
 module.exports = getNative;
 
-},{"./isNative":250}],184:[function(require,module,exports){
+},{"./isNative":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isNative.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_getPlaceholder.js":[function(require,module,exports){
 /**
  * Gets the argument placeholder value for `func`.
  *
@@ -26711,7 +26711,7 @@ function getPlaceholder(func) {
 
 module.exports = getPlaceholder;
 
-},{}],185:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_getPrototype.js":[function(require,module,exports){
 /* Built-in method references for those with the same name as other `lodash` methods. */
 var nativeGetPrototype = Object.getPrototypeOf;
 
@@ -26728,7 +26728,7 @@ function getPrototype(value) {
 
 module.exports = getPrototype;
 
-},{}],186:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_getSymbols.js":[function(require,module,exports){
 /** Built-in value references. */
 var getOwnPropertySymbols = Object.getOwnPropertySymbols;
 
@@ -26754,7 +26754,7 @@ if (!getOwnPropertySymbols) {
 
 module.exports = getSymbols;
 
-},{}],187:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_getTag.js":[function(require,module,exports){
 var DataView = require('./_DataView'),
     Map = require('./_Map'),
     Promise = require('./_Promise'),
@@ -26826,7 +26826,7 @@ if ((DataView && getTag(new DataView(new ArrayBuffer(1))) != dataViewTag) ||
 
 module.exports = getTag;
 
-},{"./_DataView":77,"./_Map":81,"./_Promise":83,"./_Set":85,"./_WeakMap":90,"./_toSource":229}],188:[function(require,module,exports){
+},{"./_DataView":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_DataView.js","./_Map":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_Map.js","./_Promise":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_Promise.js","./_Set":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_Set.js","./_WeakMap":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_WeakMap.js","./_toSource":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_toSource.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_hasPath.js":[function(require,module,exports){
 var baseCastPath = require('./_baseCastPath'),
     isArguments = require('./isArguments'),
     isArray = require('./isArray'),
@@ -26868,7 +26868,7 @@ function hasPath(object, path, hasFunc) {
 
 module.exports = hasPath;
 
-},{"./_baseCastPath":111,"./_isIndex":199,"./_isKey":201,"./isArguments":242,"./isArray":243,"./isLength":249,"./isString":256}],189:[function(require,module,exports){
+},{"./_baseCastPath":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseCastPath.js","./_isIndex":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_isIndex.js","./_isKey":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_isKey.js","./isArguments":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isArguments.js","./isArray":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isArray.js","./isLength":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isLength.js","./isString":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isString.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_hashDelete.js":[function(require,module,exports){
 var hashHas = require('./_hashHas');
 
 /**
@@ -26885,7 +26885,7 @@ function hashDelete(hash, key) {
 
 module.exports = hashDelete;
 
-},{"./_hashHas":191}],190:[function(require,module,exports){
+},{"./_hashHas":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_hashHas.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_hashGet.js":[function(require,module,exports){
 var nativeCreate = require('./_nativeCreate');
 
 /** Used to stand-in for `undefined` hash values. */
@@ -26915,7 +26915,7 @@ function hashGet(hash, key) {
 
 module.exports = hashGet;
 
-},{"./_nativeCreate":216}],191:[function(require,module,exports){
+},{"./_nativeCreate":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_nativeCreate.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_hashHas.js":[function(require,module,exports){
 var nativeCreate = require('./_nativeCreate');
 
 /** Used for built-in method references. */
@@ -26938,7 +26938,7 @@ function hashHas(hash, key) {
 
 module.exports = hashHas;
 
-},{"./_nativeCreate":216}],192:[function(require,module,exports){
+},{"./_nativeCreate":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_nativeCreate.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_hashSet.js":[function(require,module,exports){
 var nativeCreate = require('./_nativeCreate');
 
 /** Used to stand-in for `undefined` hash values. */
@@ -26958,7 +26958,7 @@ function hashSet(hash, key, value) {
 
 module.exports = hashSet;
 
-},{"./_nativeCreate":216}],193:[function(require,module,exports){
+},{"./_nativeCreate":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_nativeCreate.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_indexKeys.js":[function(require,module,exports){
 var baseTimes = require('./_baseTimes'),
     isArguments = require('./isArguments'),
     isArray = require('./isArray'),
@@ -26984,7 +26984,7 @@ function indexKeys(object) {
 
 module.exports = indexKeys;
 
-},{"./_baseTimes":142,"./isArguments":242,"./isArray":243,"./isLength":249,"./isString":256}],194:[function(require,module,exports){
+},{"./_baseTimes":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseTimes.js","./isArguments":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isArguments.js","./isArray":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isArray.js","./isLength":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isLength.js","./isString":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isString.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_indexOfNaN.js":[function(require,module,exports){
 /**
  * Gets the index at which the first occurrence of `NaN` is found in `array`.
  *
@@ -27009,7 +27009,7 @@ function indexOfNaN(array, fromIndex, fromRight) {
 
 module.exports = indexOfNaN;
 
-},{}],195:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_initCloneArray.js":[function(require,module,exports){
 /** Used for built-in method references. */
 var objectProto = Object.prototype;
 
@@ -27037,7 +27037,7 @@ function initCloneArray(array) {
 
 module.exports = initCloneArray;
 
-},{}],196:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_initCloneByTag.js":[function(require,module,exports){
 var cloneArrayBuffer = require('./_cloneArrayBuffer'),
     cloneDataView = require('./_cloneDataView'),
     cloneMap = require('./_cloneMap'),
@@ -27119,7 +27119,7 @@ function initCloneByTag(object, tag, cloneFunc, isDeep) {
 
 module.exports = initCloneByTag;
 
-},{"./_cloneArrayBuffer":149,"./_cloneDataView":151,"./_cloneMap":152,"./_cloneRegExp":153,"./_cloneSet":154,"./_cloneSymbol":155,"./_cloneTypedArray":156}],197:[function(require,module,exports){
+},{"./_cloneArrayBuffer":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_cloneArrayBuffer.js","./_cloneDataView":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_cloneDataView.js","./_cloneMap":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_cloneMap.js","./_cloneRegExp":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_cloneRegExp.js","./_cloneSet":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_cloneSet.js","./_cloneSymbol":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_cloneSymbol.js","./_cloneTypedArray":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_cloneTypedArray.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_initCloneObject.js":[function(require,module,exports){
 var baseCreate = require('./_baseCreate'),
     getPrototype = require('./_getPrototype'),
     isPrototype = require('./_isPrototype');
@@ -27139,7 +27139,7 @@ function initCloneObject(object) {
 
 module.exports = initCloneObject;
 
-},{"./_baseCreate":113,"./_getPrototype":185,"./_isPrototype":204}],198:[function(require,module,exports){
+},{"./_baseCreate":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseCreate.js","./_getPrototype":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_getPrototype.js","./_isPrototype":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_isPrototype.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_isHostObject.js":[function(require,module,exports){
 /**
  * Checks if `value` is a host object in IE < 9.
  *
@@ -27161,7 +27161,7 @@ function isHostObject(value) {
 
 module.exports = isHostObject;
 
-},{}],199:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_isIndex.js":[function(require,module,exports){
 /** Used as references for various `Number` constants. */
 var MAX_SAFE_INTEGER = 9007199254740991;
 
@@ -27184,7 +27184,7 @@ function isIndex(value, length) {
 
 module.exports = isIndex;
 
-},{}],200:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_isIterateeCall.js":[function(require,module,exports){
 var eq = require('./eq'),
     isArrayLike = require('./isArrayLike'),
     isIndex = require('./_isIndex'),
@@ -27216,7 +27216,7 @@ function isIterateeCall(value, index, object) {
 
 module.exports = isIterateeCall;
 
-},{"./_isIndex":199,"./eq":235,"./isArrayLike":244,"./isObject":252}],201:[function(require,module,exports){
+},{"./_isIndex":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_isIndex.js","./eq":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/eq.js","./isArrayLike":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isArrayLike.js","./isObject":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isObject.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_isKey.js":[function(require,module,exports){
 var isArray = require('./isArray'),
     isSymbol = require('./isSymbol');
 
@@ -27244,7 +27244,7 @@ function isKey(value, object) {
 
 module.exports = isKey;
 
-},{"./isArray":243,"./isSymbol":257}],202:[function(require,module,exports){
+},{"./isArray":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isArray.js","./isSymbol":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isSymbol.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_isKeyable.js":[function(require,module,exports){
 /**
  * Checks if `value` is suitable for use as unique object key.
  *
@@ -27260,7 +27260,7 @@ function isKeyable(value) {
 
 module.exports = isKeyable;
 
-},{}],203:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_isLaziable.js":[function(require,module,exports){
 var LazyWrapper = require('./_LazyWrapper'),
     getData = require('./_getData'),
     getFuncName = require('./_getFuncName'),
@@ -27290,7 +27290,7 @@ function isLaziable(func) {
 
 module.exports = isLaziable;
 
-},{"./_LazyWrapper":79,"./_getData":179,"./_getFuncName":180,"./wrapperLodash":278}],204:[function(require,module,exports){
+},{"./_LazyWrapper":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_LazyWrapper.js","./_getData":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_getData.js","./_getFuncName":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_getFuncName.js","./wrapperLodash":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/wrapperLodash.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_isPrototype.js":[function(require,module,exports){
 /** Used for built-in method references. */
 var objectProto = Object.prototype;
 
@@ -27310,7 +27310,7 @@ function isPrototype(value) {
 
 module.exports = isPrototype;
 
-},{}],205:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_isStrictComparable.js":[function(require,module,exports){
 var isObject = require('./isObject');
 
 /**
@@ -27327,7 +27327,7 @@ function isStrictComparable(value) {
 
 module.exports = isStrictComparable;
 
-},{"./isObject":252}],206:[function(require,module,exports){
+},{"./isObject":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isObject.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_iteratorToArray.js":[function(require,module,exports){
 /**
  * Converts `iterator` to an array.
  *
@@ -27347,7 +27347,7 @@ function iteratorToArray(iterator) {
 
 module.exports = iteratorToArray;
 
-},{}],207:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_mapClear.js":[function(require,module,exports){
 var Hash = require('./_Hash'),
     Map = require('./_Map');
 
@@ -27368,7 +27368,7 @@ function mapClear() {
 
 module.exports = mapClear;
 
-},{"./_Hash":78,"./_Map":81}],208:[function(require,module,exports){
+},{"./_Hash":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_Hash.js","./_Map":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_Map.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_mapDelete.js":[function(require,module,exports){
 var Map = require('./_Map'),
     assocDelete = require('./_assocDelete'),
     hashDelete = require('./_hashDelete'),
@@ -27393,7 +27393,7 @@ function mapDelete(key) {
 
 module.exports = mapDelete;
 
-},{"./_Map":81,"./_assocDelete":104,"./_hashDelete":189,"./_isKeyable":202}],209:[function(require,module,exports){
+},{"./_Map":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_Map.js","./_assocDelete":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_assocDelete.js","./_hashDelete":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_hashDelete.js","./_isKeyable":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_isKeyable.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_mapGet.js":[function(require,module,exports){
 var Map = require('./_Map'),
     assocGet = require('./_assocGet'),
     hashGet = require('./_hashGet'),
@@ -27418,7 +27418,7 @@ function mapGet(key) {
 
 module.exports = mapGet;
 
-},{"./_Map":81,"./_assocGet":105,"./_hashGet":190,"./_isKeyable":202}],210:[function(require,module,exports){
+},{"./_Map":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_Map.js","./_assocGet":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_assocGet.js","./_hashGet":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_hashGet.js","./_isKeyable":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_isKeyable.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_mapHas.js":[function(require,module,exports){
 var Map = require('./_Map'),
     assocHas = require('./_assocHas'),
     hashHas = require('./_hashHas'),
@@ -27443,7 +27443,7 @@ function mapHas(key) {
 
 module.exports = mapHas;
 
-},{"./_Map":81,"./_assocHas":106,"./_hashHas":191,"./_isKeyable":202}],211:[function(require,module,exports){
+},{"./_Map":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_Map.js","./_assocHas":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_assocHas.js","./_hashHas":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_hashHas.js","./_isKeyable":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_isKeyable.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_mapSet.js":[function(require,module,exports){
 var Map = require('./_Map'),
     assocSet = require('./_assocSet'),
     hashSet = require('./_hashSet'),
@@ -27473,7 +27473,7 @@ function mapSet(key, value) {
 
 module.exports = mapSet;
 
-},{"./_Map":81,"./_assocSet":108,"./_hashSet":192,"./_isKeyable":202}],212:[function(require,module,exports){
+},{"./_Map":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_Map.js","./_assocSet":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_assocSet.js","./_hashSet":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_hashSet.js","./_isKeyable":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_isKeyable.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_mapToArray.js":[function(require,module,exports){
 /**
  * Converts `map` to an array.
  *
@@ -27493,7 +27493,7 @@ function mapToArray(map) {
 
 module.exports = mapToArray;
 
-},{}],213:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_matchesStrictComparable.js":[function(require,module,exports){
 /**
  * A specialized version of `matchesProperty` for source values suitable
  * for strict equality comparisons, i.e. `===`.
@@ -27515,7 +27515,7 @@ function matchesStrictComparable(key, srcValue) {
 
 module.exports = matchesStrictComparable;
 
-},{}],214:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_mergeData.js":[function(require,module,exports){
 var composeArgs = require('./_composeArgs'),
     composeArgsRight = require('./_composeArgsRight'),
     copyArray = require('./_copyArray'),
@@ -27608,7 +27608,7 @@ function mergeData(data, source) {
 
 module.exports = mergeData;
 
-},{"./_composeArgs":157,"./_composeArgsRight":158,"./_copyArray":159,"./_replaceHolders":219}],215:[function(require,module,exports){
+},{"./_composeArgs":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_composeArgs.js","./_composeArgsRight":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_composeArgsRight.js","./_copyArray":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_copyArray.js","./_replaceHolders":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_replaceHolders.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_metaMap.js":[function(require,module,exports){
 var WeakMap = require('./_WeakMap');
 
 /** Used to store function metadata. */
@@ -27616,7 +27616,7 @@ var metaMap = WeakMap && new WeakMap;
 
 module.exports = metaMap;
 
-},{"./_WeakMap":90}],216:[function(require,module,exports){
+},{"./_WeakMap":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_WeakMap.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_nativeCreate.js":[function(require,module,exports){
 var getNative = require('./_getNative');
 
 /* Built-in method references that are verified to be native. */
@@ -27624,13 +27624,13 @@ var nativeCreate = getNative(Object, 'create');
 
 module.exports = nativeCreate;
 
-},{"./_getNative":183}],217:[function(require,module,exports){
+},{"./_getNative":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_getNative.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_realNames.js":[function(require,module,exports){
 /** Used to lookup unminified function names. */
 var realNames = {};
 
 module.exports = realNames;
 
-},{}],218:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_reorder.js":[function(require,module,exports){
 var copyArray = require('./_copyArray'),
     isIndex = require('./_isIndex');
 
@@ -27661,7 +27661,7 @@ function reorder(array, indexes) {
 
 module.exports = reorder;
 
-},{"./_copyArray":159,"./_isIndex":199}],219:[function(require,module,exports){
+},{"./_copyArray":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_copyArray.js","./_isIndex":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_isIndex.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_replaceHolders.js":[function(require,module,exports){
 /** Used as the internal argument placeholder. */
 var PLACEHOLDER = '__lodash_placeholder__';
 
@@ -27692,7 +27692,7 @@ function replaceHolders(array, placeholder) {
 
 module.exports = replaceHolders;
 
-},{}],220:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_root.js":[function(require,module,exports){
 (function (global){
 var checkGlobal = require('./_checkGlobal');
 
@@ -27737,7 +27737,7 @@ var root = freeGlobal ||
 module.exports = root;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./_checkGlobal":148}],221:[function(require,module,exports){
+},{"./_checkGlobal":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_checkGlobal.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_setData.js":[function(require,module,exports){
 var baseSetData = require('./_baseSetData'),
     now = require('./now');
 
@@ -27781,7 +27781,7 @@ var setData = (function() {
 
 module.exports = setData;
 
-},{"./_baseSetData":141,"./now":267}],222:[function(require,module,exports){
+},{"./_baseSetData":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseSetData.js","./now":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/now.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_setToArray.js":[function(require,module,exports){
 /**
  * Converts `set` to an array.
  *
@@ -27801,7 +27801,7 @@ function setToArray(set) {
 
 module.exports = setToArray;
 
-},{}],223:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_stackClear.js":[function(require,module,exports){
 /**
  * Removes all key-value entries from the stack.
  *
@@ -27815,7 +27815,7 @@ function stackClear() {
 
 module.exports = stackClear;
 
-},{}],224:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_stackDelete.js":[function(require,module,exports){
 var assocDelete = require('./_assocDelete');
 
 /**
@@ -27836,7 +27836,7 @@ function stackDelete(key) {
 
 module.exports = stackDelete;
 
-},{"./_assocDelete":104}],225:[function(require,module,exports){
+},{"./_assocDelete":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_assocDelete.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_stackGet.js":[function(require,module,exports){
 var assocGet = require('./_assocGet');
 
 /**
@@ -27857,7 +27857,7 @@ function stackGet(key) {
 
 module.exports = stackGet;
 
-},{"./_assocGet":105}],226:[function(require,module,exports){
+},{"./_assocGet":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_assocGet.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_stackHas.js":[function(require,module,exports){
 var assocHas = require('./_assocHas');
 
 /**
@@ -27878,7 +27878,7 @@ function stackHas(key) {
 
 module.exports = stackHas;
 
-},{"./_assocHas":106}],227:[function(require,module,exports){
+},{"./_assocHas":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_assocHas.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_stackSet.js":[function(require,module,exports){
 var MapCache = require('./_MapCache'),
     assocSet = require('./_assocSet');
 
@@ -27916,7 +27916,7 @@ function stackSet(key, value) {
 
 module.exports = stackSet;
 
-},{"./_MapCache":82,"./_assocSet":108}],228:[function(require,module,exports){
+},{"./_MapCache":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_MapCache.js","./_assocSet":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_assocSet.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_stringToPath.js":[function(require,module,exports){
 var memoize = require('./memoize'),
     toString = require('./toString');
 
@@ -27943,7 +27943,7 @@ var stringToPath = memoize(function(string) {
 
 module.exports = stringToPath;
 
-},{"./memoize":264,"./toString":276}],229:[function(require,module,exports){
+},{"./memoize":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/memoize.js","./toString":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/toString.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_toSource.js":[function(require,module,exports){
 var isFunction = require('./isFunction'),
     toString = require('./toString');
 
@@ -27968,7 +27968,7 @@ function toSource(func) {
 
 module.exports = toSource;
 
-},{"./isFunction":248,"./toString":276}],230:[function(require,module,exports){
+},{"./isFunction":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isFunction.js","./toString":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/toString.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_wrapperClone.js":[function(require,module,exports){
 var LazyWrapper = require('./_LazyWrapper'),
     LodashWrapper = require('./_LodashWrapper'),
     copyArray = require('./_copyArray');
@@ -27993,7 +27993,7 @@ function wrapperClone(wrapper) {
 
 module.exports = wrapperClone;
 
-},{"./_LazyWrapper":79,"./_LodashWrapper":80,"./_copyArray":159}],231:[function(require,module,exports){
+},{"./_LazyWrapper":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_LazyWrapper.js","./_LodashWrapper":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_LodashWrapper.js","./_copyArray":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_copyArray.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/assign.js":[function(require,module,exports){
 var assignValue = require('./_assignValue'),
     copyObject = require('./_copyObject'),
     createAssigner = require('./_createAssigner'),
@@ -28058,7 +28058,7 @@ var assign = createAssigner(function(object, source) {
 
 module.exports = assign;
 
-},{"./_assignValue":103,"./_copyObject":160,"./_createAssigner":165,"./_isPrototype":204,"./isArrayLike":244,"./keys":260}],232:[function(require,module,exports){
+},{"./_assignValue":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_assignValue.js","./_copyObject":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_copyObject.js","./_createAssigner":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_createAssigner.js","./_isPrototype":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_isPrototype.js","./isArrayLike":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isArrayLike.js","./keys":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/keys.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/bind.js":[function(require,module,exports){
 var createWrapper = require('./_createWrapper'),
     getPlaceholder = require('./_getPlaceholder'),
     replaceHolders = require('./_replaceHolders'),
@@ -28117,7 +28117,7 @@ bind.placeholder = {};
 
 module.exports = bind;
 
-},{"./_createWrapper":174,"./_getPlaceholder":184,"./_replaceHolders":219,"./rest":270}],233:[function(require,module,exports){
+},{"./_createWrapper":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_createWrapper.js","./_getPlaceholder":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_getPlaceholder.js","./_replaceHolders":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_replaceHolders.js","./rest":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/rest.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/constant.js":[function(require,module,exports){
 /**
  * Creates a function that returns `value`.
  *
@@ -28143,7 +28143,7 @@ function constant(value) {
 
 module.exports = constant;
 
-},{}],234:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/differenceBy.js":[function(require,module,exports){
 var baseDifference = require('./_baseDifference'),
     baseFlatten = require('./_baseFlatten'),
     baseIteratee = require('./_baseIteratee'),
@@ -28187,7 +28187,7 @@ var differenceBy = rest(function(array, values) {
 
 module.exports = differenceBy;
 
-},{"./_baseDifference":114,"./_baseFlatten":118,"./_baseIteratee":129,"./isArrayLikeObject":245,"./last":262,"./rest":270}],235:[function(require,module,exports){
+},{"./_baseDifference":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseDifference.js","./_baseFlatten":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseFlatten.js","./_baseIteratee":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseIteratee.js","./isArrayLikeObject":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isArrayLikeObject.js","./last":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/last.js","./rest":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/rest.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/eq.js":[function(require,module,exports){
 /**
  * Performs a
  * [`SameValueZero`](http://ecma-international.org/ecma-262/6.0/#sec-samevaluezero)
@@ -28226,7 +28226,7 @@ function eq(value, other) {
 
 module.exports = eq;
 
-},{}],236:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/find.js":[function(require,module,exports){
 var baseEach = require('./_baseEach'),
     baseFind = require('./_baseFind'),
     baseFindIndex = require('./_baseFindIndex'),
@@ -28280,7 +28280,7 @@ function find(collection, predicate) {
 
 module.exports = find;
 
-},{"./_baseEach":115,"./_baseFind":116,"./_baseFindIndex":117,"./_baseIteratee":129,"./isArray":243}],237:[function(require,module,exports){
+},{"./_baseEach":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseEach.js","./_baseFind":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseFind.js","./_baseFindIndex":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseFindIndex.js","./_baseIteratee":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseIteratee.js","./isArray":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isArray.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/findIndex.js":[function(require,module,exports){
 var baseFindIndex = require('./_baseFindIndex'),
     baseIteratee = require('./_baseIteratee');
 
@@ -28327,7 +28327,7 @@ function findIndex(array, predicate) {
 
 module.exports = findIndex;
 
-},{"./_baseFindIndex":117,"./_baseIteratee":129}],238:[function(require,module,exports){
+},{"./_baseFindIndex":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseFindIndex.js","./_baseIteratee":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseIteratee.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/forEach.js":[function(require,module,exports){
 var arrayEach = require('./_arrayEach'),
     baseEach = require('./_baseEach'),
     baseIteratee = require('./_baseIteratee'),
@@ -28370,7 +28370,7 @@ function forEach(collection, iteratee) {
 
 module.exports = forEach;
 
-},{"./_arrayEach":95,"./_baseEach":115,"./_baseIteratee":129,"./isArray":243}],239:[function(require,module,exports){
+},{"./_arrayEach":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_arrayEach.js","./_baseEach":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseEach.js","./_baseIteratee":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseIteratee.js","./isArray":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isArray.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/get.js":[function(require,module,exports){
 var baseGet = require('./_baseGet');
 
 /**
@@ -28405,7 +28405,7 @@ function get(object, path, defaultValue) {
 
 module.exports = get;
 
-},{"./_baseGet":121}],240:[function(require,module,exports){
+},{"./_baseGet":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseGet.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/hasIn.js":[function(require,module,exports){
 var baseHasIn = require('./_baseHasIn'),
     hasPath = require('./_hasPath');
 
@@ -28441,7 +28441,7 @@ function hasIn(object, path) {
 
 module.exports = hasIn;
 
-},{"./_baseHasIn":124,"./_hasPath":188}],241:[function(require,module,exports){
+},{"./_baseHasIn":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseHasIn.js","./_hasPath":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_hasPath.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/identity.js":[function(require,module,exports){
 /**
  * This method returns the first argument given to it.
  *
@@ -28464,7 +28464,7 @@ function identity(value) {
 
 module.exports = identity;
 
-},{}],242:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isArguments.js":[function(require,module,exports){
 var isArrayLikeObject = require('./isArrayLikeObject');
 
 /** `Object#toString` result references. */
@@ -28512,7 +28512,7 @@ function isArguments(value) {
 
 module.exports = isArguments;
 
-},{"./isArrayLikeObject":245}],243:[function(require,module,exports){
+},{"./isArrayLikeObject":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isArrayLikeObject.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isArray.js":[function(require,module,exports){
 /**
  * Checks if `value` is classified as an `Array` object.
  *
@@ -28542,7 +28542,7 @@ var isArray = Array.isArray;
 
 module.exports = isArray;
 
-},{}],244:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isArrayLike.js":[function(require,module,exports){
 var getLength = require('./_getLength'),
     isFunction = require('./isFunction'),
     isLength = require('./isLength');
@@ -28578,7 +28578,7 @@ function isArrayLike(value) {
 
 module.exports = isArrayLike;
 
-},{"./_getLength":181,"./isFunction":248,"./isLength":249}],245:[function(require,module,exports){
+},{"./_getLength":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_getLength.js","./isFunction":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isFunction.js","./isLength":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isLength.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isArrayLikeObject.js":[function(require,module,exports){
 var isArrayLike = require('./isArrayLike'),
     isObjectLike = require('./isObjectLike');
 
@@ -28613,7 +28613,7 @@ function isArrayLikeObject(value) {
 
 module.exports = isArrayLikeObject;
 
-},{"./isArrayLike":244,"./isObjectLike":253}],246:[function(require,module,exports){
+},{"./isArrayLike":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isArrayLike.js","./isObjectLike":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isObjectLike.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isBuffer.js":[function(require,module,exports){
 var constant = require('./constant'),
     root = require('./_root');
 
@@ -28664,7 +28664,7 @@ var isBuffer = !Buffer ? constant(false) : function(value) {
 
 module.exports = isBuffer;
 
-},{"./_root":220,"./constant":233}],247:[function(require,module,exports){
+},{"./_root":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_root.js","./constant":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/constant.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isEmpty.js":[function(require,module,exports){
 var getTag = require('./_getTag'),
     isArguments = require('./isArguments'),
     isArray = require('./isArray'),
@@ -28746,7 +28746,7 @@ function isEmpty(value) {
 
 module.exports = isEmpty;
 
-},{"./_getTag":187,"./isArguments":242,"./isArray":243,"./isArrayLike":244,"./isBuffer":246,"./isFunction":248,"./isObjectLike":253,"./isString":256,"./keys":260}],248:[function(require,module,exports){
+},{"./_getTag":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_getTag.js","./isArguments":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isArguments.js","./isArray":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isArray.js","./isArrayLike":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isArrayLike.js","./isBuffer":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isBuffer.js","./isFunction":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isFunction.js","./isObjectLike":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isObjectLike.js","./isString":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isString.js","./keys":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/keys.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isFunction.js":[function(require,module,exports){
 var isObject = require('./isObject');
 
 /** `Object#toString` result references. */
@@ -28791,7 +28791,7 @@ function isFunction(value) {
 
 module.exports = isFunction;
 
-},{"./isObject":252}],249:[function(require,module,exports){
+},{"./isObject":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isObject.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isLength.js":[function(require,module,exports){
 /** Used as references for various `Number` constants. */
 var MAX_SAFE_INTEGER = 9007199254740991;
 
@@ -28829,7 +28829,7 @@ function isLength(value) {
 
 module.exports = isLength;
 
-},{}],250:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isNative.js":[function(require,module,exports){
 var isFunction = require('./isFunction'),
     isHostObject = require('./_isHostObject'),
     isObject = require('./isObject'),
@@ -28887,7 +28887,7 @@ function isNative(value) {
 
 module.exports = isNative;
 
-},{"./_isHostObject":198,"./_toSource":229,"./isFunction":248,"./isObject":252}],251:[function(require,module,exports){
+},{"./_isHostObject":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_isHostObject.js","./_toSource":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_toSource.js","./isFunction":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isFunction.js","./isObject":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isObject.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isNumber.js":[function(require,module,exports){
 var isObjectLike = require('./isObjectLike');
 
 /** `Object#toString` result references. */
@@ -28937,7 +28937,7 @@ function isNumber(value) {
 
 module.exports = isNumber;
 
-},{"./isObjectLike":253}],252:[function(require,module,exports){
+},{"./isObjectLike":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isObjectLike.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isObject.js":[function(require,module,exports){
 /**
  * Checks if `value` is the
  * [language type](http://www.ecma-international.org/ecma-262/6.0/#sec-ecmascript-language-types)
@@ -28970,7 +28970,7 @@ function isObject(value) {
 
 module.exports = isObject;
 
-},{}],253:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isObjectLike.js":[function(require,module,exports){
 /**
  * Checks if `value` is object-like. A value is object-like if it's not `null`
  * and has a `typeof` result of "object".
@@ -29001,7 +29001,7 @@ function isObjectLike(value) {
 
 module.exports = isObjectLike;
 
-},{}],254:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isPlainObject.js":[function(require,module,exports){
 var getPrototype = require('./_getPrototype'),
     isHostObject = require('./_isHostObject'),
     isObjectLike = require('./isObjectLike');
@@ -29073,7 +29073,7 @@ function isPlainObject(value) {
 
 module.exports = isPlainObject;
 
-},{"./_getPrototype":185,"./_isHostObject":198,"./isObjectLike":253}],255:[function(require,module,exports){
+},{"./_getPrototype":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_getPrototype.js","./_isHostObject":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_isHostObject.js","./isObjectLike":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isObjectLike.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isRegExp.js":[function(require,module,exports){
 var isObject = require('./isObject');
 
 /** `Object#toString` result references. */
@@ -29113,7 +29113,7 @@ function isRegExp(value) {
 
 module.exports = isRegExp;
 
-},{"./isObject":252}],256:[function(require,module,exports){
+},{"./isObject":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isObject.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isString.js":[function(require,module,exports){
 var isArray = require('./isArray'),
     isObjectLike = require('./isObjectLike');
 
@@ -29155,7 +29155,7 @@ function isString(value) {
 
 module.exports = isString;
 
-},{"./isArray":243,"./isObjectLike":253}],257:[function(require,module,exports){
+},{"./isArray":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isArray.js","./isObjectLike":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isObjectLike.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isSymbol.js":[function(require,module,exports){
 var isObjectLike = require('./isObjectLike');
 
 /** `Object#toString` result references. */
@@ -29196,7 +29196,7 @@ function isSymbol(value) {
 
 module.exports = isSymbol;
 
-},{"./isObjectLike":253}],258:[function(require,module,exports){
+},{"./isObjectLike":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isObjectLike.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isTypedArray.js":[function(require,module,exports){
 var isLength = require('./isLength'),
     isObjectLike = require('./isObjectLike');
 
@@ -29278,7 +29278,7 @@ function isTypedArray(value) {
 
 module.exports = isTypedArray;
 
-},{"./isLength":249,"./isObjectLike":253}],259:[function(require,module,exports){
+},{"./isLength":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isLength.js","./isObjectLike":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isObjectLike.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/keyBy.js":[function(require,module,exports){
 var createAggregator = require('./_createAggregator');
 
 /**
@@ -29316,7 +29316,7 @@ var keyBy = createAggregator(function(result, value, key) {
 
 module.exports = keyBy;
 
-},{"./_createAggregator":164}],260:[function(require,module,exports){
+},{"./_createAggregator":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_createAggregator.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/keys.js":[function(require,module,exports){
 var baseHas = require('./_baseHas'),
     baseKeys = require('./_baseKeys'),
     indexKeys = require('./_indexKeys'),
@@ -29374,7 +29374,7 @@ function keys(object) {
 
 module.exports = keys;
 
-},{"./_baseHas":123,"./_baseKeys":130,"./_indexKeys":193,"./_isIndex":199,"./_isPrototype":204,"./isArrayLike":244}],261:[function(require,module,exports){
+},{"./_baseHas":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseHas.js","./_baseKeys":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseKeys.js","./_indexKeys":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_indexKeys.js","./_isIndex":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_isIndex.js","./_isPrototype":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_isPrototype.js","./isArrayLike":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isArrayLike.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/keysIn.js":[function(require,module,exports){
 var baseKeysIn = require('./_baseKeysIn'),
     indexKeys = require('./_indexKeys'),
     isIndex = require('./_isIndex'),
@@ -29431,7 +29431,7 @@ function keysIn(object) {
 
 module.exports = keysIn;
 
-},{"./_baseKeysIn":131,"./_indexKeys":193,"./_isIndex":199,"./_isPrototype":204}],262:[function(require,module,exports){
+},{"./_baseKeysIn":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseKeysIn.js","./_indexKeys":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_indexKeys.js","./_isIndex":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_isIndex.js","./_isPrototype":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_isPrototype.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/last.js":[function(require,module,exports){
 /**
  * Gets the last element of `array`.
  *
@@ -29453,7 +29453,7 @@ function last(array) {
 
 module.exports = last;
 
-},{}],263:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/map.js":[function(require,module,exports){
 var arrayMap = require('./_arrayMap'),
     baseIteratee = require('./_baseIteratee'),
     baseMap = require('./_baseMap'),
@@ -29509,7 +29509,7 @@ function map(collection, iteratee) {
 
 module.exports = map;
 
-},{"./_arrayMap":98,"./_baseIteratee":129,"./_baseMap":133,"./isArray":243}],264:[function(require,module,exports){
+},{"./_arrayMap":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_arrayMap.js","./_baseIteratee":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseIteratee.js","./_baseMap":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseMap.js","./isArray":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isArray.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/memoize.js":[function(require,module,exports){
 var MapCache = require('./_MapCache');
 
 /** Used as the `TypeError` message for "Functions" methods. */
@@ -29584,7 +29584,7 @@ memoize.Cache = MapCache;
 
 module.exports = memoize;
 
-},{"./_MapCache":82}],265:[function(require,module,exports){
+},{"./_MapCache":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_MapCache.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/merge.js":[function(require,module,exports){
 var baseMerge = require('./_baseMerge'),
     createAssigner = require('./_createAssigner');
 
@@ -29625,7 +29625,7 @@ var merge = createAssigner(function(object, source, srcIndex) {
 
 module.exports = merge;
 
-},{"./_baseMerge":136,"./_createAssigner":165}],266:[function(require,module,exports){
+},{"./_baseMerge":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseMerge.js","./_createAssigner":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_createAssigner.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/noop.js":[function(require,module,exports){
 /**
  * A no-operation function that returns `undefined` regardless of the
  * arguments it receives.
@@ -29647,7 +29647,7 @@ function noop() {
 
 module.exports = noop;
 
-},{}],267:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/now.js":[function(require,module,exports){
 /**
  * Gets the timestamp of the number of milliseconds that have elapsed since
  * the Unix epoch (1 January 1970 00:00:00 UTC).
@@ -29669,7 +29669,7 @@ var now = Date.now;
 
 module.exports = now;
 
-},{}],268:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/property.js":[function(require,module,exports){
 var baseProperty = require('./_baseProperty'),
     basePropertyDeep = require('./_basePropertyDeep'),
     isKey = require('./_isKey');
@@ -29702,7 +29702,7 @@ function property(path) {
 
 module.exports = property;
 
-},{"./_baseProperty":138,"./_basePropertyDeep":139,"./_isKey":201}],269:[function(require,module,exports){
+},{"./_baseProperty":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseProperty.js","./_basePropertyDeep":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_basePropertyDeep.js","./_isKey":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_isKey.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/reduce.js":[function(require,module,exports){
 var arrayReduce = require('./_arrayReduce'),
     baseEach = require('./_baseEach'),
     baseIteratee = require('./_baseIteratee'),
@@ -29754,7 +29754,7 @@ function reduce(collection, iteratee, accumulator) {
 
 module.exports = reduce;
 
-},{"./_arrayReduce":100,"./_baseEach":115,"./_baseIteratee":129,"./_baseReduce":140,"./isArray":243}],270:[function(require,module,exports){
+},{"./_arrayReduce":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_arrayReduce.js","./_baseEach":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseEach.js","./_baseIteratee":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseIteratee.js","./_baseReduce":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseReduce.js","./isArray":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isArray.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/rest.js":[function(require,module,exports){
 var apply = require('./_apply'),
     toInteger = require('./toInteger');
 
@@ -29820,7 +29820,7 @@ function rest(func, start) {
 
 module.exports = rest;
 
-},{"./_apply":93,"./toInteger":272}],271:[function(require,module,exports){
+},{"./_apply":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_apply.js","./toInteger":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/toInteger.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/result.js":[function(require,module,exports){
 var baseCastPath = require('./_baseCastPath'),
     isFunction = require('./isFunction'),
     isKey = require('./_isKey');
@@ -29878,7 +29878,7 @@ function result(object, path, defaultValue) {
 
 module.exports = result;
 
-},{"./_baseCastPath":111,"./_isKey":201,"./isFunction":248}],272:[function(require,module,exports){
+},{"./_baseCastPath":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseCastPath.js","./_isKey":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_isKey.js","./isFunction":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isFunction.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/toInteger.js":[function(require,module,exports){
 var toNumber = require('./toNumber');
 
 /** Used as references for various `Number` constants. */
@@ -29926,7 +29926,7 @@ function toInteger(value) {
 
 module.exports = toInteger;
 
-},{"./toNumber":273}],273:[function(require,module,exports){
+},{"./toNumber":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/toNumber.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/toNumber.js":[function(require,module,exports){
 var isFunction = require('./isFunction'),
     isObject = require('./isObject'),
     isSymbol = require('./isSymbol');
@@ -29995,7 +29995,7 @@ function toNumber(value) {
 
 module.exports = toNumber;
 
-},{"./isFunction":248,"./isObject":252,"./isSymbol":257}],274:[function(require,module,exports){
+},{"./isFunction":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isFunction.js","./isObject":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isObject.js","./isSymbol":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isSymbol.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/toPairs.js":[function(require,module,exports){
 var baseToPairs = require('./_baseToPairs'),
     keys = require('./keys');
 
@@ -30028,7 +30028,7 @@ function toPairs(object) {
 
 module.exports = toPairs;
 
-},{"./_baseToPairs":143,"./keys":260}],275:[function(require,module,exports){
+},{"./_baseToPairs":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseToPairs.js","./keys":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/keys.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/toPlainObject.js":[function(require,module,exports){
 var copyObject = require('./_copyObject'),
     keysIn = require('./keysIn');
 
@@ -30062,7 +30062,7 @@ function toPlainObject(value) {
 
 module.exports = toPlainObject;
 
-},{"./_copyObject":160,"./keysIn":261}],276:[function(require,module,exports){
+},{"./_copyObject":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_copyObject.js","./keysIn":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/keysIn.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/toString.js":[function(require,module,exports){
 var Symbol = require('./_Symbol'),
     isSymbol = require('./isSymbol');
 
@@ -30111,7 +30111,7 @@ function toString(value) {
 
 module.exports = toString;
 
-},{"./_Symbol":88,"./isSymbol":257}],277:[function(require,module,exports){
+},{"./_Symbol":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_Symbol.js","./isSymbol":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isSymbol.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/values.js":[function(require,module,exports){
 var baseValues = require('./_baseValues'),
     keys = require('./keys');
 
@@ -30147,7 +30147,7 @@ function values(object) {
 
 module.exports = values;
 
-},{"./_baseValues":145,"./keys":260}],278:[function(require,module,exports){
+},{"./_baseValues":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseValues.js","./keys":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/keys.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/wrapperLodash.js":[function(require,module,exports){
 var LazyWrapper = require('./_LazyWrapper'),
     LodashWrapper = require('./_LodashWrapper'),
     baseLodash = require('./_baseLodash'),
@@ -30294,7 +30294,7 @@ lodash.prototype.constructor = lodash;
 
 module.exports = lodash;
 
-},{"./_LazyWrapper":79,"./_LodashWrapper":80,"./_baseLodash":132,"./_wrapperClone":230,"./isArray":243,"./isObjectLike":253}],279:[function(require,module,exports){
+},{"./_LazyWrapper":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_LazyWrapper.js","./_LodashWrapper":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_LodashWrapper.js","./_baseLodash":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_baseLodash.js","./_wrapperClone":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/_wrapperClone.js","./isArray":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isArray.js","./isObjectLike":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/lodash/isObjectLike.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/loglevel/lib/loglevel.js":[function(require,module,exports){
 /*
 * loglevel - https://github.com/pimterry/loglevel
 *
@@ -30519,7 +30519,7 @@ module.exports = lodash;
     return defaultLogger;
 }));
 
-},{}],280:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/parse-headers/parse-headers.js":[function(require,module,exports){
 var trim = require('trim')
   , forEach = require('for-each')
   , isArray = function(arg) {
@@ -30551,7 +30551,7 @@ module.exports = function (headers) {
 
   return result
 }
-},{"for-each":17,"trim":295}],281:[function(require,module,exports){
+},{"for-each":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/for-each/index.js","trim":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/trim/index.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/path-browserify/index.js":[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -30779,7 +30779,7 @@ var substr = 'ab'.substr(-1) === 'b'
 ;
 
 }).call(this,require('_process'))
-},{"_process":282}],282:[function(require,module,exports){
+},{"_process":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/process/browser.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/process/browser.js":[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -30872,16 +30872,16 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],283:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/promise-queue/index.js":[function(require,module,exports){
 (function (process){
 module.exports = process.env.PROMISE_QUEUE_COVERAGE ?
     require('./lib-cov') :
     require('./lib');
 
 }).call(this,require('_process'))
-},{"./lib":285,"./lib-cov":284,"_process":282}],284:[function(require,module,exports){
+},{"./lib":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/promise-queue/lib/index.js","./lib-cov":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/promise-queue/lib-cov/index.js","_process":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/process/browser.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/promise-queue/lib-cov/index.js":[function(require,module,exports){
 
-},{}],285:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/promise-queue/lib/index.js":[function(require,module,exports){
 /* global define, Promise */
 (function (root, factory) {
     'use strict';
@@ -31061,7 +31061,7 @@ module.exports = process.env.PROMISE_QUEUE_COVERAGE ?
     return Queue;
 });
 
-},{}],286:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/punycode/punycode.js":[function(require,module,exports){
 (function (global){
 /*! https://mths.be/punycode v1.4.1 by @mathias */
 ;(function(root) {
@@ -31598,7 +31598,7 @@ module.exports = process.env.PROMISE_QUEUE_COVERAGE ?
 }(this));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],287:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/qs/lib/index.js":[function(require,module,exports){
 'use strict';
 
 var Stringify = require('./stringify');
@@ -31609,7 +31609,7 @@ module.exports = {
     parse: Parse
 };
 
-},{"./parse":288,"./stringify":289}],288:[function(require,module,exports){
+},{"./parse":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/qs/lib/parse.js","./stringify":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/qs/lib/stringify.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/qs/lib/parse.js":[function(require,module,exports){
 'use strict';
 
 var Utils = require('./utils');
@@ -31775,7 +31775,7 @@ module.exports = function (str, opts) {
     return Utils.compact(obj);
 };
 
-},{"./utils":290}],289:[function(require,module,exports){
+},{"./utils":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/qs/lib/utils.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/qs/lib/stringify.js":[function(require,module,exports){
 'use strict';
 
 var Utils = require('./utils');
@@ -31908,7 +31908,7 @@ module.exports = function (object, opts) {
     return keys.join(delimiter);
 };
 
-},{"./utils":290}],290:[function(require,module,exports){
+},{"./utils":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/qs/lib/utils.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/qs/lib/utils.js":[function(require,module,exports){
 'use strict';
 
 var hexTable = (function () {
@@ -32072,7 +32072,7 @@ exports.isBuffer = function (obj) {
     return !!(obj.constructor && obj.constructor.isBuffer && obj.constructor.isBuffer(obj));
 };
 
-},{}],291:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/querystring-es3/decode.js":[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -32158,7 +32158,7 @@ var isArray = Array.isArray || function (xs) {
   return Object.prototype.toString.call(xs) === '[object Array]';
 };
 
-},{}],292:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/querystring-es3/encode.js":[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -32245,13 +32245,13 @@ var objectKeys = Object.keys || function (obj) {
   return res;
 };
 
-},{}],293:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/querystring-es3/index.js":[function(require,module,exports){
 'use strict';
 
 exports.decode = exports.parse = require('./decode');
 exports.encode = exports.stringify = require('./encode');
 
-},{"./decode":291,"./encode":292}],294:[function(require,module,exports){
+},{"./decode":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/querystring-es3/decode.js","./encode":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/querystring-es3/encode.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/sift/sift.js":[function(require,module,exports){
 /*
  * Sift 3.x
  *
@@ -32760,7 +32760,7 @@ exports.encode = exports.stringify = require('./encode');
   }
 })();
 
-},{}],295:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/trim/index.js":[function(require,module,exports){
 
 exports = module.exports = trim;
 
@@ -32776,7 +32776,7 @@ exports.right = function(str){
   return str.replace(/\s*$/, '');
 };
 
-},{}],296:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/uid/index.js":[function(require,module,exports){
 /**
  * Export `uid`
  */
@@ -32795,7 +32795,7 @@ function uid(len) {
   return Math.random().toString(35).substr(2, len);
 }
 
-},{}],297:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/url-pattern/lib/url-pattern.js":[function(require,module,exports){
 // Generated by CoffeeScript 1.10.0
 var slice = [].slice;
 
@@ -33233,7 +33233,7 @@ var slice = [].slice;
   return UrlPattern;
 });
 
-},{}],298:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/url/url.js":[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -33967,7 +33967,7 @@ Url.prototype.parseHost = function() {
   if (host) this.hostname = host;
 };
 
-},{"./util":299,"punycode":286,"querystring":293}],299:[function(require,module,exports){
+},{"./util":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/url/util.js","punycode":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/punycode/punycode.js","querystring":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/querystring-es3/index.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/url/util.js":[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -33985,14 +33985,14 @@ module.exports = {
   }
 };
 
-},{}],300:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/util/support/isBufferBrowser.js":[function(require,module,exports){
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
-},{}],301:[function(require,module,exports){
+},{}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/util/util.js":[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -34582,7 +34582,7 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":300,"_process":282,"inherits":21}],302:[function(require,module,exports){
+},{"./support/isBuffer":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/util/support/isBufferBrowser.js","_process":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/process/browser.js","inherits":"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/node_modules/inherits/inherits_browser.js"}],"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/package.json":[function(require,module,exports){
 module.exports={
   "name": "kinvey-phonegap-sdk",
   "version": "3.0.0-beta.14",
@@ -34653,5 +34653,5 @@ module.exports={
   ]
 }
 
-},{}]},{},[3])(3)
+},{}]},{},["/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/build/index.js"])("/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK/build/index.js")
 });
