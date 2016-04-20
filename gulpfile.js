@@ -9,7 +9,6 @@ var git = require('gulp-git');
 var gulpif = require('gulp-if');
 var prompt = require('gulp-prompt');
 var bump = require('gulp-bump');
-var browserify = require('browserify');
 var babel = require('gulp-babel');
 var buffer = require('vinyl-buffer');
 var del = require('del');
@@ -50,7 +49,9 @@ gulp.task('bundle', ['build'], function() {
       entry: './index.js',
       output: {
         path: __dirname + '/dist',
-        filename: 'kinvey-phonegap-sdk.js'
+        filename: 'kinvey-phonegap-sdk.js',
+        library: 'Kinvey',
+        libraryTarget: 'umd'
       },
       resolve: {
         alias: {
