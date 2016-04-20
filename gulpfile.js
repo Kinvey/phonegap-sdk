@@ -17,6 +17,9 @@ var source = require('vinyl-source-stream');
 var runSequence = require('run-sequence');
 var semverRegex = require('semver-regex');
 var spawn = require('child_process').spawn;
+var webpack = require('webpack');
+var gulpWebpack = require('webpack-stream');
+var path = require('path');
 
 function errorHandler(err) {
   util.log(err.toString());
@@ -41,16 +44,23 @@ gulp.task('build', ['clean', 'lint'], function() {
 });
 
 gulp.task('bundle', ['build'], function() {
-  return browserify({
-    debug: false, // turns on/off source mapping
-    entries: './build/index.js',
-    standalone: 'Kinvey'
-  })
-    .bundle()
-    .pipe(plumber())
-    .pipe(source('kinvey.js'))
+  return gulp.src('./build/index.js')
+    .pipe(gulpWebpack({
+      context: __dirname + '/build',
+      entry: './index.js',
+      output: {
+        path: __dirname + '/dist',
+        filename: 'kinvey-phonegap-sdk.js'
+      },
+      resolve: {
+        alias: {
+          device$: path.resolve(__dirname, 'build/device.js'),
+          popup$: path.resolve(__dirname, 'build/popup.js')
+        }
+      }
+    }, webpack))
     .pipe(gulp.dest('./dist'))
-    .pipe(rename('kinvey.min.js'))
+    .pipe(rename('kinvey-phonegap-sdk.min.js'))
     .pipe(buffer())
     .pipe(uglify())
     .pipe(gulp.dest('./dist'))
@@ -62,12 +72,12 @@ gulp.task('uploadS3', ['bundle'], function () {
   var version = packageJSON.version;
 
   gulp.src([
-    'dist/kinvey.js',
-    'dist/kinvey.min.js'
+    'dist/kinvey-phonegap-sdk.js',
+    'dist/kinvey-phonegap-sdk.min.js'
   ])
     .pipe(plumber())
-    .pipe(gulpif('kinvey.js', rename({ basename: `kinvey-phonegap-${version}` })))
-    .pipe(gulpif('kinvey.min.js', rename({ basename: `kinvey-phonegap-${version}.min` })))
+    .pipe(gulpif('kinvey.js', rename({ basename: `kinvey-phonegap-sdk-${version}` })))
+    .pipe(gulpif('kinvey.min.js', rename({ basename: `kinvey-phonegap-sdk-${version}.min` })))
     .pipe(gulp.dest('./sample'));
 });
 
