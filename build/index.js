@@ -17,5 +17,17 @@ networkRack.useAfter(_serialize.SerializeMiddleware, new _http.HttpMiddleware())
 // Add Push module
 _kinveyJavascriptSdkCore.Kinvey.Push = _push.Push;
 
+var _init = _kinveyJavascriptSdkCore.Kinvey.init;
+_kinveyJavascriptSdkCore.Kinvey.init = function (options) {
+  // Initialize Kinvey
+  var client = _init(options);
+
+  // Add Push module to Kinvey
+  _kinveyJavascriptSdkCore.Kinvey.Push = new _push.Push();
+
+  // Return the client
+  return client;
+};
+
 // Export
 module.exports = _kinveyJavascriptSdkCore.Kinvey;

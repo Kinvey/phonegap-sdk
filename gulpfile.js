@@ -50,7 +50,7 @@ gulp.task('bundle', ['build'], function() {
       entry: './index.js',
       output: {
         path: __dirname + '/dist',
-        filename: 'kinvey-phonegap.js'
+        filename: 'kinvey-phonegap-sdk.js'
       },
       resolve: {
         alias: {
@@ -60,7 +60,7 @@ gulp.task('bundle', ['build'], function() {
       }
     }, webpack))
     .pipe(gulp.dest('./dist'))
-    .pipe(rename('kinvey-phonegap.min.js'))
+    .pipe(rename('kinvey-phonegap-sdk.min.js'))
     .pipe(buffer())
     .pipe(uglify())
     .pipe(gulp.dest('./dist'))
@@ -72,12 +72,12 @@ gulp.task('uploadS3', ['bundle'], function () {
   var version = packageJSON.version;
 
   gulp.src([
-    'dist/kinvey.js',
-    'dist/kinvey.min.js'
+    'dist/kinvey-phonegap-sdk.js',
+    'dist/kinvey-phonegap-sdk.min.js'
   ])
     .pipe(plumber())
-    .pipe(gulpif('kinvey.js', rename({ basename: `kinvey-phonegap-${version}` })))
-    .pipe(gulpif('kinvey.min.js', rename({ basename: `kinvey-phonegap-${version}.min` })))
+    .pipe(gulpif('kinvey.js', rename({ basename: `kinvey-phonegap-sdk-${version}` })))
+    .pipe(gulpif('kinvey.min.js', rename({ basename: `kinvey-phonegap-sdk-${version}.min` })))
     .pipe(gulp.dest('./sample'));
 });
 
