@@ -39,9 +39,9 @@ var Device = exports.Device = function () {
         var browser = rChrome.exec(userAgent) || rFirefox.exec(userAgent) || rIE.exec(userAgent) || rOpera.exec(userAgent) || rSafari.exec(userAgent) || [];
 
         return {
-          environment: 'phonegap',
+          environment: 'angular',
           library: {
-            name: 'phonegap'
+            name: 'angular'
           },
           os: {
             name: browser[1],
