@@ -29,7 +29,7 @@
     "parse-headers": "^2.0.1"
   },
   "peerDependencies": {
-    "kinvey-javascript-sdk-core": "git://github.com/Kinvey/javascript-sdk-core.git#develop",
+    "kinvey-javascript-sdk-core": "git://github.com/Kinvey/javascript-sdk-core.git#develop"
   },
   "devDependencies": {
     "babel-eslint": "^6.0.2",
