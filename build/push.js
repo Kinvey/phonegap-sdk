@@ -70,19 +70,21 @@ var Push = exports.Push = function (_EventEmitter) {
     _this.client = _client.Client.sharedInstance();
     notificationEventListener = (0, _bind2.default)(_this.notificationListener, _this);
 
-    var onDeviceReady = function onDeviceReady() {
+    _this.deviceReady = new _babybird2.default(function (resolve) {
+      var onDeviceReady = (0, _bind2.default)(function () {
+        document.removeEventListener('deviceready', onDeviceReady);
+        resolve();
+      }, _this);
+
+      document.addEventListener('deviceready', onDeviceReady, false);
+      _this.deviceReady = new _babybird2.default(function () {});
+    }).then(function () {
       var pushOptions = _this.client.push;
       if (pushOptions) {
         _this.phonegapPush = global.PushNotification.init(pushOptions);
         _this.phonegapPush.on(notificationEvent, notificationEventListener);
       }
-
-      document.removeEventListener('deviceready', onDeviceReady);
-      _this.deviceReady = _babybird2.default.resolve();
-    };
-
-    document.addEventListener('deviceready', (0, _bind2.default)(onDeviceReady, _this), false);
-    _this.deviceReady = new _babybird2.default(function () {});
+    });
     return _this;
   }
 
@@ -183,7 +185,8 @@ var Push = exports.Push = function (_EventEmitter) {
                 deviceId: deviceId,
                 userId: user ? undefined : options.userId
               },
-              timeout: options.timeout
+              timeout: options.timeout,
+              client: _this2.client
             });
             return request.execute().then(function () {
               return store.save({ _id: deviceId, registered: true });
@@ -252,7 +255,8 @@ var Push = exports.Push = function (_EventEmitter) {
                 deviceId: deviceId,
                 userId: user ? null : options.userId
               },
-              timeout: options.timeout
+              timeout: options.timeout,
+              client: _this3.client
             });
             return request.execute().then(function () {
               return store.removeById(deviceId);
@@ -278,7 +282,7 @@ var Push = exports.Push = function (_EventEmitter) {
     },
     set: function set(client) {
       if (!client) {
-        throw new _errors.KinveyError('$kinvey.Push much have a client defined.');
+        throw new _errors.KinveyError('Kinvey.Push much have a client defined.');
       }
 
       this._client = client;

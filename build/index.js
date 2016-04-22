@@ -1,5 +1,7 @@
 'use strict';
 
+require('babel-polyfill');
+
 var _kinveyJavascriptSdkCore = require('kinvey-javascript-sdk-core');
 
 var _rack = require('kinvey-javascript-sdk-core/build/rack/rack');
@@ -13,9 +15,6 @@ var _push = require('./push');
 // Add Http middleware
 var networkRack = _rack.NetworkRack.sharedInstance();
 networkRack.useAfter(_serialize.SerializeMiddleware, new _http.HttpMiddleware());
-
-// Add Push module
-_kinveyJavascriptSdkCore.Kinvey.Push = _push.Push;
 
 var _init = _kinveyJavascriptSdkCore.Kinvey.init;
 _kinveyJavascriptSdkCore.Kinvey.init = function (options) {
