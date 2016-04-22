@@ -1,7 +1,5 @@
 'use strict';
 
-require('babel-polyfill');
-
 var _kinveyJavascriptSdkCore = require('kinvey-javascript-sdk-core');
 
 var _rack = require('kinvey-javascript-sdk-core/build/rack/rack');

@@ -34,7 +34,7 @@
     "babel-preset-stage-2": "^6.0.15",
     "del": "^2.0.2",
     "eslint": "^2.4.0",
-    "eslint-config-airbnb": "^6.0.0",
+    "eslint-config-airbnb": "^7.0.0",
     "eslint-plugin-react": "^4.2.3",
     "gulp": "^3.9.0",
     "gulp-babel": "^6.1.2",
