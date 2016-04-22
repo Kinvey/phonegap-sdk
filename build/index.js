@@ -14,9 +14,6 @@ var _push = require('./push');
 var networkRack = _rack.NetworkRack.sharedInstance();
 networkRack.useAfter(_serialize.SerializeMiddleware, new _http.HttpMiddleware());
 
-// Add Push module
-_kinveyJavascriptSdkCore.Kinvey.Push = _push.Push;
-
 var _init = _kinveyJavascriptSdkCore.Kinvey.init;
 _kinveyJavascriptSdkCore.Kinvey.init = function (options) {
   // Initialize Kinvey

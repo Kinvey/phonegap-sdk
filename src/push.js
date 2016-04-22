@@ -1,4 +1,5 @@
 import Promise from 'babybird';
+import { isPhoneGap } from 'kinvey-javascript-sdk-core/build/utils/device';
 import { KinveyError, NotFoundError } from 'kinvey-javascript-sdk-core/build/errors';
 import { EventEmitter } from 'events';
 import { DataStore, DataStoreType } from 'kinvey-javascript-sdk-core/build/stores/datastore';
@@ -25,19 +26,28 @@ export class Push extends EventEmitter {
     this.client = Client.sharedInstance();
     notificationEventListener = bind(this.notificationListener, this);
 
-    const onDeviceReady = () => {
-      const pushOptions = this.client.push;
-      if (pushOptions) {
-        this.phonegapPush = global.PushNotification.init(pushOptions);
-        this.phonegapPush.on(notificationEvent, notificationEventListener);
-      }
+    if (isPhoneGap()) {
+      this.deviceReady = new Promise(resolve => {
+        const onDeviceReady = bind(() => {
+          document.removeEventListener('deviceready', onDeviceReady);
+          resolve();
+        }, this);
 
-      document.removeEventListener('deviceready', onDeviceReady);
+        document.addEventListener('deviceready', onDeviceReady, false);
+      });
+    } else {
       this.deviceReady = Promise.resolve();
-    };
+    }
 
-    document.addEventListener('deviceready', bind(onDeviceReady, this), false);
-    this.deviceReady = new Promise(() => {});
+    this.deviceReady = this.deviceReady.then(() => {
+      if (this.isSupported()) {
+        const pushOptions = this.client.push;
+        if (pushOptions) {
+          this.phonegapPush = global.PushNotification.init(pushOptions);
+          this.phonegapPush.on(notificationEvent, notificationEventListener);
+        }
+      }
+    });
   }
 
   get _pathname() {
@@ -50,7 +60,7 @@ export class Push extends EventEmitter {
 
   set client(client) {
     if (!client) {
-      throw new KinveyError('$kinvey.Push much have a client defined.');
+      throw new KinveyError('Kinvey.Push much have a client defined.');
     }
 
     this._client = client;
@@ -146,7 +156,8 @@ export class Push extends EventEmitter {
               deviceId: deviceId,
               userId: user ? undefined : options.userId
             },
-            timeout: options.timeout
+            timeout: options.timeout,
+            client: this.client
           });
           return request.execute().then(() => store.save({ _id: deviceId, registered: true })).then(() => {
             this.client.push = options;
@@ -209,7 +220,8 @@ export class Push extends EventEmitter {
               deviceId: deviceId,
               userId: user ? null : options.userId
             },
-            timeout: options.timeout
+            timeout: options.timeout,
+            client: this.client
           });
           return request.execute().then(() => store.removeById(deviceId));
         });

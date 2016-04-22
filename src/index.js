@@ -8,9 +8,6 @@ import { Push } from './push';
 const networkRack = NetworkRack.sharedInstance();
 networkRack.useAfter(SerializeMiddleware, new HttpMiddleware());
 
-// Add Push module
-Kinvey.Push = Push;
-
 const _init = Kinvey.init;
 Kinvey.init = (options) => {
   // Initialize Kinvey
