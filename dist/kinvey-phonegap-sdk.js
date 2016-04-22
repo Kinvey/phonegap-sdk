@@ -44378,17 +44378,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.isiOS = isiOS;
 	exports.isAndroid = isAndroid;
 	function isBrowser() {
-	  var platform = global.device.platform;
+	  var platform = !!global.device ? global.device.platform : undefined;
 	  return platform === 'browser' || !platform;
 	}
 
 	function isiOS() {
-	  var platform = global.device.platform;
+	  var platform = !!global.device ? global.device.platform : undefined;
 	  return platform === 'iOS';
 	}
 
 	function isAndroid() {
-	  var platform = global.device.platform;
+	  var platform = !!global.device ? global.device.platform : undefined;
 	  return platform === 'Android';
 	}
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
