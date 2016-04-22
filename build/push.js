@@ -11,6 +11,8 @@ var _babybird = require('babybird');
 
 var _babybird2 = _interopRequireDefault(_babybird);
 
+var _device = require('kinvey-javascript-sdk-core/build/utils/device');
+
 var _errors = require('kinvey-javascript-sdk-core/build/errors');
 
 var _events = require('events');
@@ -70,19 +72,26 @@ var Push = exports.Push = function (_EventEmitter) {
     _this.client = _client.Client.sharedInstance();
     notificationEventListener = (0, _bind2.default)(_this.notificationListener, _this);
 
-    _this.deviceReady = new _babybird2.default(function (resolve) {
-      var onDeviceReady = (0, _bind2.default)(function () {
-        document.removeEventListener('deviceready', onDeviceReady);
-        resolve();
-      }, _this);
+    if ((0, _device.isPhoneGap)()) {
+      _this.deviceReady = new _babybird2.default(function (resolve) {
+        var onDeviceReady = (0, _bind2.default)(function () {
+          document.removeEventListener('deviceready', onDeviceReady);
+          resolve();
+        }, _this);
 
-      document.addEventListener('deviceready', onDeviceReady, false);
-      _this.deviceReady = new _babybird2.default(function () {});
-    }).then(function () {
-      var pushOptions = _this.client.push;
-      if (pushOptions) {
-        _this.phonegapPush = global.PushNotification.init(pushOptions);
-        _this.phonegapPush.on(notificationEvent, notificationEventListener);
+        document.addEventListener('deviceready', onDeviceReady, false);
+      });
+    } else {
+      _this.deviceReady = _babybird2.default.resolve();
+    }
+
+    _this.deviceReady = _this.deviceReady.then(function () {
+      if (_this.isSupported()) {
+        var pushOptions = _this.client.push;
+        if (pushOptions) {
+          _this.phonegapPush = global.PushNotification.init(pushOptions);
+          _this.phonegapPush.on(notificationEvent, notificationEventListener);
+        }
       }
     });
     return _this;
