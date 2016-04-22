@@ -12,13 +12,13 @@ To use the library, sign up for Kinvey if you have not already done so. Go to th
 You can install the module using npm:
 
 ```bash
-npm install kinvey-phonegap-sdk --save
+npm install kinvey-phonegap-sdk@3.0.0-beta.19 --save
 ```
 
 or
 
 ```bash
-bower install kinvey-phonegap-sdk#3.0.0-beta.7 --save
+bower install kinvey-phonegap-sdk#3.0.0-beta.19 --save
 ```
 
 ### 3. Configure the library
@@ -33,7 +33,7 @@ var Kinvey = require('kinvey-phonegap-sdk');
 If you installed the library with bower, add a script tag to your main html file.
 
 ```html
-<script src="bower_components/kinvey-phonegap-sdk/dist/kinvey.min.js"></script>
+<script src="bower_components/kinvey-phonegap-sdk/dist/kinvey-phonegap-sdk.min.js"></script>
 ```
 
 Next, use `Kinvey.init` to configure your app:
