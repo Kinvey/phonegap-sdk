@@ -33,20 +33,20 @@ gulp.task('lint', function() {
 });
 
 gulp.task('clean', function(done) {
-  return del(['build', 'dist'], done);
+  return del(['build', 'es5'], done);
 });
 
 gulp.task('build', ['clean', 'lint'], function() {
   return gulp.src('src/**/*.js')
     .pipe(babel())
-    .pipe(gulp.dest('./build'))
+    .pipe(gulp.dest('./es5'))
 });
 
 gulp.task('bundle', ['build'], function() {
-  return gulp.src('./build/index.js')
+  return gulp.src('./es5/index.js')
     .pipe(gulpWebpack({
-      context: __dirname + '/build',
-      entry: ['babel-polyfill', './index.js'],
+      context: __dirname + '/es5',
+      entry: ['babel-regenerator-runtime/runtime.js', './index.js'],
       output: {
         path: __dirname + '/dist',
         filename: 'kinvey-phonegap-sdk.js',

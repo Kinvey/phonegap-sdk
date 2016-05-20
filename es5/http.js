@@ -9,7 +9,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _middleware = require('kinvey-javascript-sdk-core/build/rack/middleware');
+var _middleware = require('kinvey-javascript-sdk-core/es5/rack/middleware');
 
 var _parseHeaders = require('parse-headers');
 
@@ -45,9 +45,29 @@ var HttpMiddleware = exports.HttpMiddleware = function (_KinveyMiddleware) {
           xhr.responseType = request.responseType;
 
           // Append request headers
-          for (var name in request.headers) {
-            if (request.headers.hasOwnProperty(name)) {
+          var names = Object.keys(request.headers);
+          var _iteratorNormalCompletion = true;
+          var _didIteratorError = false;
+          var _iteratorError = undefined;
+
+          try {
+            for (var _iterator = names[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+              var name = _step.value;
+
               xhr.setRequestHeader(name, request.headers[name]);
+            }
+          } catch (err) {
+            _didIteratorError = true;
+            _iteratorError = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion && _iterator.return) {
+                _iterator.return();
+              }
+            } finally {
+              if (_didIteratorError) {
+                throw _iteratorError;
+              }
             }
           }
 

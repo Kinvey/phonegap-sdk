@@ -2,17 +2,17 @@
 
 var _kinveyJavascriptSdkCore = require('kinvey-javascript-sdk-core');
 
-var _rack = require('kinvey-javascript-sdk-core/build/rack/rack');
+var _rack = require('kinvey-javascript-sdk-core/es5/rack/rack');
 
-var _serialize = require('kinvey-javascript-sdk-core/build/rack/middleware/serialize');
+var _http = require('kinvey-javascript-sdk-core/es5/rack/middleware/http');
 
-var _http = require('./http');
+var _http2 = require('./http');
 
 var _push = require('./push');
 
 // Add Http middleware
 var networkRack = _rack.NetworkRack.sharedInstance();
-networkRack.useAfter(_serialize.SerializeMiddleware, new _http.HttpMiddleware());
+networkRack.swap(_http.KinveyHttpMiddleware, new _http2.HttpMiddleware());
 
 var _init = _kinveyJavascriptSdkCore.Kinvey.init;
 _kinveyJavascriptSdkCore.Kinvey.init = function (options) {
