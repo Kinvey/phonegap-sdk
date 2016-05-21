@@ -36790,7 +36790,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'isBrowser',
 	    value: function isBrowser() {
-	      return document.URL.indexOf('http://') !== -1 && document.URL.indexOf('https://') !== -1;
+	      return document.URL.indexOf('http://') !== -1 || document.URL.indexOf('https://') !== -1;
 	    }
 	  }, {
 	    key: 'isiOS',
@@ -36868,7 +36868,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = {
 		"name": "kinvey-phonegap-sdk",
-		"version": "3.0.0-beta.24",
+		"version": "3.0.0-beta.25",
 		"description": "Kinvey JavaScript SDK for PhoneGap/Cordova applications.",
 		"homepage": "http://www.kinvey.com",
 		"bugs": {

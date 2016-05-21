@@ -47,7 +47,7 @@ var Device = function () {
   }, {
     key: 'isBrowser',
     value: function isBrowser() {
-      return document.URL.indexOf('http://') !== -1 && document.URL.indexOf('https://') !== -1;
+      return document.URL.indexOf('http://') !== -1 || document.URL.indexOf('https://') !== -1;
     }
   }, {
     key: 'isiOS',
