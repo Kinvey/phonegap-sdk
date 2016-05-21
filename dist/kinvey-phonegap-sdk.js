@@ -828,6 +828,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
 	var _kinveyJavascriptSdkCore = __webpack_require__(4);
 
 	var _rack = __webpack_require__(155);
@@ -838,24 +842,56 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _push = __webpack_require__(292);
 
+	var _device = __webpack_require__(293);
+
+	var _device2 = _interopRequireDefault(_device);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
 	// Add Http middleware
 	var networkRack = _rack.NetworkRack.sharedInstance();
-	networkRack.swap(_http.KinveyHttpMiddleware, new _http2.HttpMiddleware());
+	networkRack.swap(_http.HttpMiddleware, new _http2.HttpMiddleware());
 
-	var _init = _kinveyJavascriptSdkCore.Kinvey.init;
-	_kinveyJavascriptSdkCore.Kinvey.init = function (options) {
-	  // Initialize Kinvey
-	  var client = _init(options);
+	// Extend the Core Kinvey class
 
-	  // Add Push module to Kinvey
-	  _kinveyJavascriptSdkCore.Kinvey.Push = new _push.Push();
+	var Kinvey = function (_CoreKinvey) {
+	  _inherits(Kinvey, _CoreKinvey);
 
-	  // Return the client
-	  return client;
-	};
+	  function Kinvey() {
+	    _classCallCheck(this, Kinvey);
+
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(Kinvey).apply(this, arguments));
+	  }
+
+	  _createClass(Kinvey, null, [{
+	    key: 'init',
+	    value: function init(options) {
+	      // Initialize Kinvey
+	      var client = _get(Object.getPrototypeOf(Kinvey), 'init', this).call(this, options);
+
+	      // Add Push module to Kinvey
+	      if (_device2.default.isiOS() || _device2.default.isAndroid()) {
+	        this.Push = new _push.Push();
+	      }
+
+	      // Return the client
+	      return client;
+	    }
+	  }]);
+
+	  return Kinvey;
+	}(_kinveyJavascriptSdkCore.Kinvey);
 
 	// Export
-	module.exports = _kinveyJavascriptSdkCore.Kinvey;
+
+
+	module.exports = Kinvey;
 
 /***/ },
 /* 4 */
@@ -36458,8 +36494,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _events = __webpack_require__(295);
 
-	var _datastore = __webpack_require__(233);
-
 	var _request = __webpack_require__(148);
 
 	var _user = __webpack_require__(280);
@@ -36468,9 +36502,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _client = __webpack_require__(137);
 
-	var _assign = __webpack_require__(121);
-
-	var _assign2 = _interopRequireDefault(_assign);
+	var _client2 = _interopRequireDefault(_client);
 
 	var _url = __webpack_require__(142);
 
@@ -36490,8 +36522,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var pushNamespace = process.env.KINVEY_PUSH_NAMESPACE || 'push';
 	var notificationEvent = process.env.KINVEY_NOTIFICATION_EVENT || 'notification';
-	var deviceCollectionName = process.env.KINVEY_DEVICE_COLLECTION_NAME || 'kinvey_device';
-	var idAttribute = process.env.KINVEY_ID_ATTRIBUTE || '_id';
+	var deviceIdCollectionName = process.env.KINVEY_DEVICE_COLLECTION_NAME || 'kinvey_deviceId';
+	var pushSettingsCollectionName = process.env.KINVEY_PUSH_COLLECTION_NAME || 'kinvey_pushSettings';
 	var storage = global.localStorage;
 	var notificationEventListener = void 0;
 
@@ -36503,7 +36535,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Push).call(this));
 
-	    _this.client = _client.Client.sharedInstance();
+	    _this.client = _client2.default.sharedInstance();
 	    notificationEventListener = (0, _bind2.default)(_this.notificationListener, _this);
 
 	    if (_device.Device.isPhoneGap()) {
@@ -36520,12 +36552,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    _this.deviceReady = _this.deviceReady.then(function () {
-	      if (_this.isSupported()) {
-	        var pushOptions = _this.client.push;
-	        if (pushOptions) {
-	          _this.phonegapPush = global.PushNotification.init(pushOptions);
-	          _this.phonegapPush.on(notificationEvent, notificationEventListener);
+	      try {
+	        if (_this.isSupported()) {
+	          var pushOptions = JSON.parse(storage.getItem(pushSettingsCollectionName));
+	          if (pushOptions) {
+	            _this.phonegapPush = global.PushNotification.init(pushOptions);
+	            _this.phonegapPush.on(notificationEvent, notificationEventListener);
+	          }
 	        }
+	      } catch (error) {
+	        // Cactch the JSON parsing error
 	      }
 	    });
 	    return _this;
@@ -36563,19 +36599,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	          return Promise.reject(new _errors.KinveyError('Kinvey currently only supports ' + 'push notifications on iOS and Android platforms.'));
 	        }
 
-	        options = (0, _assign2.default)({
-	          force: false
-	        }, options);
+	        if (!global.PushNotification) {
+	          throw new _errors.KinveyError('PhoneGap Push Notification Plugin is not installed.', 'Please refer to http://devcenter.kinvey.com/phonegap-v3.0/guides/push#ProjectSetUp for help with ' + 'setting up your project.');
+	        }
 
+	        return _this2.unregister();
+	      }).catch(function () {
+	        return null;
+	      }).then(function () {
 	        var promise = new Promise(function (resolve, reject) {
-	          if (!global.PushNotification) {
-	            return reject(new _errors.KinveyError('PhoneGap Push Notification Plugin is not installed.', 'Please refer to http://devcenter.kinvey.com/phonegap-v3.0/guides/push#ProjectSetUp for help with ' + 'setting up your project.'));
-	          }
-
-	          if (_this2.phonegapPush) {
-	            _this2.phonegapPush.off(notificationEvent, notificationEventListener);
-	          }
-
 	          _this2.phonegapPush = global.PushNotification.init(options);
 	          _this2.phonegapPush.on(notificationEvent, notificationEventListener);
 
@@ -36593,42 +36625,29 @@ return /******/ (function(modules) { // webpackBootstrap
 	            throw new _errors.KinveyError('Unable to retrieve the device id to register this device for push notifications.');
 	          }
 
-	          return new Promise(function (resolve, reject) {
-	            try {
-	              var entity = JSON.parse(storage.getItem(deviceCollectionName));
-	              resolve(entity);
-	            } catch (error) {
-	              reject(error);
-	            }
-	          }).then(function (entity) {
-	            if (entity && options.force !== true) {
-	              return entity;
-	            }
-
-	            var user = _user.User.getActiveUser(_this2.client);
-	            var request = new _network.NetworkRequest({
-	              method: _request.RequestMethod.POST,
-	              url: _url2.default.format({
-	                protocol: _this2.client.protocol,
-	                host: _this2.client.host,
-	                pathname: _this2._pathname + '/register-device'
-	              }),
-	              properties: options.properties,
-	              authType: user ? _request.AuthType.Session : _request.AuthType.Master,
-	              data: {
-	                platform: global.device.platform.toLowerCase(),
-	                framework: 'phonegap',
-	                deviceId: deviceId,
-	                userId: user ? undefined : options.userId
-	              },
-	              timeout: options.timeout,
-	              client: _this2.client
-	            });
-	            return request.execute().then(function () {
-	              return storage.setItem(deviceCollectionName, JSON.stringify({ _id: deviceId, registered: true }));
-	            }).then(function () {
-	              _this2.client.push = options;
-	            });
+	          var user = _user.User.getActiveUser(_this2.client);
+	          var request = new _network.NetworkRequest({
+	            method: _request.RequestMethod.POST,
+	            url: _url2.default.format({
+	              protocol: _this2.client.protocol,
+	              host: _this2.client.host,
+	              pathname: _this2.pathname + '/register-device'
+	            }),
+	            properties: options.properties,
+	            authType: user ? _request.AuthType.Session : _request.AuthType.Master,
+	            data: {
+	              platform: global.device.platform.toLowerCase(),
+	              framework: 'phonegap',
+	              deviceId: deviceId,
+	              userId: user ? undefined : options.userId
+	            },
+	            timeout: options.timeout,
+	            client: _this2.client
+	          });
+	          return request.execute().then(function (response) {
+	            storage.setItem(deviceIdCollectionName, deviceId);
+	            storage.setItem(pushSettingsCollectionName, JSON.stringify(options));
+	            return response.data;
 	          });
 	        });
 
@@ -36647,12 +36666,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	          return Promise.reject(new _errors.KinveyError('Kinvey currently only supports ' + 'push notifications on iOS and Android platforms.'));
 	        }
 
-	        var store = _datastore.DataStore.collection(deviceCollectionName, _datastore.DataStoreType.Sync);
-	        store.client = _this3.client;
-	        store.disableSync();
-
 	        var promise = new Promise(function (resolve, reject) {
 	          if (_this3.phonegapPush) {
+	            _this3.phonegapPush.off(notificationEvent, notificationEventListener);
 	            _this3.phonegapPush.unregister(function () {
 	              _this3.phonegapPush = null;
 	              resolve();
@@ -36665,28 +36681,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	        });
 
 	        promise = promise.then(function () {
-	          var promise = new Promise(function (resolve, reject) {
-	            try {
-	              var entity = JSON.parse(storage.getItem(deviceCollectionName));
-	              resolve(entity);
-	            } catch (error) {
-	              reject(error);
-	            }
-	          });
-	          return promise;
-	        }).then(function (entity) {
-	          if (!entity) {
+	          return Promise.resolve(storage.getItem(deviceIdCollectionName));
+	        }).then(function (deviceId) {
+	          if (!deviceId) {
 	            throw new _errors.KinveyError('This device has not been registered for push notifications.');
 	          }
 
 	          var user = _user.User.getActiveUser(_this3.client);
-	          var deviceId = entity[idAttribute];
 	          var request = new _network.NetworkRequest({
 	            method: _request.RequestMethod.POST,
 	            url: _url2.default.format({
 	              protocol: _this3.client.protocol,
 	              host: _this3.client.host,
-	              pathname: _this3._pathname + '/unregister-device'
+	              pathname: _this3.pathname + '/unregister-device'
 	            }),
 	            properties: options.properties,
 	            authType: user ? _request.AuthType.Session : _request.AuthType.Master,
@@ -36699,32 +36706,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	            timeout: options.timeout,
 	            client: _this3.client
 	          });
-	          return request.execute().then(function () {
-	            return storage.removeItem(deviceId);
-	          });
-	        }).then(function () {
-	          _this3.client.push = null;
+	          return request.execute();
+	        }).then(function (response) {
+	          storage.removeItem(deviceIdCollectionName);
+	          storage.removeItem(pushSettingsCollectionName);
+	          return response.data;
 	        });
 
 	        return promise;
 	      });
 	    }
 	  }, {
-	    key: '_pathname',
+	    key: 'pathname',
 	    get: function get() {
 	      return '/' + pushNamespace + '/' + this.client.appKey;
-	    }
-	  }, {
-	    key: 'client',
-	    get: function get() {
-	      return this._client;
-	    },
-	    set: function set(client) {
-	      if (!client) {
-	        throw new _errors.KinveyError('Kinvey.Push much have a client defined.');
-	      }
-
-	      this._client = client;
 	    }
 	  }]);
 
@@ -36863,7 +36858,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = {
 		"name": "kinvey-phonegap-sdk",
-		"version": "3.0.0-beta.19",
+		"version": "3.0.0-beta.23",
 		"description": "Kinvey JavaScript SDK for PhoneGap/Cordova applications.",
 		"homepage": "http://www.kinvey.com",
 		"bugs": {
