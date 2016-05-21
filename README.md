@@ -12,13 +12,13 @@ To use the library, sign up for Kinvey if you have not already done so. Go to th
 You can install the module using npm:
 
 ```bash
-npm install kinvey-phonegap-sdk@3.0.0-beta.22 --save
+npm install kinvey-phonegap-sdk@3.0.0-beta.26 --save
 ```
 
 or
 
 ```bash
-bower install kinvey-phonegap-sdk#3.0.0-beta.22 --save
+bower install kinvey-phonegap-sdk#3.0.0-beta.26 --save
 ```
 
 ### 3. Configure the library

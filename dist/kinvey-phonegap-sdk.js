@@ -36868,7 +36868,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = {
 		"name": "kinvey-phonegap-sdk",
-		"version": "3.0.0-beta.25",
+		"version": "3.0.0-beta.26",
 		"description": "Kinvey JavaScript SDK for PhoneGap/Cordova applications.",
 		"homepage": "http://www.kinvey.com",
 		"bugs": {
@@ -36888,12 +36888,12 @@ return /******/ (function(modules) { // webpackBootstrap
 		"scripts": {},
 		"dependencies": {
 			"babel-regenerator-runtime": "^6.5.0",
-			"kinvey-javascript-sdk-core": "3.0.0-beta.22",
+			"kinvey-javascript-sdk-core": "3.0.0-beta.23",
 			"lodash": "^4.0.0",
 			"parse-headers": "^2.0.0"
 		},
 		"peerDependencies": {
-			"kinvey-javascript-sdk-core": "3.0.0-beta.22"
+			"kinvey-javascript-sdk-core": "3.0.0-beta.23"
 		},
 		"devDependencies": {
 			"babel-eslint": "^6.0.2",
