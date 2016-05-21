@@ -3,11 +3,12 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Push = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _device = require('./device');
+
+var _device2 = _interopRequireDefault(_device);
 
 var _errors = require('kinvey-javascript-sdk-core/es5/errors');
 
@@ -46,7 +47,7 @@ var pushSettingsCollectionName = process.env.KINVEY_PUSH_COLLECTION_NAME || 'kin
 var storage = global.localStorage;
 var notificationEventListener = void 0;
 
-var Push = exports.Push = function (_EventEmitter) {
+var Push = function (_EventEmitter) {
   _inherits(Push, _EventEmitter);
 
   function Push() {
@@ -57,7 +58,7 @@ var Push = exports.Push = function (_EventEmitter) {
     _this.client = _client2.default.sharedInstance();
     notificationEventListener = (0, _bind2.default)(_this.notificationListener, _this);
 
-    if (_device.Device.isPhoneGap()) {
+    if (_device2.default.isPhoneGap()) {
       _this.deviceReady = new Promise(function (resolve) {
         var onDeviceReady = (0, _bind2.default)(function () {
           document.removeEventListener('deviceready', onDeviceReady);
@@ -89,7 +90,7 @@ var Push = exports.Push = function (_EventEmitter) {
   _createClass(Push, [{
     key: 'isSupported',
     value: function isSupported() {
-      return _device.Device.isiOS() || _device.Device.isAndroid();
+      return _device2.default.isiOS() || _device2.default.isAndroid();
     }
   }, {
     key: 'onNotification',
@@ -244,3 +245,5 @@ var Push = exports.Push = function (_EventEmitter) {
 
   return Push;
 }(_events.EventEmitter);
+
+exports.default = Push;

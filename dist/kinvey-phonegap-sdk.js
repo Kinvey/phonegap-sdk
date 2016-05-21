@@ -834,13 +834,19 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _kinveyJavascriptSdkCore = __webpack_require__(4);
 
+	var _kinveyJavascriptSdkCore2 = _interopRequireDefault(_kinveyJavascriptSdkCore);
+
 	var _rack = __webpack_require__(155);
 
 	var _http = __webpack_require__(219);
 
 	var _http2 = __webpack_require__(287);
 
+	var _http3 = _interopRequireDefault(_http2);
+
 	var _push = __webpack_require__(292);
+
+	var _push2 = _interopRequireDefault(_push);
 
 	var _device = __webpack_require__(293);
 
@@ -856,28 +862,28 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	// Add Http middleware
 	var networkRack = _rack.NetworkRack.sharedInstance();
-	networkRack.swap(_http.HttpMiddleware, new _http2.HttpMiddleware());
+	networkRack.swap(_http.HttpMiddleware, new _http3.default());
 
-	// Extend the Core Kinvey class
+	// Extend the Kinvey class
 
-	var Kinvey = function (_CoreKinvey) {
-	  _inherits(Kinvey, _CoreKinvey);
+	var PhoneGapKinvey = function (_Kinvey) {
+	  _inherits(PhoneGapKinvey, _Kinvey);
 
-	  function Kinvey() {
-	    _classCallCheck(this, Kinvey);
+	  function PhoneGapKinvey() {
+	    _classCallCheck(this, PhoneGapKinvey);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(Kinvey).apply(this, arguments));
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(PhoneGapKinvey).apply(this, arguments));
 	  }
 
-	  _createClass(Kinvey, null, [{
+	  _createClass(PhoneGapKinvey, null, [{
 	    key: 'init',
 	    value: function init(options) {
 	      // Initialize Kinvey
-	      var client = _get(Object.getPrototypeOf(Kinvey), 'init', this).call(this, options);
+	      var client = _get(Object.getPrototypeOf(PhoneGapKinvey), 'init', this).call(this, options);
 
 	      // Add Push module to Kinvey
 	      if (_device2.default.isiOS() || _device2.default.isAndroid()) {
-	        this.Push = new _push.Push();
+	        this.Push = new _push2.default();
 	      }
 
 	      // Return the client
@@ -885,13 +891,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  }]);
 
-	  return Kinvey;
-	}(_kinveyJavascriptSdkCore.Kinvey);
+	  return PhoneGapKinvey;
+	}(_kinveyJavascriptSdkCore2.default);
 
 	// Export
 
 
-	module.exports = Kinvey;
+	module.exports = PhoneGapKinvey;
 
 /***/ },
 /* 4 */
@@ -36241,7 +36247,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.HttpMiddleware = undefined;
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -36261,21 +36266,21 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var HttpMiddleware = exports.HttpMiddleware = function (_KinveyMiddleware) {
-	  _inherits(HttpMiddleware, _KinveyMiddleware);
+	var PhoneGapHttpMiddleware = function (_KinveyMiddleware) {
+	  _inherits(PhoneGapHttpMiddleware, _KinveyMiddleware);
 
-	  function HttpMiddleware() {
+	  function PhoneGapHttpMiddleware() {
 	    var name = arguments.length <= 0 || arguments[0] === undefined ? 'Kinvey PhoneGap Http Middleware' : arguments[0];
 
-	    _classCallCheck(this, HttpMiddleware);
+	    _classCallCheck(this, PhoneGapHttpMiddleware);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(HttpMiddleware).call(this, name));
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(PhoneGapHttpMiddleware).call(this, name));
 	  }
 
-	  _createClass(HttpMiddleware, [{
+	  _createClass(PhoneGapHttpMiddleware, [{
 	    key: 'handle',
 	    value: function handle(request) {
-	      return _get(Object.getPrototypeOf(HttpMiddleware.prototype), 'handle', this).call(this, request).then(function () {
+	      return _get(Object.getPrototypeOf(PhoneGapHttpMiddleware.prototype), 'handle', this).call(this, request).then(function () {
 	        var promise = new Promise(function (resolve, reject) {
 	          // Create request
 	          var xhr = new XMLHttpRequest();
@@ -36343,8 +36348,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  }]);
 
-	  return HttpMiddleware;
+	  return PhoneGapHttpMiddleware;
 	}(_middleware.KinveyMiddleware);
+
+	exports.default = PhoneGapHttpMiddleware;
 
 /***/ },
 /* 288 */
@@ -36484,11 +36491,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.Push = undefined;
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _device = __webpack_require__(293);
+
+	var _device2 = _interopRequireDefault(_device);
 
 	var _errors = __webpack_require__(5);
 
@@ -36527,7 +36535,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var storage = global.localStorage;
 	var notificationEventListener = void 0;
 
-	var Push = exports.Push = function (_EventEmitter) {
+	var Push = function (_EventEmitter) {
 	  _inherits(Push, _EventEmitter);
 
 	  function Push() {
@@ -36538,7 +36546,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    _this.client = _client2.default.sharedInstance();
 	    notificationEventListener = (0, _bind2.default)(_this.notificationListener, _this);
 
-	    if (_device.Device.isPhoneGap()) {
+	    if (_device2.default.isPhoneGap()) {
 	      _this.deviceReady = new Promise(function (resolve) {
 	        var onDeviceReady = (0, _bind2.default)(function () {
 	          document.removeEventListener('deviceready', onDeviceReady);
@@ -36570,7 +36578,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  _createClass(Push, [{
 	    key: 'isSupported',
 	    value: function isSupported() {
-	      return _device.Device.isiOS() || _device.Device.isAndroid();
+	      return _device2.default.isiOS() || _device2.default.isAndroid();
 	    }
 	  }, {
 	    key: 'onNotification',
@@ -36725,6 +36733,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  return Push;
 	}(_events.EventEmitter);
+
+	exports.default = Push;
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), (function() { return this; }())))
 
 /***/ },
@@ -36858,7 +36868,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = {
 		"name": "kinvey-phonegap-sdk",
-		"version": "3.0.0-beta.23",
+		"version": "3.0.0-beta.24",
 		"description": "Kinvey JavaScript SDK for PhoneGap/Cordova applications.",
 		"homepage": "http://www.kinvey.com",
 		"bugs": {

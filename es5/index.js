@@ -6,13 +6,19 @@ var _get = function get(object, property, receiver) { if (object === null) objec
 
 var _kinveyJavascriptSdkCore = require('kinvey-javascript-sdk-core');
 
+var _kinveyJavascriptSdkCore2 = _interopRequireDefault(_kinveyJavascriptSdkCore);
+
 var _rack = require('kinvey-javascript-sdk-core/es5/rack/rack');
 
 var _http = require('kinvey-javascript-sdk-core/es5/rack/middleware/http');
 
 var _http2 = require('./http');
 
+var _http3 = _interopRequireDefault(_http2);
+
 var _push = require('./push');
+
+var _push2 = _interopRequireDefault(_push);
 
 var _device = require('./device');
 
@@ -28,28 +34,28 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 // Add Http middleware
 var networkRack = _rack.NetworkRack.sharedInstance();
-networkRack.swap(_http.HttpMiddleware, new _http2.HttpMiddleware());
+networkRack.swap(_http.HttpMiddleware, new _http3.default());
 
-// Extend the Core Kinvey class
+// Extend the Kinvey class
 
-var Kinvey = function (_CoreKinvey) {
-  _inherits(Kinvey, _CoreKinvey);
+var PhoneGapKinvey = function (_Kinvey) {
+  _inherits(PhoneGapKinvey, _Kinvey);
 
-  function Kinvey() {
-    _classCallCheck(this, Kinvey);
+  function PhoneGapKinvey() {
+    _classCallCheck(this, PhoneGapKinvey);
 
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(Kinvey).apply(this, arguments));
+    return _possibleConstructorReturn(this, Object.getPrototypeOf(PhoneGapKinvey).apply(this, arguments));
   }
 
-  _createClass(Kinvey, null, [{
+  _createClass(PhoneGapKinvey, null, [{
     key: 'init',
     value: function init(options) {
       // Initialize Kinvey
-      var client = _get(Object.getPrototypeOf(Kinvey), 'init', this).call(this, options);
+      var client = _get(Object.getPrototypeOf(PhoneGapKinvey), 'init', this).call(this, options);
 
       // Add Push module to Kinvey
       if (_device2.default.isiOS() || _device2.default.isAndroid()) {
-        this.Push = new _push.Push();
+        this.Push = new _push2.default();
       }
 
       // Return the client
@@ -57,10 +63,10 @@ var Kinvey = function (_CoreKinvey) {
     }
   }]);
 
-  return Kinvey;
-}(_kinveyJavascriptSdkCore.Kinvey);
+  return PhoneGapKinvey;
+}(_kinveyJavascriptSdkCore2.default);
 
 // Export
 
 
-module.exports = Kinvey;
+module.exports = PhoneGapKinvey;
