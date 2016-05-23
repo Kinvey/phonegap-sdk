@@ -20,12 +20,12 @@
   "scripts": {},
   "dependencies": {
     "babel-regenerator-runtime": "^6.5.0",
-    "kinvey-javascript-sdk-core": "3.0.0-beta.23",
+    "kinvey-javascript-sdk-core": "git://github.com/Kinvey/javascript-sdk-core",
     "lodash": "^4.0.0",
     "parse-headers": "^2.0.0"
   },
   "peerDependencies": {
-    "kinvey-javascript-sdk-core": "3.0.0-beta.23"
+    "kinvey-javascript-sdk-core": "git://github.com/Kinvey/javascript-sdk-core"
   },
   "devDependencies": {
     "babel-eslint": "^6.0.2",
