@@ -4,8 +4,7 @@
   "description": "Kinvey JavaScript SDK for PhoneGap/Cordova applications.",
   "homepage": "http://www.kinvey.com",
   "bugs": {
-    "url": "http://support.kinvey.com",
-    "email": "support@kinvey.com"
+    "url": "https://github.com/Kinvey/phonegap-sdk/issues"
   },
   "license": "Apache-2.0",
   "author": "Kinvey",
