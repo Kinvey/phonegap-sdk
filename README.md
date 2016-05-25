@@ -3,6 +3,36 @@
 
 This node and bower module makes it very easy to connect your Cordova/Phonegap app with Kinvey.
 
+## Building
+The simplest way to build the sdk is by running `gulp`. More advanced tasks are available.
+
+* `gulp clean`: remove files created by the build process
+* `gulp lint`: lint the src files
+* `gulp bump`: bump the pacakge version
+* `gulp build`: build the sdk
+* `gulp bundle`: bundle the sdk for dist
+* `gulp uploadS3`: upload dist files to AWS S3
+* `gulp release`: bundle and upload the sdk
+
+### Flags
+The following flags are available when running `gulp bump`:
+
+* `--type <major|minor|patch|prerelease>`: Bumps the package version using the [Semantic Version 2.0.0](http://semver.org/) spec. Defaults to `patch`.
+* `--version <version>`: Sets the package version to the provided version.
+
+## Testing
+
+You can run the tests using `npm test`.
+
+## Releasing
+The workflow for releasing a new version of the sdk is as follows:
+
+1. Commit all changes on the develop branch.
+2. Checkout the master branch and merge the develop branch.
+4. Update the [Changelog](CHANGELOG.md).
+5. Run `gulp bump --type <type>` replacing `<type>` with major, minor, patch, or prerelease. See [Flags](#Flags) above.
+6. Make sure all changes are committed on the master branch and push.
+
 ## How to use
 
 ### 1. Sign up for Kinvey
