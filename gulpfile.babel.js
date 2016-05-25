@@ -8,7 +8,6 @@ import gulpif from 'gulp-if';
 import babel from 'gulp-babel';
 import buffer from 'gulp-buffer';
 import del from 'del';
-import runSequence from 'run-sequence';
 import webpack from 'webpack';
 import gulpWebpack from 'webpack-stream';
 import s3Upload from 'gulp-s3-upload';
@@ -129,10 +128,6 @@ gulp.task('uploadS3', ['build'], () => {
     }))
     .on('error', errorHandler);
   return stream;
-});
-
-gulp.task('release', () => {
-  runSequence('bundle', 'uploadS3');
 });
 
 gulp.task('default', ['bundle']);
