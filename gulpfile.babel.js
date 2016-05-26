@@ -16,6 +16,8 @@ import pkg from './package.json';
 import bump from 'gulp-bump';
 import file from 'gulp-file';
 import { argv as args } from 'yargs';
+import dotenv from 'dotenv';
+dotenv.config();
 
 function errorHandler(err) {
   util.log(err.toString());
@@ -103,8 +105,8 @@ gulp.task('bump', ['bumpVersion'], () => {
 
 gulp.task('uploadS3', ['build'], () => {
   const s3 = s3Upload({
-    accessKeyId: process.env.S3ACCESSKEY,
-    secretAccessKey: process.env.S3ACCESSSECRET
+    accessKeyId: process.env.S3_ACCESSKEYID,
+    secretAccessKey: process.env.S3_SECRETACCESSKEY
   });
 
   const stream = gulp.src([
