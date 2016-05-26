@@ -103,11 +103,13 @@ gulp.task('bump', ['bumpVersion'], () => {
   return stream;
 });
 
-gulp.task('uploadS3', ['build'], () => {
+gulp.task('upload', ['bundle'], () => {
   const s3 = s3Upload({
     accessKeyId: process.env.S3_ACCESSKEYID,
     secretAccessKey: process.env.S3_SECRETACCESSKEY
   });
+
+  console.log(process.env.S3_ACCESSKEYID, process.env.S3_SECRETACCESSKEY);
 
   const stream = gulp.src([
     'dist/kinvey-phonegap-sdk.js',
