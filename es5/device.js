@@ -3,6 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.PhoneGapDevice = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -24,12 +25,12 @@ global.document.addEventListener('offline', function () {
   online = false;
 }, false);
 
-var Device = function () {
-  function Device() {
-    _classCallCheck(this, Device);
+var PhoneGapDevice = exports.PhoneGapDevice = function () {
+  function PhoneGapDevice() {
+    _classCallCheck(this, PhoneGapDevice);
   }
 
-  _createClass(Device, null, [{
+  _createClass(PhoneGapDevice, null, [{
     key: 'isOnline',
     value: function isOnline() {
       return online;
@@ -62,7 +63,7 @@ var Device = function () {
   }, {
     key: 'toJSON',
     value: function toJSON() {
-      if (Device.isBrowser()) {
+      if (PhoneGapDevice.isBrowser()) {
         var userAgent = global.navigator.userAgent.toLowerCase();
         var rChrome = /(chrome)\/([\w]+)/;
         var rFirefox = /(firefox)\/([\w.]+)/;
@@ -109,11 +110,5 @@ var Device = function () {
     }
   }]);
 
-  return Device;
+  return PhoneGapDevice;
 }();
-
-// Expose the device class globally
-
-
-exports.default = Device;
-global.KinveyDevice = Device;

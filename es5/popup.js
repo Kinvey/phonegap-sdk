@@ -1,12 +1,15 @@
 'use strict';
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.PhoneGapPopup = undefined;
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _events = require('events');
 
 var _device = require('./device');
-
-var _device2 = _interopRequireDefault(_device);
 
 var _bind = require('lodash/bind');
 
@@ -22,15 +25,15 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Popup = function (_EventEmitter) {
-  _inherits(Popup, _EventEmitter);
+var PhoneGapPopup = exports.PhoneGapPopup = function (_EventEmitter) {
+  _inherits(PhoneGapPopup, _EventEmitter);
 
-  function Popup() {
-    _classCallCheck(this, Popup);
+  function PhoneGapPopup() {
+    _classCallCheck(this, PhoneGapPopup);
 
     // Create some event listeners
 
-    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Popup).call(this));
+    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(PhoneGapPopup).call(this));
 
     _this.eventListeners = {
       loadStopCallback: (0, _bind2.default)(_this.loadStopCallback, _this),
@@ -39,7 +42,7 @@ var Popup = function (_EventEmitter) {
     };
 
     // Listen fro the deviceready event
-    if (_device2.default.isPhoneGap()) {
+    if (_device.PhoneGapDevice.isPhoneGap()) {
       _this.deviceReady = new Promise(function (resolve) {
         var onDeviceReady = (0, _bind2.default)(function () {
           document.removeEventListener('deviceready', onDeviceReady);
@@ -54,7 +57,7 @@ var Popup = function (_EventEmitter) {
     return _this;
   }
 
-  _createClass(Popup, [{
+  _createClass(PhoneGapPopup, [{
     key: 'open',
     value: function () {
       var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
@@ -69,7 +72,7 @@ var Popup = function (_EventEmitter) {
                 return this.deviceReady;
 
               case 2:
-                if (!_device2.default.isPhoneGap()) {
+                if (!_device.PhoneGapDevice.isPhoneGap()) {
                   _context.next = 15;
                   break;
                 }
@@ -125,9 +128,7 @@ var Popup = function (_EventEmitter) {
                         url: _this2.popup.location.href
                       });
                     } catch (error) {
-                      _this2.loadErrorCallback({
-                        message: 'Unable to retrieve popup location due to Cross Origin Domain constraints.'
-                      });
+                      // Just catch the error
                     }
                   }
                 }, 100);
@@ -164,7 +165,6 @@ var Popup = function (_EventEmitter) {
               case 0:
                 if (this.popup) {
                   this.popup.close();
-                  this.popup = null;
                 }
 
                 return _context2.abrupt('return', this);
@@ -196,9 +196,9 @@ var Popup = function (_EventEmitter) {
   }, {
     key: 'exitCallback',
     value: function exitCallback() {
-      clearTimeout(this.interval);
+      clearInterval(this.interval);
 
-      if (_device2.default.isPhoneGap()) {
+      if (_device.PhoneGapDevice.isPhoneGap()) {
         this.popup.removeEventListener('loadstop', this.eventListeners.loadStopCallback);
         this.popup.removeEventListener('loaderror', this.eventListeners.loadErrorCallback);
         this.popup.removeEventListener('exit', this.eventListeners.exitCallback);
@@ -208,10 +208,5 @@ var Popup = function (_EventEmitter) {
     }
   }]);
 
-  return Popup;
+  return PhoneGapPopup;
 }(_events.EventEmitter);
-
-// Expose the popup class globally
-
-
-global.KinveyPopup = Popup;

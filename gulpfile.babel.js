@@ -56,8 +56,6 @@ gulp.task('bundle', ['build'], () => {
       context: `${__dirname}/es5`,
       entry: [
         'babel-regenerator-runtime/runtime.js',
-        './popup',
-        './device',
         './index.js'
       ],
       output: {

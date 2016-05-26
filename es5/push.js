@@ -3,12 +3,11 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.PhoneGapPush = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _device = require('./device');
-
-var _device2 = _interopRequireDefault(_device);
 
 var _errors = require('kinvey-javascript-sdk-core/es5/errors');
 
@@ -47,18 +46,18 @@ var pushSettingsCollectionName = process.env.KINVEY_PUSH_COLLECTION_NAME || 'kin
 var storage = global.localStorage;
 var notificationEventListener = void 0;
 
-var Push = function (_EventEmitter) {
-  _inherits(Push, _EventEmitter);
+var PhoneGapPush = exports.PhoneGapPush = function (_EventEmitter) {
+  _inherits(PhoneGapPush, _EventEmitter);
 
-  function Push() {
-    _classCallCheck(this, Push);
+  function PhoneGapPush() {
+    _classCallCheck(this, PhoneGapPush);
 
-    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Push).call(this));
+    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(PhoneGapPush).call(this));
 
     _this.client = _client2.default.sharedInstance();
     notificationEventListener = (0, _bind2.default)(_this.notificationListener, _this);
 
-    if (_device2.default.isPhoneGap()) {
+    if (_device.PhoneGapDevice.isPhoneGap()) {
       _this.deviceReady = new Promise(function (resolve) {
         var onDeviceReady = (0, _bind2.default)(function () {
           document.removeEventListener('deviceready', onDeviceReady);
@@ -87,10 +86,10 @@ var Push = function (_EventEmitter) {
     return _this;
   }
 
-  _createClass(Push, [{
+  _createClass(PhoneGapPush, [{
     key: 'isSupported',
     value: function isSupported() {
-      return _device2.default.isiOS() || _device2.default.isAndroid();
+      return _device.PhoneGapDevice.isiOS() || _device.PhoneGapDevice.isAndroid();
     }
   }, {
     key: 'onNotification',
@@ -243,7 +242,5 @@ var Push = function (_EventEmitter) {
     }
   }]);
 
-  return Push;
+  return PhoneGapPush;
 }(_events.EventEmitter);
-
-exports.default = Push;

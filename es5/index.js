@@ -14,15 +14,11 @@ var _http = require('kinvey-javascript-sdk-core/es5/rack/middleware/http');
 
 var _http2 = require('./http');
 
-var _http3 = _interopRequireDefault(_http2);
-
 var _push = require('./push');
 
-var _push2 = _interopRequireDefault(_push);
+var _popup = require('./popup');
 
 var _device = require('./device');
-
-var _device2 = _interopRequireDefault(_device);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -34,7 +30,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 // Add Http middleware
 var networkRack = _rack.NetworkRack.sharedInstance();
-networkRack.swap(_http.HttpMiddleware, new _http3.default());
+networkRack.swap(_http.HttpMiddleware, new _http2.PhoneGapHttpMiddleware());
 
 // Extend the Kinvey class
 
@@ -54,8 +50,8 @@ var PhoneGapKinvey = function (_Kinvey) {
       var client = _get(Object.getPrototypeOf(PhoneGapKinvey), 'init', this).call(this, options);
 
       // Add Push module to Kinvey
-      if (_device2.default.isiOS() || _device2.default.isAndroid()) {
-        this.Push = new _push2.default();
+      if (_device.PhoneGapDevice.isiOS() || _device.PhoneGapDevice.isAndroid()) {
+        this.Push = new _push.PhoneGapPush();
       }
 
       // Return the client
@@ -66,7 +62,11 @@ var PhoneGapKinvey = function (_Kinvey) {
   return PhoneGapKinvey;
 }(_kinveyJavascriptSdkCore2.default);
 
+// Expose some globals
+
+
+global.KinveyDevice = _device.PhoneGapDevice;
+global.KinveyPopup = _popup.PhoneGapPopup;
+
 // Export
-
-
 module.exports = PhoneGapKinvey;

@@ -3,6 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.PhoneGapHttpMiddleware = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -22,7 +23,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var PhoneGapHttpMiddleware = function (_KinveyMiddleware) {
+var PhoneGapHttpMiddleware = exports.PhoneGapHttpMiddleware = function (_KinveyMiddleware) {
   _inherits(PhoneGapHttpMiddleware, _KinveyMiddleware);
 
   function PhoneGapHttpMiddleware() {
@@ -38,13 +39,19 @@ var PhoneGapHttpMiddleware = function (_KinveyMiddleware) {
     value: function handle(request) {
       return _get(Object.getPrototypeOf(PhoneGapHttpMiddleware.prototype), 'handle', this).call(this, request).then(function () {
         var promise = new Promise(function (resolve, reject) {
+          var url = request.url;
+          var method = request.method;
+          var headers = request.headers;
+          var body = request.body;
+
           // Create request
+
           var xhr = new XMLHttpRequest();
-          xhr.open(request.method, request.url);
-          xhr.responseType = request.responseType;
+          xhr.open(method, url);
+          // xhr.responseType = request.responseType;
 
           // Append request headers
-          var names = Object.keys(request.headers);
+          var names = Object.keys(headers.toJSON());
           var _iteratorNormalCompletion = true;
           var _didIteratorError = false;
           var _iteratorError = undefined;
@@ -53,7 +60,7 @@ var PhoneGapHttpMiddleware = function (_KinveyMiddleware) {
             for (var _iterator = names[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
               var name = _step.value;
 
-              xhr.setRequestHeader(name, request.headers[name]);
+              xhr.setRequestHeader(name, headers.get(name));
             }
           } catch (err) {
             _didIteratorError = true;
@@ -97,7 +104,7 @@ var PhoneGapHttpMiddleware = function (_KinveyMiddleware) {
           };
 
           // Send xhr
-          xhr.send(request.data);
+          xhr.send(body);
         });
         return promise;
       });
@@ -106,5 +113,3 @@ var PhoneGapHttpMiddleware = function (_KinveyMiddleware) {
 
   return PhoneGapHttpMiddleware;
 }(_middleware.KinveyMiddleware);
-
-exports.default = PhoneGapHttpMiddleware;
