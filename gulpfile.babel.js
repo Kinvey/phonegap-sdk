@@ -4,7 +4,6 @@ import util from 'gulp-util';
 import plumber from 'gulp-plumber';
 import uglify from 'gulp-uglify';
 import rename from 'gulp-rename';
-import gulpif from 'gulp-if';
 import babel from 'gulp-babel';
 import buffer from 'gulp-buffer';
 import del from 'del';
@@ -60,7 +59,7 @@ gulp.task('bundle', ['build'], () => {
         './index.js'
       ],
       output: {
-        filename: 'kinvey-phonegap-sdk.js'
+        filename: `kinvey-phonegap-sdk-${pkg.version}.js`
       },
       module: {
         loaders: [
@@ -70,7 +69,7 @@ gulp.task('bundle', ['build'], () => {
     }, webpack))
     .pipe(banner(header, { pkg: pkg }))
     .pipe(gulp.dest(`${__dirname}/dist`))
-    .pipe(rename('kinvey-phonegap-sdk.min.js'))
+    .pipe(rename(`kinvey-phonegap-sdk-${pkg.version}.min.js`))
     .pipe(buffer())
     .pipe(uglify())
     .pipe(banner(header, { pkg: pkg }))
@@ -102,12 +101,10 @@ gulp.task('upload', ['bundle'], () => {
   });
 
   const stream = gulp.src([
-    'dist/kinvey-phonegap-sdk.js',
-    'dist/kinvey-phonegap-sdk.min.js'
+    `dist/kinvey-phonegap-sdk-${pkg.version}.js`,
+    `dist/kinvey-phonegap-sdk-${pkg.version}.min.js`
   ])
     .pipe(plumber())
-    .pipe(gulpif('kinvey-phonegap-sdk.js', rename({ basename: `kinvey-phonegap-sdk-${pkg.version}` })))
-    .pipe(gulpif('kinvey-phonegap-sdk.min.js', rename({ basename: `kinvey-phonegap-sdk-${pkg.version}.min` })))
     .pipe(s3({
       Bucket: 'kinvey-downloads/js',
       uploadNewFilesOnly: true
