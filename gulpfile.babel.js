@@ -14,7 +14,6 @@ import s3Upload from 'gulp-s3-upload';
 import banner from 'gulp-banner';
 import pkg from './package.json';
 import bump from 'gulp-bump';
-import file from 'gulp-file';
 import { argv as args } from 'yargs';
 import dotenv from 'dotenv';
 dotenv.config();
@@ -80,12 +79,12 @@ gulp.task('bundle', ['build'], () => {
   return stream;
 });
 
-gulp.task('bumpVersion', () => {
+gulp.task('bump', () => {
   if (!args.type && !args.version) {
     args.type = 'patch';
   }
 
-  const stream = gulp.src('./package.json')
+  const stream = gulp.src(['./package.json', './bower.json'])
     .pipe(bump({
       preid: 'beta',
       type: args.type,
@@ -96,20 +95,11 @@ gulp.task('bumpVersion', () => {
   return stream;
 });
 
-gulp.task('bump', ['bumpVersion'], () => {
-  const stream = file('bump.txt', '', { src: true })
-    .pipe(gulp.dest(`${__dirname}/tmp`))
-    .on('error', errorHandler);
-  return stream;
-});
-
 gulp.task('upload', ['bundle'], () => {
   const s3 = s3Upload({
     accessKeyId: process.env.S3_ACCESSKEYID,
     secretAccessKey: process.env.S3_SECRETACCESSKEY
   });
-
-  console.log(process.env.S3_ACCESSKEYID, process.env.S3_SECRETACCESSKEY);
 
   const stream = gulp.src([
     'dist/kinvey-phonegap-sdk.js',
