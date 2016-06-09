@@ -14,7 +14,7 @@
   "main": "./es5/index.js",
   "repository": {
     "type": "git",
-    "url": "git@github.com:Kinvey/kinvey-phonegap-sdk"
+    "url": "git@github.com:Kinvey/phonegap-sdk"
   },
   "scripts": {
     "test": "./node_modules/mocha/bin/mocha --compilers js:babel-core/register -r babel-polyfill -s 100 --recursive test",
