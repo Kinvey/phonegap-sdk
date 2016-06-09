@@ -59,7 +59,9 @@ gulp.task('bundle', ['build'], () => {
         './index.js'
       ],
       output: {
-        filename: `kinvey-phonegap-sdk-${pkg.version}.js`
+        filename: `kinvey-phonegap-sdk-${pkg.version}.js`,
+        libraryTarget: 'var',
+        library: 'Kinvey'
       },
       module: {
         loaders: [
