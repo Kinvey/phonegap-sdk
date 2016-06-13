@@ -1,5 +1,5 @@
 /**
- * kinvey-phonegap-sdk v3.0.0-beta.29
+ * kinvey-phonegap-sdk v3.0.0-beta.30
  * Kinvey JavaScript SDK for PhoneGap/Cordova applications.
  * http://www.kinvey.com
  *
@@ -8,6 +8,7 @@
  *
  * Released under the Apache-2.0 license.
  */
+var Kinvey =
 /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -729,6 +730,11 @@
 	// shim for using process in browser
 
 	var process = module.exports = {};
+
+	// cached from whatever global is present so that test runners that stub it don't break things.
+	var cachedSetTimeout = setTimeout;
+	var cachedClearTimeout = clearTimeout;
+
 	var queue = [];
 	var draining = false;
 	var currentQueue;
@@ -753,7 +759,7 @@
 	    if (draining) {
 	        return;
 	    }
-	    var timeout = setTimeout(cleanUpNextTick);
+	    var timeout = cachedSetTimeout(cleanUpNextTick);
 	    draining = true;
 
 	    var len = queue.length;
@@ -770,7 +776,7 @@
 	    }
 	    currentQueue = null;
 	    draining = false;
-	    clearTimeout(timeout);
+	    cachedClearTimeout(timeout);
 	}
 
 	process.nextTick = function (fun) {
@@ -782,7 +788,7 @@
 	    }
 	    queue.push(new Item(fun, args));
 	    if (queue.length === 1 && !draining) {
-	        setTimeout(drainQueue, 0);
+	        cachedSetTimeout(drainQueue, 0);
 	    }
 	};
 
@@ -840,15 +846,15 @@
 
 	var _rack = __webpack_require__(154);
 
-	var _http = __webpack_require__(221);
+	var _http = __webpack_require__(220);
 
-	var _http2 = __webpack_require__(305);
+	var _http2 = __webpack_require__(304);
 
-	var _push = __webpack_require__(310);
+	var _push = __webpack_require__(309);
 
-	var _popup = __webpack_require__(342);
+	var _popup = __webpack_require__(341);
 
-	var _device = __webpack_require__(311);
+	var _device = __webpack_require__(310);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -861,6 +867,21 @@
 	// Add Http middleware
 	var networkRack = _rack.NetworkRack.sharedInstance();
 	networkRack.swap(_http.HttpMiddleware, new _http2.PhoneGapHttpMiddleware());
+
+	// Check that the cordova device plugin is installed
+	if (_device.PhoneGapDevice.isPhoneGap()) {
+	  (function () {
+	    var onDeviceReady = function onDeviceReady() {
+	      document.removeEventListener('deviceready', onDeviceReady);
+
+	      if (typeof global.device === 'undefined') {
+	        throw new _errors.KinveyError('Cordova Device Plugin is not installed.' + ' Please refer to devcenter.kinvey.com/phonegap-v3.0/guides/getting-started for help with' + ' setting up your project.');
+	      }
+	    };
+
+	    document.addEventListener('deviceready', onDeviceReady, false);
+	  })();
+	}
 
 	// Extend the Kinvey class
 
@@ -876,20 +897,6 @@
 	  _createClass(PhoneGapKinvey, null, [{
 	    key: 'init',
 	    value: function init(options) {
-	      if (_device.PhoneGapDevice.isPhoneGap()) {
-	        (function () {
-	          var onDeviceReady = function onDeviceReady() {
-	            document.removeEventListener('deviceready', onDeviceReady);
-
-	            if (typeof global.device === 'undefined') {
-	              throw new _errors.KinveyError('Cordova Device Plugin is not installed.', 'Please refer to http://devcenter.kinvey.com/phonegap-v3.0/guides/push#ProjectSetUp for help with' + ' setting up your project.');
-	            }
-	          };
-
-	          document.addEventListener('deviceready', onDeviceReady, false);
-	        })();
-	      }
-
 	      // Initialize Kinvey
 	      var client = _get(Object.getPrototypeOf(PhoneGapKinvey), 'init', this).call(this, options);
 
@@ -940,23 +947,23 @@
 
 	var _log = __webpack_require__(159);
 
-	var _metadata = __webpack_require__(249);
+	var _metadata = __webpack_require__(248);
 
 	var _query = __webpack_require__(8);
 
-	var _datastore = __webpack_require__(251);
+	var _datastore = __webpack_require__(250);
 
-	var _filestore = __webpack_require__(298);
+	var _filestore = __webpack_require__(297);
 
-	var _sync = __webpack_require__(271);
+	var _sync = __webpack_require__(270);
 
 	var _sync2 = _interopRequireDefault(_sync);
 
-	var _user = __webpack_require__(299);
+	var _user = __webpack_require__(298);
 
-	var _mic = __webpack_require__(301);
+	var _mic = __webpack_require__(300);
 
-	var _network = __webpack_require__(248);
+	var _network = __webpack_require__(247);
 
 	var _request = __webpack_require__(149);
 
@@ -7573,13 +7580,21 @@
 
 	    options = (0, _assign2.default)({
 	      protocol: process.env.KINVEY_API_PROTOCOL || 'https:',
-	      host: process.env.KINVEY_API_HOST || 'baas.kinvey.com'
+	      host: process.env.KINVEY_API_HOST || 'baas.kinvey.com',
+	      micProtocol: process.env.KINVEY_MIC_PROTOCOL || 'https:',
+	      micHost: process.env.KINVEY_MIC_HOST || 'auth.kinvey.com'
 	    }, options);
 
 	    if (options.hostname && (0, _isString2.default)(options.hostname)) {
 	      var hostnameParsed = _url2.default.parse(options.hostname);
 	      options.protocol = hostnameParsed.protocol;
 	      options.host = hostnameParsed.host;
+	    }
+
+	    if (options.micHostname && (0, _isString2.default)(options.micHostname)) {
+	      var micHostnameParsed = _url2.default.parse(options.micHostname);
+	      options.micProtocol = micHostnameParsed.protocol;
+	      options.micHost = micHostnameParsed.host;
 	    }
 
 	    /**
@@ -7591,6 +7606,16 @@
 	     * @type {string}
 	     */
 	    this.host = options.host;
+
+	    /**
+	     * @type {string}
+	     */
+	    this.micProtocol = options.micProtocol;
+
+	    /**
+	     * @type {string}
+	     */
+	    this.micHost = options.micHost;
 
 	    /**
 	     * @type {string}
@@ -7631,6 +7656,8 @@
 	      var json = {
 	        protocol: this.protocol,
 	        host: this.host,
+	        micProtocol: this.micProtocol,
+	        micHost: this.micHost,
 	        appKey: this.appKey,
 	        appSecret: this.appSecret,
 	        masterSecret: this.masterSecret,
@@ -9437,7 +9464,7 @@
 
 	var _errors = __webpack_require__(5);
 
-	var _network = __webpack_require__(248);
+	var _network = __webpack_require__(247);
 
 	var _url = __webpack_require__(142);
 
@@ -9585,11 +9612,11 @@
 
 	var _errors = __webpack_require__(5);
 
-	var _urlPattern = __webpack_require__(240);
+	var _urlPattern = __webpack_require__(239);
 
 	var _urlPattern2 = _interopRequireDefault(_urlPattern);
 
-	var _qs = __webpack_require__(242);
+	var _qs = __webpack_require__(241);
 
 	var _qs2 = _interopRequireDefault(_qs);
 
@@ -9597,7 +9624,7 @@
 
 	var _url2 = _interopRequireDefault(_url);
 
-	var _appendQuery = __webpack_require__(246);
+	var _appendQuery = __webpack_require__(245);
 
 	var _appendQuery2 = _interopRequireDefault(_appendQuery);
 
@@ -9617,7 +9644,7 @@
 
 	var _isString2 = _interopRequireDefault(_isString);
 
-	var _isPlainObject = __webpack_require__(195);
+	var _isPlainObject = __webpack_require__(194);
 
 	var _isPlainObject2 = _interopRequireDefault(_isPlainObject);
 
@@ -12359,21 +12386,21 @@
 
 	var _cache = __webpack_require__(157);
 
-	var _parse = __webpack_require__(219);
+	var _parse = __webpack_require__(218);
 
-	var _serialize = __webpack_require__(220);
+	var _serialize = __webpack_require__(219);
 
-	var _http = __webpack_require__(221);
+	var _http = __webpack_require__(220);
 
-	var _findIndex = __webpack_require__(204);
+	var _findIndex = __webpack_require__(203);
 
 	var _findIndex2 = _interopRequireDefault(_findIndex);
 
-	var _reduce = __webpack_require__(217);
+	var _reduce = __webpack_require__(216);
 
 	var _reduce2 = _interopRequireDefault(_reduce);
 
-	var _es6Symbol = __webpack_require__(222);
+	var _es6Symbol = __webpack_require__(221);
 
 	var _es6Symbol2 = _interopRequireDefault(_es6Symbol);
 
@@ -12922,11 +12949,11 @@
 
 	var _indexeddb2 = _interopRequireDefault(_indexeddb);
 
-	var _localstorage = __webpack_require__(162);
+	var _localstorage = __webpack_require__(161);
 
-	var _memory = __webpack_require__(206);
+	var _memory = __webpack_require__(205);
 
-	var _websql = __webpack_require__(210);
+	var _websql = __webpack_require__(209);
 
 	var _errors = __webpack_require__(5);
 
@@ -12936,13 +12963,13 @@
 
 	var _request2 = __webpack_require__(149);
 
-	var _response = __webpack_require__(213);
+	var _response = __webpack_require__(212);
 
-	var _promiseQueue = __webpack_require__(214);
+	var _promiseQueue = __webpack_require__(213);
 
 	var _promiseQueue2 = _interopRequireDefault(_promiseQueue);
 
-	var _map = __webpack_require__(211);
+	var _map = __webpack_require__(210);
 
 	var _map2 = _interopRequireDefault(_map);
 
@@ -12950,7 +12977,7 @@
 
 	var _result2 = _interopRequireDefault(_result);
 
-	var _reduce = __webpack_require__(217);
+	var _reduce = __webpack_require__(216);
 
 	var _reduce2 = _interopRequireDefault(_reduce);
 
@@ -13644,12 +13671,7 @@
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	var dbCache = {};
-
-	if (typeof window !== 'undefined') {
-	  __webpack_require__(161); // eslint-disable-line global-require
-	}
-
-	var indexedDB = global.shimIndexedDB || global.indexedDB || global.webkitIndexedDB || global.mozIndexedDB || global.msIndexedDB;
+	var indexedDB = global.indexedDB || global.webkitIndexedDB || global.mozIndexedDB || global.msIndexedDB;
 
 	var TransactionMode = {
 	  ReadWrite: 'readwrite',
@@ -14381,3352 +14403,6 @@
 
 /***/ },
 /* 161 */
-/***/ function(module, exports) {
-
-	var idbModules = {  // jshint ignore:line
-	    util: {
-	        cleanInterface: false
-	    }
-	};
-
-	(function () {
-	    'use strict';
-
-	    var testObject = {test: true};
-	    //Test whether Object.defineProperty really works.
-	    if (Object.defineProperty) {
-	        try {
-	            Object.defineProperty(testObject, 'test', { enumerable: false });
-	            if (testObject.test) {
-	                idbModules.util.cleanInterface = true;      // jshint ignore:line
-	            }
-	        } catch (e) {
-	        //Object.defineProperty does not work as intended.
-	        }
-	    }
-	})();
-
-	(function(idbModules) {
-	    'use strict';
-
-	    /**
-	     * A utility method to callback onsuccess, onerror, etc as soon as the calling function's context is over
-	     * @param {Object} fn
-	     * @param {Object} context
-	     * @param {Object} argArray
-	     */
-	    function callback(fn, context, event) {
-	        //window.setTimeout(function(){
-	        event.target = context;
-	        (typeof context[fn] === "function") && context[fn].apply(context, [event]);
-	        //}, 1);
-	    }
-
-	    /**
-	     * Shim the DOMStringList object.
-	     *
-	     */
-	    var StringList = function() {
-	        this.length = 0;
-	        this._items = [];
-	        //Internal functions on the prototype have been made non-enumerable below.
-	        if (idbModules.util.cleanInterface) {
-	            Object.defineProperty(this, '_items', {
-	                enumerable: false
-	            });
-	        }
-	    };
-	    StringList.prototype = {
-	        // Interface.
-	        contains: function(str) {
-	            return -1 !== this._items.indexOf(str);
-	        },
-	        item: function(key) {
-	            return this._items[key];
-	        },
-
-	        // Helpers. Should only be used internally.
-	        indexOf: function(str) {
-	            return this._items.indexOf(str);
-	        },
-	        push: function(item) {
-	            this._items.push(item);
-	            this.length += 1;
-	            for (var i = 0; i < this._items.length; i++) {
-	                this[i] = this._items[i];
-	            }
-	        },
-	        splice: function(/*index, howmany, item1, ..., itemX*/) {
-	            this._items.splice.apply(this._items, arguments);
-	            this.length = this._items.length;
-	            for (var i in this) {
-	                if (i === String(parseInt(i, 10))) {
-	                    delete this[i];
-	                }
-	            }
-	            for (i = 0; i < this._items.length; i++) {
-	                this[i] = this._items[i];
-	            }
-	        }
-	    };
-	    if (idbModules.util.cleanInterface) {
-	        for (var i in {
-	            'indexOf': false,
-	            'push': false,
-	            'splice': false
-	        }) {
-	            Object.defineProperty(StringList.prototype, i, {
-	                enumerable: false
-	            });
-	        }
-	    }
-
-	    idbModules.util.callback = callback;
-	    idbModules.util.StringList = StringList;
-	    idbModules.util.quote = function(arg) {
-	        return "\"" + arg + "\"";
-	    };
-
-	}(idbModules));
-
-	(function (idbModules) {
-	    'use strict';
-
-	    /**
-	     * Polyfills missing features in the browser's native IndexedDB implementation.
-	     * This is used for browsers that DON'T support WebSQL but DO support IndexedDB
-	     */
-	    function polyfill() {
-	        if (navigator.userAgent.match(/MSIE/) ||
-	            navigator.userAgent.match(/Trident/) ||
-	            navigator.userAgent.match(/Edge/)) {
-	            // Internet Explorer's native IndexedDB does not support compound keys
-	            compoundKeyPolyfill();
-	        }
-	    }
-
-	    /**
-	     * Polyfills support for compound keys
-	     */
-	    function compoundKeyPolyfill() {
-	        var cmp = IDBFactory.prototype.cmp;
-	        var createObjectStore = IDBDatabase.prototype.createObjectStore;
-	        var createIndex = IDBObjectStore.prototype.createIndex;
-	        var add = IDBObjectStore.prototype.add;
-	        var put = IDBObjectStore.prototype.put;
-	        var indexGet = IDBIndex.prototype.get;
-	        var indexGetKey = IDBIndex.prototype.getKey;
-	        var indexCursor = IDBIndex.prototype.openCursor;
-	        var indexKeyCursor = IDBIndex.prototype.openKeyCursor;
-	        var storeGet = IDBObjectStore.prototype.get;
-	        var storeDelete = IDBObjectStore.prototype.delete;
-	        var storeCursor = IDBObjectStore.prototype.openCursor;
-	        var storeKeyCursor = IDBObjectStore.prototype.openKeyCursor;
-	        var bound = IDBKeyRange.bound;
-	        var upperBound = IDBKeyRange.upperBound;
-	        var lowerBound = IDBKeyRange.lowerBound;
-	        var only = IDBKeyRange.only;
-	        var requestResult = Object.getOwnPropertyDescriptor(IDBRequest.prototype, 'result');
-	        var cursorPrimaryKey = Object.getOwnPropertyDescriptor(IDBCursor.prototype, 'primaryKey');
-	        var cursorKey = Object.getOwnPropertyDescriptor(IDBCursor.prototype, 'key');
-	        var cursorValue = Object.getOwnPropertyDescriptor(IDBCursorWithValue.prototype, 'value');
-
-	        IDBFactory.prototype.cmp = function(key1, key2) {
-	            var args = Array.prototype.slice.call(arguments);
-	            if (key1 instanceof Array) {
-	                args[0] = encodeCompoundKey(key1);
-	            }
-	            if (key2 instanceof Array) {
-	                args[1] = encodeCompoundKey(key2);
-	            }
-	            return cmp.apply(this, args);
-	        };
-
-	        IDBDatabase.prototype.createObjectStore = function(name, opts) {
-	            if (opts && opts.keyPath instanceof Array) {
-	                opts.keyPath = encodeCompoundKeyPath(opts.keyPath);
-	            }
-	            return createObjectStore.apply(this, arguments);
-	        };
-
-	        IDBObjectStore.prototype.createIndex = function(name, keyPath, opts) {
-	            var args = Array.prototype.slice.call(arguments);
-	            if (keyPath instanceof Array) {
-	                args[1] = encodeCompoundKeyPath(keyPath);
-	            }
-	            return createIndex.apply(this, args);
-	        };
-
-	        IDBObjectStore.prototype.add = function(value, key) {
-	            return this.__insertData(add, arguments);
-	        };
-
-	        IDBObjectStore.prototype.put = function(value, key) {
-	            return this.__insertData(put, arguments);
-	        };
-
-	        IDBObjectStore.prototype.__insertData = function(method, args) {
-	            args = Array.prototype.slice.call(args);
-	            var value = args[0];
-	            var key = args[1];
-
-	            // out-of-line key
-	            if (key instanceof Array) {
-	                args[1] = encodeCompoundKey(key);
-	            }
-
-	            if (typeof value === 'object') {
-	                // inline key
-	                if (isCompoundKey(this.keyPath)) {
-	                    setInlineCompoundKey(value, this.keyPath);
-	                }
-
-	                // inline indexes
-	                for (var i = 0; i < this.indexNames.length; i++) {
-	                    var index = this.index(this.indexNames[i]);
-	                    if (isCompoundKey(index.keyPath)) {
-	                        try {
-	                            setInlineCompoundKey(value, index.keyPath);
-	                        }
-	                        catch (e) {
-	                            // The value doesn't have a valid key for this index.
-	                        }
-	                    }
-	                }
-	            }
-	            return method.apply(this, args);
-	        };
-
-	        IDBIndex.prototype.get = function(key) {
-	            var args = Array.prototype.slice.call(arguments);
-	            if (key instanceof Array) {
-	                args[0] = encodeCompoundKey(key);
-	            }
-	            return indexGet.apply(this, args);
-	        };
-
-	        IDBIndex.prototype.getKey = function(key) {
-	            var args = Array.prototype.slice.call(arguments);
-	            if (key instanceof Array) {
-	                args[0] = encodeCompoundKey(key);
-	            }
-	            return indexGetKey.apply(this, args);
-	        };
-
-	        IDBIndex.prototype.openCursor = function(key) {
-	            var args = Array.prototype.slice.call(arguments);
-	            if (key instanceof Array) {
-	                args[0] = encodeCompoundKey(key);
-	            }
-	            return indexCursor.apply(this, args);
-	        };
-
-	        IDBIndex.prototype.openKeyCursor = function(key) {
-	            var args = Array.prototype.slice.call(arguments);
-	            if (key instanceof Array) {
-	                args[0] = encodeCompoundKey(key);
-	            }
-	            return indexKeyCursor.apply(this, args);
-	        };
-
-	        IDBObjectStore.prototype.get = function(key) {
-	            var args = Array.prototype.slice.call(arguments);
-	            if (key instanceof Array) {
-	                args[0] = encodeCompoundKey(key);
-	            }
-	            return storeGet.apply(this, args);
-	        };
-
-	        IDBObjectStore.prototype.delete = function(key) {
-	            var args = Array.prototype.slice.call(arguments);
-	            if (key instanceof Array) {
-	                args[0] = encodeCompoundKey(key);
-	            }
-	            return storeDelete.apply(this, args);
-	        };
-
-	        IDBObjectStore.prototype.openCursor = function(key) {
-	            var args = Array.prototype.slice.call(arguments);
-	            if (key instanceof Array) {
-	                args[0] = encodeCompoundKey(key);
-	            }
-	            return storeCursor.apply(this, args);
-	        };
-
-	        IDBObjectStore.prototype.openKeyCursor = function(key) {
-	            var args = Array.prototype.slice.call(arguments);
-	            if (key instanceof Array) {
-	                args[0] = encodeCompoundKey(key);
-	            }
-	            return storeKeyCursor.apply(this, args);
-	        };
-
-	        IDBKeyRange.bound = function(lower, upper, lowerOpen, upperOpen) {
-	            var args = Array.prototype.slice.call(arguments);
-	            if (lower instanceof Array) {
-	                args[0] = encodeCompoundKey(lower);
-	            }
-	            if (upper instanceof Array) {
-	                args[1] = encodeCompoundKey(upper);
-	            }
-	            return bound.apply(IDBKeyRange, args);
-	        };
-
-	        IDBKeyRange.upperBound = function(key, open) {
-	            var args = Array.prototype.slice.call(arguments);
-	            if (key instanceof Array) {
-	                args[0] = encodeCompoundKey(key);
-	            }
-	            return upperBound.apply(IDBKeyRange, args);
-	        };
-
-	        IDBKeyRange.lowerBound = function(key, open) {
-	            var args = Array.prototype.slice.call(arguments);
-	            if (key instanceof Array) {
-	                args[0] = encodeCompoundKey(key);
-	            }
-	            return lowerBound.apply(IDBKeyRange, args);
-	        };
-
-	        IDBKeyRange.only = function(key) {
-	            var args = Array.prototype.slice.call(arguments);
-	            if (key instanceof Array) {
-	                args[0] = encodeCompoundKey(key);
-	            }
-	            return only.apply(IDBKeyRange, args);
-	        };
-
-	        Object.defineProperty(IDBRequest.prototype, 'result', {
-	            enumerable: requestResult.enumerable,
-	            configurable: requestResult.configurable,
-	            get: function() {
-	                var result = requestResult.get.call(this);
-	                return removeInlineCompoundKey(result);
-	            }
-	        });
-
-	        Object.defineProperty(IDBCursor.prototype, 'primaryKey', {
-	            enumerable: cursorPrimaryKey.enumerable,
-	            configurable: cursorPrimaryKey.configurable,
-	            get: function() {
-	                var result = cursorPrimaryKey.get.call(this);
-	                return removeInlineCompoundKey(result);
-	            }
-	        });
-
-	        Object.defineProperty(IDBCursor.prototype, 'key', {
-	            enumerable: cursorKey.enumerable,
-	            configurable: cursorKey.configurable,
-	            get: function() {
-	                var result = cursorKey.get.call(this);
-	                return removeInlineCompoundKey(result);
-	            }
-	        });
-
-	        Object.defineProperty(IDBCursorWithValue.prototype, 'value', {
-	            enumerable: cursorValue.enumerable,
-	            configurable: cursorValue.configurable,
-	            get: function() {
-	                var result = cursorValue.get.call(this);
-	                return removeInlineCompoundKey(result);
-	            }
-	        });
-
-	        try {
-	            if (!IDBTransaction.VERSION_CHANGE) {
-	                IDBTransaction.VERSION_CHANGE = 'versionchange';
-	            }
-	        }
-	        catch (e) {}
-	    }
-
-	    var compoundKeysPropertyName = '__$$compoundKey';
-	    var propertySeparatorRegExp = /\$\$/g;
-	    var propertySeparator = '$$$$';         // "$$" after RegExp escaping
-	    var keySeparator = '$_$';
-
-	    function isCompoundKey(keyPath) {
-	        return keyPath && (keyPath.indexOf(compoundKeysPropertyName + '.') === 0);
-	    }
-
-	    function encodeCompoundKeyPath(keyPath) {
-	        // Encoded dotted properties
-	        // ["name.first", "name.last"] ==> ["name$$first", "name$$last"]
-	        for (var i = 0; i < keyPath.length; i++) {
-	            keyPath[i] = keyPath[i].replace(/\./g, propertySeparator);
-	        }
-
-	        // Encode the array as a single property
-	        // ["name$$first", "name$$last"] => "__$$compoundKey.name$$first$_$name$$last"
-	        return compoundKeysPropertyName + '.' + keyPath.join(keySeparator);
-	    }
-
-	    function decodeCompoundKeyPath(keyPath) {
-	        // Remove the "__$$compoundKey." prefix
-	        keyPath = keyPath.substr(compoundKeysPropertyName.length + 1);
-
-	        // Split the properties into an array
-	        // "name$$first$_$name$$last" ==> ["name$$first", "name$$last"]
-	        keyPath = keyPath.split(keySeparator);
-
-	        // Decode dotted properties
-	        // ["name$$first", "name$$last"] ==> ["name.first", "name.last"]
-	        for (var i = 0; i < keyPath.length; i++) {
-	            keyPath[i] = keyPath[i].replace(propertySeparatorRegExp, '.');
-	        }
-	        return keyPath;
-	    }
-
-	    function setInlineCompoundKey(value, encodedKeyPath) {
-	        // Encode the key
-	        var keyPath = decodeCompoundKeyPath(encodedKeyPath);
-	        var key = idbModules.Key.getValue(value, keyPath);
-	        var encodedKey = encodeCompoundKey(key);
-
-	        // Store the encoded key inline
-	        encodedKeyPath = encodedKeyPath.substr(compoundKeysPropertyName.length + 1);
-	        value[compoundKeysPropertyName] = value[compoundKeysPropertyName] || {};
-	        value[compoundKeysPropertyName][encodedKeyPath] = encodedKey;
-	    }
-
-	    function removeInlineCompoundKey(value) {
-	        if (typeof value === "string" && isCompoundKey(value)) {
-	            return decodeCompoundKey(value);
-	        }
-	        else if (value && typeof value[compoundKeysPropertyName] === "object") {
-	            delete value[compoundKeysPropertyName];
-	        }
-	        return value;
-	    }
-
-	    function encodeCompoundKey(key) {
-	        // Validate and encode the key
-	        idbModules.Key.validate(key);
-	        key = idbModules.Key.encode(key);
-
-	        // Prepend the "__$$compoundKey." prefix
-	        key = compoundKeysPropertyName + '.' + key;
-
-	        validateKeyLength(key);
-	        return key;
-	    }
-
-	    function decodeCompoundKey(key) {
-	        validateKeyLength(key);
-
-	        // Remove the "__$$compoundKey." prefix
-	        key = key.substr(compoundKeysPropertyName.length + 1);
-
-	        // Decode the key
-	        key = idbModules.Key.decode(key);
-	        return key;
-	    }
-
-	    function validateKeyLength(key) {
-	        // BUG: Internet Explorer truncates string keys at 889 characters
-	        if (key.length > 889) {
-	            throw idbModules.util.createDOMException("DataError", "The encoded key is " + key.length + " characters long, but IE only allows 889 characters. Consider replacing numeric keys with strings to reduce the encoded length.");
-	        }
-	    }
-
-	    idbModules.polyfill = polyfill;
-	})(idbModules);
-
-	(function(idbModules){
-	    'use strict';
-
-	    /**
-	     * Implementation of the Structured Cloning Algorithm.  Supports the
-	     * following object types:
-	     * - Blob
-	     * - Boolean
-	     * - Date object
-	     * - File object (deserialized as Blob object).
-	     * - Number object
-	     * - RegExp object
-	     * - String object
-	     * This is accomplished by doing the following:
-	     * 1) Using the cycle/decycle functions from:
-	     *    https://github.com/douglascrockford/JSON-js/blob/master/cycle.js
-	     * 2) Serializing/deserializing objects to/from string that don't work with
-	     *    JSON.stringify and JSON.parse by using object specific logic (eg use 
-	     *    the FileReader API to convert a Blob or File object to a data URL.   
-	     * 3) JSON.stringify and JSON.parse do the final conversion to/from string.
-	     */
-	    var Sca = (function(){
-	        return {
-	            decycle: function(object, callback) {
-	                //From: https://github.com/douglascrockford/JSON-js/blob/master/cycle.js
-	                // Contains additional logic to convert the following object types to string
-	                // so that they can properly be encoded using JSON.stringify:
-	                //  *Boolean
-	                //  *Date
-	                //  *File
-	                //  *Blob
-	                //  *Number
-	                //  *Regex
-	                // Make a deep copy of an object or array, assuring that there is at most
-	                // one instance of each object or array in the resulting structure. The
-	                // duplicate references (which might be forming cycles) are replaced with
-	                // an object of the form
-	                //      {$ref: PATH}
-	                // where the PATH is a JSONPath string that locates the first occurance.
-	                // So,
-	                //      var a = [];
-	                //      a[0] = a;
-	                //      return JSON.stringify(JSON.decycle(a));
-	                // produces the string '[{"$ref":"$"}]'.
-
-	                // JSONPath is used to locate the unique object. $ indicates the top level of
-	                // the object or array. [NUMBER] or [STRING] indicates a child member or
-	                // property.
-
-	                var objects = [],   // Keep a reference to each unique object or array
-	                paths = [],     // Keep the path to each unique object or array
-	                queuedObjects = [],
-	                returnCallback = callback;
-
-	                /**
-	                 * Check the queue to see if all objects have been processed.
-	                 * if they have, call the callback with the converted object.
-	                 */
-	                function checkForCompletion() {
-	                    if (queuedObjects.length === 0) {
-	                        returnCallback(derezObj);
-	                    }    
-	                }
-
-	                /**
-	                 * Convert a blob to a data URL.
-	                 * @param {Blob} blob to convert.
-	                 * @param {String} path of blob in object being encoded.
-	                 */
-	                function readBlobAsDataURL(blob, path) {
-	                    var reader = new FileReader();
-	                    reader.onloadend = function(loadedEvent) {
-	                        var dataURL = loadedEvent.target.result;
-	                        var blobtype = 'Blob';
-	                        if (blob instanceof File) {
-	                            //blobtype = 'File';
-	                        }
-	                        updateEncodedBlob(dataURL, path, blobtype);
-	                    };
-	                    reader.readAsDataURL(blob);
-	                }
-	                
-	                /**
-	                 * Async handler to update a blob object to a data URL for encoding.
-	                 * @param {String} dataURL
-	                 * @param {String} path
-	                 * @param {String} blobtype - file if the blob is a file; blob otherwise
-	                 */
-	                function updateEncodedBlob(dataURL, path, blobtype) {
-	                    var encoded = queuedObjects.indexOf(path);
-	                    path = path.replace('$','derezObj');
-	                    eval(path+'.$enc="'+dataURL+'"');
-	                    eval(path+'.$type="'+blobtype+'"');
-	                    queuedObjects.splice(encoded, 1);
-	                    checkForCompletion();
-	                }
-
-	                function derez(value, path) {
-
-	                    // The derez recurses through the object, producing the deep copy.
-
-	                    var i,          // The loop counter
-	                    name,       // Property name
-	                    nu;         // The new object or array
-
-	                    // typeof null === 'object', so go on if this value is really an object but not
-	                    // one of the weird builtin objects.
-
-	                    if (typeof value === 'object' && value !== null &&
-	                        !(value instanceof Boolean) &&
-	                        !(value instanceof Date)    &&
-	                        !(value instanceof Number)  &&
-	                        !(value instanceof RegExp)  &&
-	                        !(value instanceof Blob)  &&
-	                        !(value instanceof String)) {
-
-	                        // If the value is an object or array, look to see if we have already
-	                        // encountered it. If so, return a $ref/path object. This is a hard way,
-	                        // linear search that will get slower as the number of unique objects grows.
-
-	                        for (i = 0; i < objects.length; i += 1) {
-	                            if (objects[i] === value) {
-	                                return {$ref: paths[i]};
-	                            }
-	                        }
-
-	                        // Otherwise, accumulate the unique value and its path.
-
-	                        objects.push(value);
-	                        paths.push(path);
-
-	                        // If it is an array, replicate the array.
-
-	                        if (Object.prototype.toString.apply(value) === '[object Array]') {
-	                            nu = [];
-	                            for (i = 0; i < value.length; i += 1) {
-	                                nu[i] = derez(value[i], path + '[' + i + ']');
-	                            }
-	                        } else {
-	                            // If it is an object, replicate the object.
-	                            nu = {};
-	                            for (name in value) {
-	                                if (Object.prototype.hasOwnProperty.call(value, name)) {
-	                                    nu[name] = derez(value[name],
-	                                     path + '[' + JSON.stringify(name) + ']');
-	                                }
-	                            }
-	                        }
-
-	                        return nu;
-	                    } else if (value instanceof Blob) {
-	                        //Queue blob for conversion
-	                        queuedObjects.push(path);
-	                        readBlobAsDataURL(value, path);
-	                    } else if (value instanceof Boolean) {
-	                        value = {
-	                            '$type': 'Boolean',
-	                            '$enc': value.toString()
-	                        };
-	                    } else if (value instanceof Date) {
-	                        value = {
-	                            '$type': 'Date',
-	                            '$enc': value.getTime()
-	                        };
-	                    } else if (value instanceof Number) {
-	                        value = {
-	                            '$type': 'Number',
-	                            '$enc': value.toString()
-	                        };
-	                    } else if (value instanceof RegExp) {
-	                        value = {
-	                            '$type': 'RegExp',
-	                            '$enc': value.toString()
-	                        };
-	                    } else if (typeof value === 'number') {
-	                        value = {
-	                            '$type': 'number',
-	                            '$enc': value + ''  // handles NaN, Infinity, Negative Infinity
-	                        };
-	                    } else if (value === undefined) {
-	                        value = {
-	                            '$type': 'undefined'
-	                        };
-	                    }
-	                    return value;
-	                }
-	                var derezObj = derez(object, '$');
-	                checkForCompletion();
-	            },
-	                
-	            retrocycle: function retrocycle($) {
-	                //From: https://github.com/douglascrockford/JSON-js/blob/master/cycle.js
-	                // Contains additional logic to convert strings to the following object types 
-	                // so that they can properly be decoded:
-	                //  *Boolean
-	                //  *Date
-	                //  *File
-	                //  *Blob
-	                //  *Number
-	                //  *Regex
-	                // Restore an object that was reduced by decycle. Members whose values are
-	                // objects of the form
-	                //      {$ref: PATH}
-	                // are replaced with references to the value found by the PATH. This will
-	                // restore cycles. The object will be mutated.
-
-	                // The eval function is used to locate the values described by a PATH. The
-	                // root object is kept in a $ variable. A regular expression is used to
-	                // assure that the PATH is extremely well formed. The regexp contains nested
-	                // * quantifiers. That has been known to have extremely bad performance
-	                // problems on some browsers for very long strings. A PATH is expected to be
-	                // reasonably short. A PATH is allowed to belong to a very restricted subset of
-	                // Goessner's JSONPath.
-
-	                // So,
-	                //      var s = '[{"$ref":"$"}]';
-	                //      return JSON.retrocycle(JSON.parse(s));
-	                // produces an array containing a single element which is the array itself.
-
-	                var px = /^\$(?:\[(?:\d+|\"(?:[^\\\"\u0000-\u001f]|\\([\\\"\/bfnrt]|u[0-9a-zA-Z]{4}))*\")\])*$/;
-	                
-	                /**
-	                 * Converts the specified data URL to a Blob object
-	                 * @param {String} dataURL to convert to a Blob
-	                 * @returns {Blob} the converted Blob object
-	                 */
-	                function dataURLToBlob(dataURL) {
-	                    var BASE64_MARKER = ';base64,',
-	                        contentType,
-	                        parts,
-	                        raw;
-	                    if (dataURL.indexOf(BASE64_MARKER) === -1) {
-	                        parts = dataURL.split(',');
-	                        contentType = parts[0].split(':')[1];
-	                        raw = parts[1];
-
-	                        return new Blob([raw], {type: contentType});
-	                    }
-
-	                    parts = dataURL.split(BASE64_MARKER);
-	                    contentType = parts[0].split(':')[1];
-	                    raw = window.atob(parts[1]);
-	                    var rawLength = raw.length;
-	                    var uInt8Array = new Uint8Array(rawLength);
-
-	                    for (var i = 0; i < rawLength; ++i) {
-	                        uInt8Array[i] = raw.charCodeAt(i);
-	                    }
-	                    return new Blob([uInt8Array.buffer], {type: contentType});
-	                }
-	                
-	                function rez(value) {
-	                    // The rez function walks recursively through the object looking for $ref
-	                    // properties. When it finds one that has a value that is a path, then it
-	                    // replaces the $ref object with a reference to the value that is found by
-	                    // the path.
-
-	                    var i, item, name, path;
-
-	                    if (value && typeof value === 'object') {
-	                        if (Object.prototype.toString.apply(value) === '[object Array]') {
-	                            for (i = 0; i < value.length; i += 1) {
-	                                item = value[i];
-	                                if (item && typeof item === 'object') {
-	                                    path = item.$ref;
-	                                    if (typeof path === 'string' && px.test(path)) {
-	                                        value[i] = eval(path);
-	                                    } else {
-	                                        value[i] = rez(item);
-	                                    }
-	                                }
-	                            }
-	                        } else {
-	                            if (value.$type !== undefined) {
-	                                switch(value.$type) {
-	                                    case 'Blob':
-	                                    case 'File':
-	                                        value = dataURLToBlob(value.$enc);
-	                                        break;
-	                                    case 'Boolean':
-	                                        value = Boolean(value.$enc === 'true');
-	                                        break;
-	                                    case 'Date':
-	                                        value = new Date(value.$enc);
-	                                        break;
-	                                    case 'Number':
-	                                        value = Number(value.$enc);
-	                                        break;
-	                                    case 'RegExp':
-	                                        value = eval(value.$enc);
-	                                        break;
-	                                    case 'number':
-	                                        value = parseFloat(value.$enc);
-	                                        break;
-	                                    case 'undefined':
-	                                        value = undefined;
-	                                        break;
-	                                }
-	                            } else {
-	                                for (name in value) {
-	                                    if (typeof value[name] === 'object') {
-	                                        item = value[name];
-	                                        if (item) {
-	                                            path = item.$ref;
-	                                            if (typeof path === 'string' && px.test(path)) {
-	                                                value[name] = eval(path);
-	                                            } else {
-	                                                value[name] = rez(item);
-	                                            }
-	                                        }
-	                                    }   
-	                                }
-	                            }
-	                        }
-	                    }
-	                    return value;
-	                }
-	                return rez($);
-
-	            },
-
-	            /**
-	             * Encode the specified object as a string.  Because of the asynchronus
-	             * conversion of Blob/File to string, the encode function requires
-	             * a callback
-	             * @param {Object} val the value to convert.
-	             * @param {function} callback the function to call once conversion is
-	             * complete.  The callback gets called with the converted value.
-	             */
-	            "encode": function(val, callback){
-	                function finishEncode(val) {
-	                    callback(JSON.stringify(val));
-	                }
-	                this.decycle(val, finishEncode);                        
-	            },
-	                    
-	            /**
-	             * Deserialize the specified string to an object
-	             * @param {String} val the serialized string
-	             * @returns {Object} the deserialized object
-	             */
-	            "decode": function(val){
-	                return this.retrocycle(JSON.parse(val));
-	            }
-	        };
-	    }());
-	    idbModules.Sca = Sca;
-	}(idbModules));
-
-	(function(idbModules) {
-	    "use strict";
-
-	    /**
-	     * Encodes the keys based on their types. This is required to maintain collations
-	     */
-	    var collations = ["undefined", "number", "date", "string", "array"];
-
-	    /**
-	     * The sign values for numbers, ordered from least to greatest.
-	     *  - "negativeInfinity": Sorts below all other values.
-	     *  - "bigNegative": Negative values less than or equal to negative one.
-	     *  - "smallNegative": Negative values between negative one and zero, noninclusive.
-	     *  - "smallPositive": Positive values between zero and one, including zero but not one.
-	     *  - "largePositive": Positive values greater than or equal to one.
-	     *  - "positiveInfinity": Sorts above all other values.
-	     */
-	    var signValues = ["negativeInfinity", "bigNegative", "smallNegative", "smallPositive", "bigPositive", "positiveInfinity"];
-
-	    var types = {
-	        // Undefined is not a valid key type.  It's only used when there is no key.
-	        undefined: {
-	            encode: function(key) {
-	                return collations.indexOf("undefined") + "-";
-	            },
-	            decode: function(key) {
-	                return undefined;
-	            }
-	        },
-
-	        // Dates are encoded as ISO 8601 strings, in UTC time zone.
-	        date: {
-	            encode: function(key) {
-	                return collations.indexOf("date") + "-" + key.toJSON();
-	            },
-	            decode: function(key) {
-	                return new Date(key.substring(2));
-	            }
-	        },
-
-	        // Numbers are represented in a lexically sortable base-32 sign-exponent-mantissa
-	        // notation.
-	        //
-	        // sign: takes a value between zero and five, inclusive. Represents infinite cases
-	        //     and the signs of both the exponent and the fractional part of the number.
-	        // exponent: paded to two base-32 digits, represented by the 32's compliment in the
-	        //     "smallPositive" and "bigNegative" cases to ensure proper lexical sorting.
-	        // mantissa: also called the fractional part. Normed 11-digit base-32 representation.
-	        //     Represented by the 32's compliment in the "smallNegative" and "bigNegative"
-	        //     cases to ensure proper lexical sorting.
-	        number: {
-	            // The encode step checks for six numeric cases and generates 14-digit encoded
-	            // sign-exponent-mantissa strings.
-	            encode: function(key) {
-	                var key32 = Math.abs(key).toString(32);
-	                // Get the index of the decimal.
-	                var decimalIndex = key32.indexOf(".");
-	                // Remove the decimal.
-	                key32 = (decimalIndex !== -1) ? key32.replace(".", "") : key32;
-	                // Get the index of the first significant digit.
-	                var significantDigitIndex = key32.search(/[^0]/);
-	                // Truncate leading zeros.
-	                key32 = key32.slice(significantDigitIndex);
-	                var sign, exponent = zeros(2), mantissa = zeros(11);
-
-	                // Finite cases:
-	                if (isFinite(key)) {
-	                    // Negative cases:
-	                    if (key < 0) {
-	                        // Negative exponent case:
-	                        if (key > -1) {
-	                            sign = signValues.indexOf("smallNegative");
-	                            exponent = padBase32Exponent(significantDigitIndex);
-	                            mantissa = flipBase32(padBase32Mantissa(key32));
-	                        }
-	                        // Non-negative exponent case:
-	                        else {
-	                            sign = signValues.indexOf("bigNegative");
-	                            exponent = flipBase32(padBase32Exponent(
-	                                (decimalIndex !== -1) ? decimalIndex : key32.length
-	                            ));
-	                            mantissa = flipBase32(padBase32Mantissa(key32));
-	                        }
-	                    }
-	                    // Non-negative cases:
-	                    else {
-	                        // Negative exponent case:
-	                        if (key < 1) {
-	                            sign = signValues.indexOf("smallPositive");
-	                            exponent = flipBase32(padBase32Exponent(significantDigitIndex));
-	                            mantissa = padBase32Mantissa(key32);
-	                        }
-	                        // Non-negative exponent case:
-	                        else {
-	                            sign = signValues.indexOf("bigPositive");
-	                            exponent = padBase32Exponent(
-	                                (decimalIndex !== -1) ? decimalIndex : key32.length
-	                            );
-	                            mantissa = padBase32Mantissa(key32);
-	                        }
-	                    }
-	                }
-	                // Infinite cases:
-	                else {
-	                    sign = signValues.indexOf(
-	                        key > 0 ? "positiveInfinity" : "negativeInfinity"
-	                    );
-	                }
-
-	                return collations.indexOf("number") + "-" + sign + exponent + mantissa;
-	            },
-	            // The decode step must interpret the sign, reflip values encoded as the 32's complements,
-	            // apply signs to the exponent and mantissa, do the base-32 power operation, and return
-	            // the original JavaScript number values.
-	            decode: function(key) {
-	                var sign = +key.substr(2, 1);
-	                var exponent = key.substr(3, 2);
-	                var mantissa = key.substr(5, 11);
-
-	                switch (signValues[sign]) {
-	                    case "negativeInfinity":
-	                        return -Infinity;
-	                    case "positiveInfinity":
-	                        return Infinity;
-	                    case "bigPositive":
-	                        return pow32(mantissa, exponent);
-	                    case "smallPositive":
-	                        exponent = negate(flipBase32(exponent));
-	                        return pow32(mantissa, exponent);
-	                    case "smallNegative":
-	                        exponent = negate(exponent);
-	                        mantissa = flipBase32(mantissa);
-	                        return -pow32(mantissa, exponent);
-	                    case "bigNegative":
-	                        exponent = flipBase32(exponent);
-	                        mantissa = flipBase32(mantissa);
-	                        return -pow32(mantissa, exponent);
-	                    default:
-	                        throw new Error("Invalid number.");
-	                }
-	            }
-	        },
-
-	        // Strings are encoded as JSON strings (with quotes and unicode characters escaped).
-	        //
-	        // IF the strings are in an array, then some extra encoding is done to make sorting work correctly:
-	        // Since we can't force all strings to be the same length, we need to ensure that characters line-up properly
-	        // for sorting, while also accounting for the extra characters that are added when the array itself is encoded as JSON.
-	        // To do this, each character of the string is prepended with a dash ("-"), and a space is added to the end of the string.
-	        // This effectively doubles the size of every string, but it ensures that when two arrays of strings are compared,
-	        // the indexes of each string's characters line up with each other.
-	        string: {
-	            encode: function(key, inArray) {
-	                if (inArray) {
-	                    // prepend each character with a dash, and append a space to the end
-	                    key = key.replace(/(.)/g, '-$1') + ' ';
-	                }
-	                return collations.indexOf("string") + "-" + key;
-	            },
-	            decode: function(key, inArray) {
-	                key = key.substring(2);
-	                if (inArray) {
-	                    // remove the space at the end, and the dash before each character
-	                    key = key.substr(0, key.length - 1).replace(/-(.)/g, '$1');
-	                }
-	                return key;
-	            }
-	        },
-
-	        // Arrays are encoded as JSON strings.
-	        // An extra, value is added to each array during encoding to make empty arrays sort correctly.
-	        array: {
-	            encode: function(key) {
-	                var encoded = [];
-	                for (var i = 0; i < key.length; i++) {
-	                    var item = key[i];
-	                    var encodedItem = idbModules.Key.encode(item, true);        // encode the array item
-	                    encoded[i] = encodedItem;
-	                }
-	                encoded.push(collations.indexOf("undefined") + "-");            // append an extra item, so empty arrays sort correctly
-	                return collations.indexOf("array") + "-" + JSON.stringify(encoded);
-	            },
-	            decode: function(key) {
-	                var decoded = JSON.parse(key.substring(2));
-	                decoded.pop();                                                  // remove the extra item
-	                for (var i = 0; i < decoded.length; i++) {
-	                    var item = decoded[i];
-	                    var decodedItem = idbModules.Key.decode(item, true);        // decode the item
-	                    decoded[i] = decodedItem;
-	                }
-	                return decoded;
-	            }
-	        }
-	    };
-
-	    /**
-	     * Return a padded base-32 exponent value.
-	     * @param {number}
-	     * @return {string}
-	     */
-	    function padBase32Exponent(n) {
-	        n = n.toString(32);
-	        return (n.length === 1) ? "0" + n : n;
-	    }
-
-	    /**
-	     * Return a padded base-32 mantissa.
-	     * @param {string}
-	     * @return {string}
-	     */
-	    function padBase32Mantissa(s) {
-	        return (s + zeros(11)).slice(0, 11);
-	    }
-
-	    /**
-	     * Flips each digit of a base-32 encoded string.
-	     * @param {string} encoded
-	     */
-	    function flipBase32(encoded) {
-	        var flipped = "";
-	        for (var i = 0; i < encoded.length; i++) {
-	            flipped += (31 - parseInt(encoded[i], 32)).toString(32);
-	        }
-	        return flipped;
-	    }
-
-	    /**
-	     * Base-32 power function.
-	     * RESEARCH: This function does not precisely decode floats because it performs
-	     * floating point arithmetic to recover values. But can the original values be
-	     * recovered exactly?
-	     * Someone may have already figured out a good way to store JavaScript floats as
-	     * binary strings and convert back. Barring a better method, however, one route
-	     * may be to generate decimal strings that `parseFloat` decodes predictably.
-	     * @param {string}
-	     * @param {string}
-	     * @return {number}
-	     */
-	    function pow32(mantissa, exponent) {
-	        var whole, fraction, expansion;
-	        exponent = parseInt(exponent, 32);
-	        if (exponent < 0) {
-	            return roundToPrecision(
-	                parseInt(mantissa, 32) * Math.pow(32, exponent - 10)
-	            );
-	        }
-	        else {
-	            if (exponent < 11) {
-	                whole = mantissa.slice(0, exponent);
-	                whole = parseInt(whole, 32);
-	                fraction = mantissa.slice(exponent);
-	                fraction = parseInt(fraction, 32) * Math.pow(32, exponent - 11);
-	                return roundToPrecision(whole + fraction);
-	            }
-	            else {
-	                expansion = mantissa + zeros(exponent - 11);
-	                return parseInt(expansion, 32);
-	            }
-	        }
-	    }
-
-	    /**
-	     *
-	     */
-	    function roundToPrecision(num, precision) {
-	        precision = precision || 16;
-	        return parseFloat(num.toPrecision(precision));
-	    }
-
-	    /**
-	     * Returns a string of n zeros.
-	     * @param {number}
-	     * @return {string}
-	     */
-	    function zeros(n) {
-	        var result = "";
-	        while (n--) {
-	            result = result + "0";
-	        }
-	        return result;
-	    }
-
-	    /**
-	     * Negates numeric strings.
-	     * @param {string}
-	     * @return {string}
-	     */
-	    function negate(s) {
-	        return "-" + s;
-	    }
-
-	    /**
-	     * Returns the string "number", "date", "string", or "array".
-	     */
-	    function getType(key) {
-	        if (key instanceof Date) {
-	            return "date";
-	        }
-	        if (key instanceof Array) {
-	            return "array";
-	        }
-	        return typeof key;
-	    }
-
-	    /**
-	     * Keys must be strings, numbers, Dates, or Arrays
-	     */
-	    function validate(key) {
-	        var type = getType(key);
-	        if (type === "array") {
-	            for (var i = 0; i < key.length; i++) {
-	                validate(key[i]);
-	            }
-	        }
-	        else if (!types[type] || (type !== "string" && isNaN(key))) {
-	            throw idbModules.util.createDOMException("DataError", "Not a valid key");
-	        }
-	    }
-
-	    /**
-	     * Returns the value of an inline key
-	     * @param {object} source
-	     * @param {string|array} keyPath
-	     */
-	    function getValue(source, keyPath) {
-	        try {
-	            if (keyPath instanceof Array) {
-	                var arrayValue = [];
-	                for (var i = 0; i < keyPath.length; i++) {
-	                    arrayValue.push(eval("source." + keyPath[i]));
-	                }
-	                return arrayValue;
-	            } else {
-	                return eval("source." + keyPath);
-	            }
-	        }
-	        catch (e) {
-	            return undefined;
-	        }
-	    }
-
-	    /**
-	     * Sets the inline key value
-	     * @param {object} source
-	     * @param {string} keyPath
-	     * @param {*} value
-	     */
-	    function setValue(source, keyPath, value) {
-	        var props = keyPath.split('.');
-	        for (var i = 0; i < props.length - 1; i++) {
-	            var prop = props[i];
-	            source = source[prop] = source[prop] || {};
-	        }
-	        source[props[props.length - 1]] = value;
-	    }
-
-	    /**
-	     * Determines whether an index entry matches a multi-entry key value.
-	     * @param {string} encodedEntry     The entry value (already encoded)
-	     * @param {string} encodedKey       The full index key (already encoded)
-	     * @returns {boolean}
-	     */
-	    function isMultiEntryMatch(encodedEntry, encodedKey) {
-	        var keyType = collations[encodedKey.substring(0, 1)];
-
-	        if (keyType === "array") {
-	            return encodedKey.indexOf(encodedEntry) > 1;
-	        }
-	        else {
-	            return encodedKey === encodedEntry;
-	        }
-	    }
-
-	    function isKeyInRange(key, range) {
-	        var lowerMatch = range.lower === undefined;
-	        var upperMatch = range.upper === undefined;
-	        var encodedKey = idbModules.Key.encode(key, true);
-
-	        if (range.lower !== undefined) {
-	            if (range.lowerOpen && encodedKey > range.__lower) {
-	                lowerMatch = true;
-	            }
-	            if (!range.lowerOpen && encodedKey >= range.__lower) {
-	                lowerMatch = true;
-	            }
-	        }
-	        if (range.upper !== undefined) {
-	            if (range.upperOpen && encodedKey < range.__upper) {
-	                upperMatch = true;
-	            }
-	            if (!range.upperOpen && encodedKey <= range.__upper) {
-	                upperMatch = true;
-	            }
-	        }
-
-	        return lowerMatch && upperMatch;
-	    }
-
-	    function findMultiEntryMatches(keyEntry, range) {
-	        var matches = [];
-
-	        if (keyEntry instanceof Array) {
-	            for (var i = 0; i < keyEntry.length; i++) {
-	                var key = keyEntry[i];
-
-	                if (key instanceof Array) {
-	                    if (range.lower === range.upper) {
-	                        continue;
-	                    }
-	                    if (key.length === 1) {
-	                        key = key[0];
-	                    } else {
-	                        var nested = findMultiEntryMatches(key, range);
-	                        if (nested.length > 0) {
-	                            matches.push(key);
-	                        }
-	                        continue;
-	                    }
-	                }
-
-	                if (isKeyInRange(key, range)) {
-	                    matches.push(key);
-	                }
-	            }
-	        } else {
-	            if (isKeyInRange(keyEntry, range)) {
-	                matches.push(keyEntry);
-	            }
-	        }
-	        return matches;
-	    }
-
-	    idbModules.Key = {
-	        encode: function(key, inArray) {
-	            if (key === undefined) {
-	                return null;
-	            }
-	            return types[getType(key)].encode(key, inArray);
-	        },
-	        decode: function(key, inArray) {
-	            if (typeof key !== "string") {
-	                return undefined;
-	            }
-	            return types[collations[key.substring(0, 1)]].decode(key, inArray);
-	        },
-	        validate: validate,
-	        getValue: getValue,
-	        setValue: setValue,
-	        isMultiEntryMatch: isMultiEntryMatch,
-	        findMultiEntryMatches: findMultiEntryMatches
-	    };
-	}(idbModules));
-
-	(function(idbModules) {
-	    'use strict';
-
-	    /**
-	     * Creates a native Event object, for browsers that support it
-	     * @returns {Event}
-	     */
-	    function createNativeEvent(type, debug) {
-	        var event = new Event(type);
-	        event.debug = debug;
-
-	        // Make the "target" writable
-	        Object.defineProperty(event, 'target', {
-	            writable: true
-	        });
-
-	        return event;
-	    }
-
-	    /**
-	     * A shim Event class, for browsers that don't allow us to create native Event objects.
-	     * @constructor
-	     */
-	    function ShimEvent(type, debug) {
-	        this.type = type;
-	        this.debug = debug;
-	        this.bubbles = false;
-	        this.cancelable = false;
-	        this.eventPhase = 0;
-	        this.timeStamp = new Date().valueOf();
-	    }
-
-	    var useNativeEvent = false;
-	    try {
-	        // Test whether we can use the browser's native Event class
-	        var test = createNativeEvent('test type', 'test debug');
-	        var target = {test: 'test target'};
-	        test.target = target;
-
-	        if (test instanceof Event && test.type === 'test type' && test.debug === 'test debug' && test.target === target) {
-	            // Native events work as expected
-	            useNativeEvent = true;
-	        }
-	    }
-	    catch (e) {}
-
-	    if (useNativeEvent) {
-	        idbModules.Event = Event;
-	        idbModules.IDBVersionChangeEvent = Event;
-	        idbModules.util.createEvent = createNativeEvent;
-	    }
-	    else {
-	        idbModules.Event = ShimEvent;
-	        idbModules.IDBVersionChangeEvent = ShimEvent;
-	        idbModules.util.createEvent = function(type, debug) {
-	            return new ShimEvent(type, debug);
-	        };
-	    }
-	}(idbModules));
-
-	(function(idbModules) {
-	    'use strict';
-
-	    /**
-	     * Creates a native DOMException, for browsers that support it
-	     * @returns {DOMException}
-	     */
-	    function createNativeDOMException(name, message) {
-	        var e = new DOMException.prototype.constructor(0, message);
-	        e.name = name || 'DOMException';
-	        e.message = message;
-	        return e;
-	    }
-
-	    /**
-	     * Creates a native DOMError, for browsers that support it
-	     * @returns {DOMError}
-	     */
-	    function createNativeDOMError(name, message) {
-	        name = name || 'DOMError';
-	        var e = new DOMError(name, message);
-	        e.name === name || (e.name = name);
-	        e.message === message || (e.message = message);
-	        return e;
-	    }
-
-	    /**
-	     * Creates a generic Error object
-	     * @returns {Error}
-	     */
-	    function createError(name, message) {
-	        var e = new Error(message);
-	        e.name = name || 'DOMException';
-	        e.message = message;
-	        return e;
-	    }
-
-	    /**
-	     * Logs detailed error information to the console.
-	     * @param {string} name
-	     * @param {string} message
-	     * @param {string|Error|null} error
-	     */
-	    idbModules.util.logError = function(name, message, error) {
-	        if (idbModules.DEBUG) {
-	            if (error && error.message) {
-	                error = error.message;
-	            }
-
-	            var method = typeof(console.error) === 'function' ? 'error' : 'log';
-	            console[method](name + ': ' + message + '. ' + (error || ''));
-	            console.trace && console.trace();
-	        }
-	    };
-
-	    /**
-	     * Finds the error argument.  This is useful because some WebSQL callbacks
-	     * pass the error as the first argument, and some pass it as the second argument.
-	     * @param {array} args
-	     * @returns {Error|DOMException|undefined}
-	     */
-	    idbModules.util.findError = function(args) {
-	        var err;
-	        if (args) {
-	            if (args.length === 1) {
-	                return args[0];
-	            }
-	            for (var i = 0; i < args.length; i++) {
-	                var arg = args[i];
-	                if (arg instanceof Error || arg instanceof DOMException) {
-	                    return arg;
-	                }
-	                else if (arg && typeof arg.message === "string") {
-	                    err = arg;
-	                }
-	            }
-	        }
-	        return err;
-	    };
-
-	    var test, useNativeDOMException = false, useNativeDOMError = false;
-
-	    // Test whether we can use the browser's native DOMException class
-	    try {
-	        test = createNativeDOMException('test name', 'test message');
-	        if (test instanceof DOMException && test.name === 'test name' && test.message === 'test message') {
-	            // Native DOMException works as expected
-	            useNativeDOMException = true;
-	        }
-	    }
-	    catch (e) {}
-
-	    // Test whether we can use the browser's native DOMError class
-	    try {
-	        test = createNativeDOMError('test name', 'test message');
-	        if (test instanceof DOMError && test.name === 'test name' && test.message === 'test message') {
-	            // Native DOMError works as expected
-	            useNativeDOMError = true;
-	        }
-	    }
-	    catch (e) {}
-
-	    if (useNativeDOMException) {
-	        idbModules.DOMException = DOMException;
-	        idbModules.util.createDOMException = function(name, message, error) {
-	            idbModules.util.logError(name, message, error);
-	            return createNativeDOMException(name, message);
-	        };
-	    }
-	    else {
-	        idbModules.DOMException = Error;
-	        idbModules.util.createDOMException = function(name, message, error) {
-	            idbModules.util.logError(name, message, error);
-	            return createError(name, message);
-	        };
-	    }
-
-	    if (useNativeDOMError) {
-	        idbModules.DOMError = DOMError;
-	        idbModules.util.createDOMError = function(name, message, error) {
-	            idbModules.util.logError(name, message, error);
-	            return createNativeDOMError(name, message);
-	        };
-	    }
-	    else {
-	        idbModules.DOMError = Error;
-	        idbModules.util.createDOMError = function(name, message, error) {
-	            idbModules.util.logError(name, message, error);
-	            return createError(name, message);
-	        };
-	    }
-	}(idbModules));
-
-	(function(idbModules){
-	    'use strict';
-
-	    /**
-	     * The IDBRequest Object that is returns for all async calls
-	     * http://dvcs.w3.org/hg/IndexedDB/raw-file/tip/Overview.html#request-api
-	     */
-	    function IDBRequest(){
-	        this.onsuccess = this.onerror = this.result = this.error = this.source = this.transaction = null;
-	        this.readyState = "pending";
-	    }
-
-	    /**
-	     * The IDBOpenDBRequest called when a database is opened
-	     */
-	    function IDBOpenDBRequest(){
-	        this.onblocked = this.onupgradeneeded = null;
-	    }
-	    IDBOpenDBRequest.prototype = new IDBRequest();
-	    IDBOpenDBRequest.prototype.constructor = IDBOpenDBRequest;
-	    
-	    idbModules.IDBRequest = IDBRequest;
-	    idbModules.IDBOpenDBRequest = IDBOpenDBRequest;
-	    
-	}(idbModules));
-
-	(function(idbModules, undefined){
-	    'use strict';
-
-	    /**
-	     * The IndexedDB KeyRange object
-	     * http://dvcs.w3.org/hg/IndexedDB/raw-file/tip/Overview.html#dfn-key-range
-	     * @param {Object} lower
-	     * @param {Object} upper
-	     * @param {Object} lowerOpen
-	     * @param {Object} upperOpen
-	     */
-	    function IDBKeyRange(lower, upper, lowerOpen, upperOpen){
-	        if (lower !== undefined) {
-	            idbModules.Key.validate(lower);
-	        }
-	        if (upper !== undefined) {
-	            idbModules.Key.validate(upper);
-	        }
-
-	        this.lower = lower;
-	        this.upper = upper;
-	        this.lowerOpen = !!lowerOpen;
-	        this.upperOpen = !!upperOpen;
-	    }
-
-	    IDBKeyRange.only = function(value){
-	        return new IDBKeyRange(value, value, false, false);
-	    };
-
-	    IDBKeyRange.lowerBound = function(value, open){
-	        return new IDBKeyRange(value, undefined, open, undefined);
-	    };
-	    IDBKeyRange.upperBound = function(value, open){
-	        return new IDBKeyRange(undefined, value, undefined, open);
-	    };
-	    IDBKeyRange.bound = function(lower, upper, lowerOpen, upperOpen){
-	        return new IDBKeyRange(lower, upper, lowerOpen, upperOpen);
-	    };
-
-	    idbModules.IDBKeyRange = IDBKeyRange;
-
-	}(idbModules));
-
-	(function(idbModules, undefined){
-	    'use strict';
-
-	    /**
-	     * The IndexedDB Cursor Object
-	     * http://dvcs.w3.org/hg/IndexedDB/raw-file/tip/Overview.html#idl-def-IDBCursor
-	     * @param {IDBKeyRange} range
-	     * @param {string} direction
-	     * @param {IDBObjectStore} store
-	     * @param {IDBObjectStore|IDBIndex} source
-	     * @param {string} keyColumnName
-	     * @param {string} valueColumnName
-	     * @param {boolean} count
-	     */
-	    function IDBCursor(range, direction, store, source, keyColumnName, valueColumnName, count){
-	        // Calling openCursor on an index or objectstore with null is allowed but we treat it as undefined internally
-	        if (range === null) {
-	            range = undefined;
-	        }
-	        if (range !== undefined && !(range instanceof idbModules.IDBKeyRange)) {
-	            range = new idbModules.IDBKeyRange(range, range, false, false);
-	        }
-	        store.transaction.__assertActive();
-	        if (direction !== undefined && ["next", "prev", "nextunique", "prevunique"].indexOf(direction) === -1) {
-	            throw new TypeError(direction + "is not a valid cursor direction");
-	        }
-
-	        this.source = source;
-	        this.direction = direction || "next";
-	        this.key = undefined;
-	        this.primaryKey = undefined;
-	        this.__store = store;
-	        this.__range = range;
-	        this.__req = new idbModules.IDBRequest();
-	        this.__keyColumnName = keyColumnName;
-	        this.__valueColumnName = valueColumnName;
-	        this.__valueDecoder = valueColumnName === "value" ? idbModules.Sca : idbModules.Key;
-	        this.__count = count;
-	        this.__offset = -1; // Setting this to -1 as continue will set it to 0 anyway
-	        this.__lastKeyContinued = undefined; // Used when continuing with a key
-	        this.__multiEntryIndex = source instanceof idbModules.IDBIndex ? source.multiEntry : false;
-	        this.__unique = this.direction.indexOf("unique") !== -1;
-
-	        if (range !== undefined) {
-	            // Encode the key range and cache the encoded values, so we don't have to re-encode them over and over
-	            range.__lower = range.lower !== undefined && idbModules.Key.encode(range.lower, this.__multiEntryIndex);
-	            range.__upper = range.upper !== undefined && idbModules.Key.encode(range.upper, this.__multiEntryIndex);
-	        }
-
-	        this["continue"]();
-	    }
-
-	    IDBCursor.prototype.__find = function (/* key, tx, success, error, recordsToLoad */) {
-	        var args = Array.prototype.slice.call(arguments);
-	        if (this.__multiEntryIndex) {
-	            this.__findMultiEntry.apply(this, args);
-	        } else {
-	            this.__findBasic.apply(this, args);
-	        }
-	    };
-
-	    IDBCursor.prototype.__findBasic = function (key, tx, success, error, recordsToLoad) {
-	        recordsToLoad = recordsToLoad || 1;
-
-	        var me = this;
-	        var quotedKeyColumnName = idbModules.util.quote(me.__keyColumnName);
-	        var sql = ["SELECT * FROM", idbModules.util.quote(me.__store.name)];
-	        var sqlValues = [];
-	        sql.push("WHERE", quotedKeyColumnName, "NOT NULL");
-	        if (me.__range && (me.__range.lower !== undefined || me.__range.upper !== undefined )) {
-	            sql.push("AND");
-	            if (me.__range.lower !== undefined) {
-	                sql.push(quotedKeyColumnName, (me.__range.lowerOpen ? ">" : ">="), "?");
-	                sqlValues.push(me.__range.__lower);
-	            }
-	            (me.__range.lower !== undefined && me.__range.upper !== undefined) && sql.push("AND");
-	            if (me.__range.upper !== undefined) {
-	                sql.push(quotedKeyColumnName, (me.__range.upperOpen ? "<" : "<="), "?");
-	                sqlValues.push(me.__range.__upper);
-	            }
-	        }
-	        if (typeof key !== "undefined") {
-	            me.__lastKeyContinued = key;
-	            me.__offset = 0;
-	        }
-	        if (me.__lastKeyContinued !== undefined) {
-	            sql.push("AND", quotedKeyColumnName, ">= ?");
-	            idbModules.Key.validate(me.__lastKeyContinued);
-	            sqlValues.push(idbModules.Key.encode(me.__lastKeyContinued));
-	        }
-
-	        // Determine the ORDER BY direction based on the cursor.
-	        var direction = me.direction === 'prev' || me.direction === 'prevunique' ? 'DESC' : 'ASC';
-
-	        if (!me.__count) {
-	            sql.push("ORDER BY", quotedKeyColumnName, direction);
-	            sql.push("LIMIT", recordsToLoad, "OFFSET", me.__offset);
-	        }
-	        sql = sql.join(" ");
-	        idbModules.DEBUG && console.log(sql, sqlValues);
-
-	        me.__prefetchedData = null;
-	        me.__prefetchedIndex = 0;
-	        tx.executeSql(sql, sqlValues, function (tx, data) {
-	            if (me.__count) {
-	                success(undefined, data.rows.length, undefined);
-	            }
-	            else if (data.rows.length > 1) {
-	                me.__prefetchedData = data.rows;
-	                me.__prefetchedIndex = 0;
-	                idbModules.DEBUG && console.log("Preloaded " + me.__prefetchedData.length + " records for cursor");
-	                me.__decode(data.rows.item(0), success);
-	            }
-	            else if (data.rows.length === 1) {
-	                me.__decode(data.rows.item(0), success);
-	            }
-	            else {
-	                idbModules.DEBUG && console.log("Reached end of cursors");
-	                success(undefined, undefined, undefined);
-	            }
-	        }, function (tx, err) {
-	            idbModules.DEBUG && console.log("Could not execute Cursor.continue", sql, sqlValues);
-	            error(err);
-	        });
-	    };
-
-	    IDBCursor.prototype.__findMultiEntry = function (key, tx, success, error) {
-	        var me = this;
-
-	        if (me.__prefetchedData && me.__prefetchedData.length === me.__prefetchedIndex) {
-	            idbModules.DEBUG && console.log("Reached end of multiEntry cursor");
-	            success(undefined, undefined, undefined);
-	            return;
-	        }
-
-	        var quotedKeyColumnName = idbModules.util.quote(me.__keyColumnName);
-	        var sql = ["SELECT * FROM", idbModules.util.quote(me.__store.name)];
-	        var sqlValues = [];
-	        sql.push("WHERE", quotedKeyColumnName, "NOT NULL");
-	        if (me.__range && (me.__range.lower !== undefined && me.__range.upper !== undefined)) {
-	            if (me.__range.upper.indexOf(me.__range.lower) === 0) {
-	                sql.push("AND", quotedKeyColumnName, "LIKE ?");
-	                sqlValues.push("%" + me.__range.__lower.slice(0, -1) + "%");
-	            }
-	        }
-	        if (typeof key !== "undefined") {
-	            me.__lastKeyContinued = key;
-	            me.__offset = 0;
-	        }
-	        if (me.__lastKeyContinued !== undefined) {
-	            sql.push("AND", quotedKeyColumnName, ">= ?");
-	            idbModules.Key.validate(me.__lastKeyContinued);
-	            sqlValues.push(idbModules.Key.encode(me.__lastKeyContinued));
-	        }
-
-	        // Determine the ORDER BY direction based on the cursor.
-	        var direction = me.direction === 'prev' || me.direction === 'prevunique' ? 'DESC' : 'ASC';
-
-	        if (!me.__count) {
-	            sql.push("ORDER BY key", direction);
-	        }
-	        sql = sql.join(" ");
-	        idbModules.DEBUG && console.log(sql, sqlValues);
-
-	        me.__prefetchedData = null;
-	        me.__prefetchedIndex = 0;
-	        tx.executeSql(sql, sqlValues, function (tx, data) {
-	            me.__multiEntryOffset = data.rows.length;
-
-	            if (data.rows.length > 0) {
-	                var rows = [];
-
-	                for (var i = 0; i < data.rows.length; i++) {
-	                    var rowItem = data.rows.item(i);
-	                    var rowKey = idbModules.Key.decode(rowItem[me.__keyColumnName], true);
-	                    var matches = idbModules.Key.findMultiEntryMatches(rowKey, me.__range);
-
-	                    for (var j = 0; j < matches.length; j++) {
-	                        var matchingKey = matches[j];
-	                        var clone = {
-	                            matchingKey: idbModules.Key.encode(matchingKey, true),
-	                            key: rowItem.key
-	                        };
-	                        clone[me.__keyColumnName] = rowItem[me.__keyColumnName];
-	                        clone[me.__valueColumnName] = rowItem[me.__valueColumnName];
-	                        rows.push(clone);
-	                    }
-	                }
-
-	                var reverse = me.direction.indexOf("prev") === 0;
-	                rows.sort(function (a, b) {
-	                    if (a.matchingKey.replace('[','z') < b.matchingKey.replace('[','z')) {
-	                        return reverse ? 1 : -1;
-	                    }
-	                    if (a.matchingKey.replace('[','z') > b.matchingKey.replace('[','z')) {
-	                        return reverse ? -1 : 1;
-	                    }
-	                    if (a.key < b.key) {
-	                        return me.direction === "prev" ? 1 : -1;
-	                    }
-	                    if (a.key > b.key) {
-	                        return me.direction === "prev" ? -1 : 1;
-	                    }
-	                    return 0;
-	                });
-
-	                me.__prefetchedData = {
-	                    data: rows,
-	                    length: rows.length,
-	                    item: function (index) {
-	                        return this.data[index];
-	                    }
-	                };
-	                me.__prefetchedIndex = 0;
-
-	                if (me.__count) {
-	                    success(undefined, rows.length, undefined);
-	                }
-	                else if (rows.length > 1) {
-	                    idbModules.DEBUG && console.log("Preloaded " + me.__prefetchedData.length + " records for multiEntry cursor");
-	                    me.__decode(rows[0], success);
-	                } else if (rows.length === 1) {
-	                    idbModules.DEBUG && console.log("Reached end of multiEntry cursor");
-	                    me.__decode(rows[0], success);
-	                } else {
-	                    idbModules.DEBUG && console.log("Reached end of multiEntry cursor");
-	                    success(undefined, undefined, undefined);
-	                }
-	            }
-	            else {
-	                idbModules.DEBUG && console.log("Reached end of multiEntry cursor");
-	                success(undefined, undefined, undefined);
-	            }
-	        }, function (tx, err) {
-	            idbModules.DEBUG && console.log("Could not execute Cursor.continue", sql, sqlValues);
-	            error(err);
-	        });
-	    };
-
-	    /**
-	     * Creates an "onsuccess" callback
-	     * @private
-	     */
-	    IDBCursor.prototype.__onsuccess = function(success) {
-	        var me = this;
-	        return function(key, value, primaryKey) {
-	            if (me.__count) {
-	                success(value, me.__req);
-	            }
-	            else {
-	                me.key = key === undefined ? null : key;
-	                me.value = value === undefined ? null : value;
-	                me.primaryKey = primaryKey === undefined ? null : primaryKey;
-	                var result = key === undefined ? null : me;
-	                success(result, me.__req);
-	            }
-	        };
-	    };
-
-	    IDBCursor.prototype.__decode = function (rowItem, callback) {
-	        if (this.__multiEntryIndex && this.__unique) {
-	            if (!this.__matchedKeys) {
-	                this.__matchedKeys = {};
-	            }
-	            if (this.__matchedKeys[rowItem.matchingKey]) {
-	                callback(undefined, undefined, undefined);
-	                return;
-	            }
-	            this.__matchedKeys[rowItem.matchingKey] = true;
-	        }
-	        var key = idbModules.Key.decode(this.__multiEntryIndex ? rowItem.matchingKey : rowItem[this.__keyColumnName], this.__multiEntryIndex);
-	        var val = this.__valueDecoder.decode(rowItem[this.__valueColumnName]);
-	        var primaryKey = idbModules.Key.decode(rowItem.key);
-	        callback(key, val, primaryKey);
-	    };
-
-	    IDBCursor.prototype["continue"] = function (key) {
-	        var recordsToPreloadOnContinue = idbModules.cursorPreloadPackSize || 100;
-	        var me = this;
-
-	        this.__store.transaction.__pushToQueue(me.__req, function cursorContinue(tx, args, success, error) {
-	            me.__offset++;
-
-	            if (me.__prefetchedData) {
-	                // We have pre-loaded data for the cursor
-	                me.__prefetchedIndex++;
-	                if (me.__prefetchedIndex < me.__prefetchedData.length) {
-	                    me.__decode(me.__prefetchedData.item(me.__prefetchedIndex), me.__onsuccess(success));
-	                    return;
-	                }
-	            }
-
-	            // No pre-fetched data, do query
-	            me.__find(key, tx, me.__onsuccess(success), error, recordsToPreloadOnContinue);
-	        });
-	    };
-
-	    IDBCursor.prototype.advance = function(count){
-	        if (count <= 0) {
-	            throw idbModules.util.createDOMException("Type Error", "Count is invalid - 0 or negative", count);
-	        }
-	        var me = this;
-	        this.__store.transaction.__pushToQueue(me.__req, function cursorAdvance(tx, args, success, error){
-	            me.__offset += count;
-	            me.__find(undefined, tx, me.__onsuccess(success), error);
-	        });
-	    };
-
-	    IDBCursor.prototype.update = function(valueToUpdate){
-	        var me = this;
-	        me.__store.transaction.__assertWritable();
-	        return me.__store.transaction.__addToTransactionQueue(function cursorUpdate(tx, args, success, error){
-	            idbModules.Sca.encode(valueToUpdate, function(encoded) {
-	                me.__find(undefined, tx, function(key, value, primaryKey){
-	                    var store = me.__store;
-	                    var params = [encoded];
-	                    var sql = ["UPDATE", idbModules.util.quote(store.name), "SET value = ?"];
-	                    idbModules.Key.validate(primaryKey);
-
-	                    // Also correct the indexes in the table
-	                    for (var i = 0; i < store.indexNames.length; i++) {
-	                        var index = store.__indexes[store.indexNames[i]];
-	                        var indexKey = idbModules.Key.getValue(valueToUpdate, index.keyPath);
-	                        sql.push(",", idbModules.util.quote(index.name), "= ?");
-	                        params.push(idbModules.Key.encode(indexKey, index.multiEntry));
-	                    }
-
-	                    sql.push("WHERE key = ?");
-	                    params.push(idbModules.Key.encode(primaryKey));
-
-	                    idbModules.DEBUG && console.log(sql.join(" "), encoded, key, primaryKey);
-	                    tx.executeSql(sql.join(" "), params, function(tx, data){
-	                        me.__prefetchedData = null;
-	                        me.__prefetchedIndex = 0;
-	                        if (data.rowsAffected === 1) {
-	                            success(key);
-	                        }
-	                        else {
-	                            error("No rows with key found" + key);
-	                        }
-	                    }, function(tx, data){
-	                        error(data);
-	                    });
-	                }, error);
-	            });
-	        });
-	    };
-
-	    IDBCursor.prototype["delete"] = function(){
-	        var me = this;
-	        me.__store.transaction.__assertWritable();
-	        return this.__store.transaction.__addToTransactionQueue(function cursorDelete(tx, args, success, error){
-	            me.__find(undefined, tx, function(key, value, primaryKey){
-	                var sql = "DELETE FROM  " + idbModules.util.quote(me.__store.name) + " WHERE key = ?";
-	                idbModules.DEBUG && console.log(sql, key, primaryKey);
-	                idbModules.Key.validate(primaryKey);
-	                tx.executeSql(sql, [idbModules.Key.encode(primaryKey)], function(tx, data){
-	                    me.__prefetchedData = null;
-	                    me.__prefetchedIndex = 0;
-	                    if (data.rowsAffected === 1) {
-	                        // lower the offset or we will miss a row
-	                        me.__offset--;
-	                        success(undefined);
-	                    }
-	                    else {
-	                        error("No rows with key found" + key);
-	                    }
-	                }, function(tx, data){
-	                    error(data);
-	                });
-	            }, error);
-	        });
-	    };
-
-	    idbModules.IDBCursor = IDBCursor;
-	}(idbModules));
-
-	(function(idbModules, undefined) {
-	    'use strict';
-
-	    /**
-	     * IDB Index
-	     * http://www.w3.org/TR/IndexedDB/#idl-def-IDBIndex
-	     * @param {IDBObjectStore} store
-	     * @param {IDBIndexProperties} indexProperties
-	     * @constructor
-	     */
-	    function IDBIndex(store, indexProperties) {
-	        this.objectStore = store;
-	        this.name = indexProperties.columnName;
-	        this.keyPath = indexProperties.keyPath;
-	        this.multiEntry = indexProperties.optionalParams && indexProperties.optionalParams.multiEntry;
-	        this.unique = indexProperties.optionalParams && indexProperties.optionalParams.unique;
-	        this.__deleted = !!indexProperties.__deleted;
-	    }
-
-	    /**
-	     * Clones an IDBIndex instance for a different IDBObjectStore instance.
-	     * @param {IDBIndex} index
-	     * @param {IDBObjectStore} store
-	     * @protected
-	     */
-	    IDBIndex.__clone = function(index, store) {
-	        return new IDBIndex(store, {
-	            columnName: index.name,
-	            keyPath: index.keyPath,
-	            optionalParams: {
-	                multiEntry: index.multiEntry,
-	                unique: index.unique
-	            }
-	        });
-	    };
-
-	    /**
-	     * Creates a new index on an object store.
-	     * @param {IDBObjectStore} store
-	     * @param {IDBIndex} index
-	     * @returns {IDBIndex}
-	     * @protected
-	     */
-	    IDBIndex.__createIndex = function(store, index) {
-	        var columnExists = !!store.__indexes[index.name] && store.__indexes[index.name].__deleted;
-
-	        // Add the index to the IDBObjectStore
-	        store.__indexes[index.name] = index;
-	        store.indexNames.push(index.name);
-
-	        // Create the index in WebSQL
-	        var transaction = store.transaction;
-	        transaction.__addToTransactionQueue(function createIndex(tx, args, success, failure) {
-	            function error(tx, err) {
-	                failure(idbModules.util.createDOMException(0, "Could not create index \"" + index.name + "\"", err));
-	            }
-
-	            function applyIndex(tx) {
-	                // Update the object store's index list
-	                IDBIndex.__updateIndexList(store, tx, function() {
-	                    // Add index entries for all existing records
-	                    tx.executeSql("SELECT * FROM " + idbModules.util.quote(store.name), [], function(tx, data) {
-	                        idbModules.DEBUG && console.log("Adding existing " + store.name + " records to the " + index.name + " index");
-	                        addIndexEntry(0);
-
-	                        function addIndexEntry(i) {
-	                            if (i < data.rows.length) {
-	                                try {
-	                                    var value = idbModules.Sca.decode(data.rows.item(i).value);
-	                                    var indexKey = idbModules.Key.getValue(value, index.keyPath);
-	                                    indexKey = idbModules.Key.encode(indexKey, index.multiEntry);
-
-	                                    tx.executeSql("UPDATE " + idbModules.util.quote(store.name) + " set " + idbModules.util.quote(index.name) + " = ? where key = ?", [indexKey, data.rows.item(i).key], function(tx, data) {
-	                                        addIndexEntry(i + 1);
-	                                    }, error);
-	                                }
-	                                catch (e) {
-	                                    // Not a valid value to insert into index, so just continue
-	                                    addIndexEntry(i + 1);
-	                                }
-	                            }
-	                            else {
-	                                success(store);
-	                            }
-	                        }
-	                    }, error);
-	                }, error);
-	            }
-
-	            if (columnExists) {
-	                // For a previously existing index, just update the index entries in the existing column
-	                applyIndex(tx);
-	            }
-	            else {
-	                // For a new index, add a new column to the object store, then apply the index
-	                var sql = ["ALTER TABLE", idbModules.util.quote(store.name), "ADD", idbModules.util.quote(index.name), "BLOB"].join(" ");
-	                idbModules.DEBUG && console.log(sql);
-	                tx.executeSql(sql, [], applyIndex, error);
-	            }
-	        });
-	    };
-
-	    /**
-	     * Deletes an index from an object store.
-	     * @param {IDBObjectStore} store
-	     * @param {IDBIndex} index
-	     * @protected
-	     */
-	    IDBIndex.__deleteIndex = function(store, index) {
-	        // Remove the index from the IDBObjectStore
-	        store.__indexes[index.name].__deleted = true;
-	        store.indexNames.splice(store.indexNames.indexOf(index.name), 1);
-
-	        // Remove the index in WebSQL
-	        var transaction = store.transaction;
-	        transaction.__addToTransactionQueue(function createIndex(tx, args, success, failure) {
-	            function error(tx, err) {
-	                failure(idbModules.util.createDOMException(0, "Could not delete index \"" + index.name + "\"", err));
-	            }
-
-	            // Update the object store's index list
-	            IDBIndex.__updateIndexList(store, tx, success, error);
-	        });
-	    };
-
-	    /**
-	     * Updates index list for the given object store.
-	     * @param {IDBObjectStore} store
-	     * @param {object} tx
-	     * @param {function} success
-	     * @param {function} failure
-	     */
-	    IDBIndex.__updateIndexList = function(store, tx, success, failure) {
-	        var indexList = {};
-	        for (var i = 0; i < store.indexNames.length; i++) {
-	            var idx = store.__indexes[store.indexNames[i]];
-	            /** @type {IDBIndexProperties} **/
-	            indexList[idx.name] = {
-	                columnName: idx.name,
-	                keyPath: idx.keyPath,
-	                optionalParams: {
-	                    unique: idx.unique,
-	                    multiEntry: idx.multiEntry
-	                },
-	                deleted: !!idx.deleted
-	            };
-	        }
-
-	        idbModules.DEBUG && console.log("Updating the index list for " + store.name, indexList);
-	        tx.executeSql("UPDATE __sys__ set indexList = ? where name = ?", [JSON.stringify(indexList), store.name], function() {
-	            success(store);
-	        }, failure);
-	    };
-
-	    /**
-	     * Retrieves index data for the given key
-	     * @param {*|IDBKeyRange} key
-	     * @param {string} opType
-	     * @returns {IDBRequest}
-	     * @private
-	     */
-	    IDBIndex.prototype.__fetchIndexData = function(key, opType) {
-	        var me = this;
-	        var hasKey, encodedKey;
-
-	        // key is optional
-	        if (arguments.length === 1) {
-	            opType = key;
-	            hasKey = false;
-	        }
-	        else {
-	            idbModules.Key.validate(key);
-	            encodedKey = idbModules.Key.encode(key, me.multiEntry);
-	            hasKey = true;
-	        }
-
-	        return me.objectStore.transaction.__addToTransactionQueue(function fetchIndexData(tx, args, success, error) {
-	            var sql = ["SELECT * FROM", idbModules.util.quote(me.objectStore.name), "WHERE", idbModules.util.quote(me.name), "NOT NULL"];
-	            var sqlValues = [];
-	            if (hasKey) {
-	                if (me.multiEntry) {
-	                    sql.push("AND", idbModules.util.quote(me.name), "LIKE ?");
-	                    sqlValues.push("%" + encodedKey + "%");
-	                }
-	                else {
-	                    sql.push("AND", idbModules.util.quote(me.name), "= ?");
-	                    sqlValues.push(encodedKey);
-	                }
-	            }
-	            idbModules.DEBUG && console.log("Trying to fetch data for Index", sql.join(" "), sqlValues);
-	            tx.executeSql(sql.join(" "), sqlValues, function(tx, data) {
-	                var recordCount = 0, record = null;
-	                if (me.multiEntry) {
-	                    for (var i = 0; i < data.rows.length; i++) {
-	                        var row = data.rows.item(i);
-	                        var rowKey = idbModules.Key.decode(row[me.name]);
-	                        if (hasKey && idbModules.Key.isMultiEntryMatch(encodedKey, row[me.name])) {
-	                            recordCount++;
-	                            record = record || row;
-	                        }
-	                        else if (!hasKey && rowKey !== undefined) {
-	                            recordCount = recordCount + (rowKey instanceof Array ? rowKey.length : 1);
-	                            record = record || row;
-	                        }
-	                    }
-	                }
-	                else {
-	                    recordCount = data.rows.length;
-	                    record = recordCount && data.rows.item(0);
-	                }
-
-	                if (opType === "count") {
-	                    success(recordCount);
-	                }
-	                else if (recordCount === 0) {
-	                    success(undefined);
-	                }
-	                else if (opType === "key") {
-	                    success(idbModules.Key.decode(record.key));
-	                }
-	                else { // when opType is value
-	                    success(idbModules.Sca.decode(record.value));
-	                }
-	            }, error);
-	        });
-	    };
-
-	    /**
-	     * Opens a cursor over the given key range.
-	     * @param {IDBKeyRange} range
-	     * @param {string} direction
-	     * @returns {IDBRequest}
-	     */
-	    IDBIndex.prototype.openCursor = function(range, direction) {
-	        return new idbModules.IDBCursor(range, direction, this.objectStore, this, this.name, "value").__req;
-	    };
-
-	    /**
-	     * Opens a cursor over the given key range.  The cursor only includes key values, not data.
-	     * @param {IDBKeyRange} range
-	     * @param {string} direction
-	     * @returns {IDBRequest}
-	     */
-	    IDBIndex.prototype.openKeyCursor = function(range, direction) {
-	        return new idbModules.IDBCursor(range, direction, this.objectStore, this, this.name, "key").__req;
-	    };
-
-	    IDBIndex.prototype.get = function(key) {
-	        if (arguments.length === 0) {
-	            throw new TypeError("No key was specified");
-	        }
-
-	        return this.__fetchIndexData(key, "value");
-	    };
-
-	    IDBIndex.prototype.getKey = function(key) {
-	        if (arguments.length === 0) {
-	            throw new TypeError("No key was specified");
-	        }
-
-	        return this.__fetchIndexData(key, "key");
-	    };
-
-	    IDBIndex.prototype.count = function(key) {
-	        // key is optional
-	        if (key === undefined) {
-	            return this.__fetchIndexData("count");
-	        }
-	        else if (key instanceof idbModules.IDBKeyRange) {
-	            return new idbModules.IDBCursor(key, "next", this.objectStore, this, this.name, "value", true).__req;
-	        }
-	        else {
-	            return this.__fetchIndexData(key, "count");
-	        }
-	    };
-
-	    idbModules.IDBIndex = IDBIndex;
-	}(idbModules));
-
-	(function(idbModules) {
-	    'use strict';
-
-	    /**
-	     * IndexedDB Object Store
-	     * http://dvcs.w3.org/hg/IndexedDB/raw-file/tip/Overview.html#idl-def-IDBObjectStore
-	     * @param {IDBObjectStoreProperties} storeProperties
-	     * @param {IDBTransaction} transaction
-	     * @constructor
-	     */
-	    function IDBObjectStore(storeProperties, transaction) {
-	        this.name = storeProperties.name;
-	        this.keyPath = JSON.parse(storeProperties.keyPath);
-	        this.transaction = transaction;
-
-	        // autoInc is numeric (0/1) on WinPhone
-	        this.autoIncrement = typeof storeProperties.autoInc === "string" ? storeProperties.autoInc === "true" : !!storeProperties.autoInc;
-
-	        this.__indexes = {};
-	        this.indexNames = new idbModules.util.StringList();
-	        var indexList = JSON.parse(storeProperties.indexList);
-	        for (var indexName in indexList) {
-	            if (indexList.hasOwnProperty(indexName)) {
-	                var index = new idbModules.IDBIndex(this, indexList[indexName]);
-	                this.__indexes[index.name] = index;
-	                if (!index.__deleted) {
-	                    this.indexNames.push(index.name);
-	                }
-	            }
-	        }
-	    }
-
-	    /**
-	     * Clones an IDBObjectStore instance for a different IDBTransaction instance.
-	     * @param {IDBObjectStore} store
-	     * @param {IDBTransaction} transaction
-	     * @protected
-	     */
-	    IDBObjectStore.__clone = function(store, transaction) {
-	        var newStore = new IDBObjectStore({
-	            name: store.name,
-	            keyPath: JSON.stringify(store.keyPath),
-	            autoInc: JSON.stringify(store.autoIncrement),
-	            indexList: "{}"
-	        }, transaction);
-	        newStore.__indexes = store.__indexes;
-	        newStore.indexNames = store.indexNames;
-	        return newStore;
-	    };
-
-	    /**
-	     * Creates a new object store in the database.
-	     * @param {IDBDatabase} db
-	     * @param {IDBObjectStore} store
-	     * @protected
-	     */
-	    IDBObjectStore.__createObjectStore = function(db, store) {
-	        // Add the object store to the IDBDatabase
-	        db.__objectStores[store.name] = store;
-	        db.objectStoreNames.push(store.name);
-
-	        // Add the object store to WebSQL
-	        var transaction = db.__versionTransaction;
-	        idbModules.IDBTransaction.__assertVersionChange(transaction);
-	        transaction.__addToTransactionQueue(function createObjectStore(tx, args, success, failure) {
-	            function error(tx, err) {
-	                throw idbModules.util.createDOMException(0, "Could not create object store \"" + store.name + "\"", err);
-	            }
-
-	            //key INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE
-	            var sql = ["CREATE TABLE", idbModules.util.quote(store.name), "(key BLOB", store.autoIncrement ? "UNIQUE, inc INTEGER PRIMARY KEY AUTOINCREMENT" : "PRIMARY KEY", ", value BLOB)"].join(" ");
-	            idbModules.DEBUG && console.log(sql);
-	            tx.executeSql(sql, [], function(tx, data) {
-	                tx.executeSql("INSERT INTO __sys__ VALUES (?,?,?,?)", [store.name, JSON.stringify(store.keyPath), store.autoIncrement, "{}"], function() {
-	                    success(store);
-	                }, error);
-	            }, error);
-	        });
-	    };
-
-	    /**
-	     * Deletes an object store from the database.
-	     * @param {IDBDatabase} db
-	     * @param {IDBObjectStore} store
-	     * @protected
-	     */
-	    IDBObjectStore.__deleteObjectStore = function(db, store) {
-	        // Remove the object store from the IDBDatabase
-	        db.__objectStores[store.name] = undefined;
-	        db.objectStoreNames.splice(db.objectStoreNames.indexOf(store.name), 1);
-
-	        // Remove the object store from WebSQL
-	        var transaction = db.__versionTransaction;
-	        idbModules.IDBTransaction.__assertVersionChange(transaction);
-	        transaction.__addToTransactionQueue(function deleteObjectStore(tx, args, success, failure) {
-	            function error(tx, err) {
-	                failure(idbModules.util.createDOMException(0, "Could not delete ObjectStore", err));
-	            }
-
-	            tx.executeSql("SELECT * FROM __sys__ where name = ?", [store.name], function(tx, data) {
-	                if (data.rows.length > 0) {
-	                    tx.executeSql("DROP TABLE " + idbModules.util.quote(store.name), [], function() {
-	                        tx.executeSql("DELETE FROM __sys__ WHERE name = ?", [store.name], function() {
-	                            success();
-	                        }, error);
-	                    }, error);
-	                }
-	            });
-	        });
-	    };
-
-	    /**
-	     * Determines whether the given inline or out-of-line key is valid, according to the object store's schema.
-	     * @param {*} value     Used for inline keys
-	     * @param {*} key       Used for out-of-line keys
-	     * @private
-	     */
-	    IDBObjectStore.prototype.__validateKey = function(value, key) {
-	        if (this.keyPath) {
-	            if (typeof key !== "undefined") {
-	                throw idbModules.util.createDOMException("DataError", "The object store uses in-line keys and the key parameter was provided", this);
-	            }
-	            else if (value && typeof value === "object") {
-	                key = idbModules.Key.getValue(value, this.keyPath);
-	                if (key === undefined) {
-	                    if (this.autoIncrement) {
-	                        // A key will be generated
-	                        return;
-	                    }
-	                    else {
-	                        throw idbModules.util.createDOMException("DataError", "Could not eval key from keyPath");
-	                    }
-	                }
-	            }
-	            else {
-	                throw idbModules.util.createDOMException("DataError", "KeyPath was specified, but value was not an object");
-	            }
-	        }
-	        else {
-	            if (typeof key === "undefined") {
-	                if (this.autoIncrement) {
-	                    // A key will be generated
-	                    return;
-	                }
-	                else {
-	                    throw idbModules.util.createDOMException("DataError", "The object store uses out-of-line keys and has no key generator and the key parameter was not provided. ", this);
-	                }
-	            }
-	        }
-
-	        idbModules.Key.validate(key);
-	    };
-
-	    /**
-	     * From the store properties and object, extracts the value for the key in hte object Store
-	     * If the table has auto increment, get the next in sequence
-	     * @param {Object} tx
-	     * @param {Object} value
-	     * @param {Object} key
-	     * @param {function} success
-	     * @param {function} failure
-	     */
-	    IDBObjectStore.prototype.__deriveKey = function(tx, value, key, success, failure) {
-	        var me = this;
-
-	        function getNextAutoIncKey(callback) {
-	            tx.executeSql("SELECT * FROM sqlite_sequence where name like ?", [me.name], function(tx, data) {
-	                if (data.rows.length !== 1) {
-	                    callback(1);
-	                }
-	                else {
-	                    callback(data.rows.item(0).seq + 1);
-	                }
-	            }, function(tx, error) {
-	                failure(idbModules.util.createDOMException("DataError", "Could not get the auto increment value for key", error));
-	            });
-	        }
-
-	        if (me.keyPath) {
-	            var primaryKey = idbModules.Key.getValue(value, me.keyPath);
-	            if (primaryKey === undefined && me.autoIncrement) {
-	                getNextAutoIncKey(function(primaryKey) {
-	                    try {
-	                        // Update the value with the new key
-	                        idbModules.Key.setValue(value, me.keyPath, primaryKey);
-	                        success(primaryKey);
-	                    }
-	                    catch (e) {
-	                        failure(idbModules.util.createDOMException("DataError", "Could not assign a generated value to the keyPath", e));
-	                    }
-	                });
-	            }
-	            else {
-	                success(primaryKey);
-	            }
-	        }
-	        else {
-	            if (typeof key === "undefined" && me.autoIncrement) {
-	                // Looks like this has autoInc, so lets get the next in sequence and return that.
-	                getNextAutoIncKey(success);
-	            }
-	            else {
-	                success(key);
-	            }
-	        }
-	    };
-
-	    IDBObjectStore.prototype.__insertData = function(tx, encoded, value, primaryKey, success, error) {
-	        try {
-	            var paramMap = {};
-	            if (typeof primaryKey !== "undefined") {
-	                idbModules.Key.validate(primaryKey);
-	                paramMap.key = idbModules.Key.encode(primaryKey);
-	            }
-	            for (var i = 0; i < this.indexNames.length; i++) {
-	                var index = this.__indexes[this.indexNames[i]];
-	                paramMap[index.name] = idbModules.Key.encode(idbModules.Key.getValue(value, index.keyPath), index.multiEntry);
-	            }
-	            var sqlStart = ["INSERT INTO ", idbModules.util.quote(this.name), "("];
-	            var sqlEnd = [" VALUES ("];
-	            var sqlValues = [];
-	            for (var key in paramMap) {
-	                sqlStart.push(idbModules.util.quote(key) + ",");
-	                sqlEnd.push("?,");
-	                sqlValues.push(paramMap[key]);
-	            }
-	            // removing the trailing comma
-	            sqlStart.push("value )");
-	            sqlEnd.push("?)");
-	            sqlValues.push(encoded);
-
-	            var sql = sqlStart.join(" ") + sqlEnd.join(" ");
-
-	            idbModules.DEBUG && console.log("SQL for adding", sql, sqlValues);
-	            tx.executeSql(sql, sqlValues, function(tx, data) {
-	                idbModules.Sca.encode(primaryKey, function(primaryKey) {
-	                    primaryKey = idbModules.Sca.decode(primaryKey);
-	                    success(primaryKey);
-	                });
-	            }, function(tx, err) {
-	                error(idbModules.util.createDOMError("ConstraintError", err.message, err));
-	            });
-	        }
-	        catch (e) {
-	            error(e);
-	        }
-	    };
-
-	    IDBObjectStore.prototype.add = function(value, key) {
-	        var me = this;
-	        if (arguments.length === 0) {
-	            throw new TypeError("No value was specified");
-	        }
-	        this.__validateKey(value, key);
-	        me.transaction.__assertWritable();
-
-	        var request = me.transaction.__createRequest();
-	        me.transaction.__pushToQueue(request, function objectStoreAdd(tx, args, success, error) {
-	            me.__deriveKey(tx, value, key, function(primaryKey) {
-	                idbModules.Sca.encode(value, function(encoded) {
-	                    me.__insertData(tx, encoded, value, primaryKey, success, error);
-	                });
-	            }, error);
-	        });
-	        return request;
-	    };
-
-	    IDBObjectStore.prototype.put = function(value, key) {
-	        var me = this;
-	        if (arguments.length === 0) {
-	            throw new TypeError("No value was specified");
-	        }
-	        this.__validateKey(value, key);
-	        me.transaction.__assertWritable();
-
-	        var request = me.transaction.__createRequest();
-	        me.transaction.__pushToQueue(request, function objectStorePut(tx, args, success, error) {
-	            me.__deriveKey(tx, value, key, function(primaryKey) {
-	                idbModules.Sca.encode(value, function(encoded) {
-	                    // First try to delete if the record exists
-	                    idbModules.Key.validate(primaryKey);
-	                    var sql = "DELETE FROM " + idbModules.util.quote(me.name) + " where key = ?";
-	                    tx.executeSql(sql, [idbModules.Key.encode(primaryKey)], function(tx, data) {
-	                        idbModules.DEBUG && console.log("Did the row with the", primaryKey, "exist? ", data.rowsAffected);
-	                        me.__insertData(tx, encoded, value, primaryKey, success, error);
-	                    }, function(tx, err) {
-	                        error(err);
-	                    });
-	                });
-	            }, error);
-	        });
-	        return request;
-	    };
-
-	    IDBObjectStore.prototype.get = function(key) {
-	        // TODO Key should also be a key range
-	        var me = this;
-
-	        if (arguments.length === 0) {
-	            throw new TypeError("No key was specified");
-	        }
-
-	        idbModules.Key.validate(key);
-	        var primaryKey = idbModules.Key.encode(key);
-	        return me.transaction.__addToTransactionQueue(function objectStoreGet(tx, args, success, error) {
-	            idbModules.DEBUG && console.log("Fetching", me.name, primaryKey);
-	            tx.executeSql("SELECT * FROM " + idbModules.util.quote(me.name) + " where key = ?", [primaryKey], function(tx, data) {
-	                idbModules.DEBUG && console.log("Fetched data", data);
-	                var value;
-	                try {
-	                    // Opera can't deal with the try-catch here.
-	                    if (0 === data.rows.length) {
-	                        return success();
-	                    }
-
-	                    value = idbModules.Sca.decode(data.rows.item(0).value);
-	                }
-	                catch (e) {
-	                    // If no result is returned, or error occurs when parsing JSON
-	                    idbModules.DEBUG && console.log(e);
-	                }
-	                success(value);
-	            }, function(tx, err) {
-	                error(err);
-	            });
-	        });
-	    };
-
-	    IDBObjectStore.prototype["delete"] = function(key) {
-	        var me = this;
-
-	        if (arguments.length === 0) {
-	            throw new TypeError("No key was specified");
-	        }
-
-	        me.transaction.__assertWritable();
-	        idbModules.Key.validate(key);
-	        var primaryKey = idbModules.Key.encode(key);
-	        // TODO key should also support key ranges
-	        return me.transaction.__addToTransactionQueue(function objectStoreDelete(tx, args, success, error) {
-	            idbModules.DEBUG && console.log("Fetching", me.name, primaryKey);
-	            tx.executeSql("DELETE FROM " + idbModules.util.quote(me.name) + " where key = ?", [primaryKey], function(tx, data) {
-	                idbModules.DEBUG && console.log("Deleted from database", data.rowsAffected);
-	                success();
-	            }, function(tx, err) {
-	                error(err);
-	            });
-	        });
-	    };
-
-	    IDBObjectStore.prototype.clear = function() {
-	        var me = this;
-	        me.transaction.__assertWritable();
-	        return me.transaction.__addToTransactionQueue(function objectStoreClear(tx, args, success, error) {
-	            tx.executeSql("DELETE FROM " + idbModules.util.quote(me.name), [], function(tx, data) {
-	                idbModules.DEBUG && console.log("Cleared all records from database", data.rowsAffected);
-	                success();
-	            }, function(tx, err) {
-	                error(err);
-	            });
-	        });
-	    };
-
-	    IDBObjectStore.prototype.count = function(key) {
-	        if (key instanceof idbModules.IDBKeyRange) {
-	            return new idbModules.IDBCursor(key, "next", this, this, "key", "value", true).__req;
-	        }
-	        else {
-	            var me = this;
-	            var hasKey = false;
-
-	            // key is optional
-	            if (key !== undefined) {
-	                hasKey = true;
-	                idbModules.Key.validate(key);
-	            }
-
-	            return me.transaction.__addToTransactionQueue(function objectStoreCount(tx, args, success, error) {
-	                var sql = "SELECT * FROM " + idbModules.util.quote(me.name) + (hasKey ? " WHERE key = ?" : "");
-	                var sqlValues = [];
-	                hasKey && sqlValues.push(idbModules.Key.encode(key));
-	                tx.executeSql(sql, sqlValues, function(tx, data) {
-	                    success(data.rows.length);
-	                }, function(tx, err) {
-	                    error(err);
-	                });
-	            });
-	        }
-	    };
-
-	    IDBObjectStore.prototype.openCursor = function(range, direction) {
-	        return new idbModules.IDBCursor(range, direction, this, this, "key", "value").__req;
-	    };
-
-	    IDBObjectStore.prototype.index = function(indexName) {
-	        if (arguments.length === 0) {
-	            throw new TypeError("No index name was specified");
-	        }
-	        var index = this.__indexes[indexName];
-	        if (!index) {
-	            throw idbModules.util.createDOMException("NotFoundError", "Index \"" + indexName + "\" does not exist on " + this.name);
-	        }
-
-	        return idbModules.IDBIndex.__clone(index, this);
-	    };
-
-	    /**
-	     * Creates a new index on the object store.
-	     * @param {string} indexName
-	     * @param {string} keyPath
-	     * @param {object} optionalParameters
-	     * @returns {IDBIndex}
-	     */
-	    IDBObjectStore.prototype.createIndex = function(indexName, keyPath, optionalParameters) {
-	        if (arguments.length === 0) {
-	            throw new TypeError("No index name was specified");
-	        }
-	        if (arguments.length === 1) {
-	            throw new TypeError("No key path was specified");
-	        }
-	        if (keyPath instanceof Array && optionalParameters && optionalParameters.multiEntry) {
-	            throw idbModules.util.createDOMException("InvalidAccessError", "The keyPath argument was an array and the multiEntry option is true.");
-	        }
-	        if (this.__indexes[indexName] && !this.__indexes[indexName].__deleted) {
-	            throw idbModules.util.createDOMException("ConstraintError", "Index \"" + indexName + "\" already exists on " + this.name);
-	        }
-
-	        this.transaction.__assertVersionChange();
-
-	        optionalParameters = optionalParameters || {};
-	        /** @name IDBIndexProperties **/
-	        var indexProperties = {
-	            columnName: indexName,
-	            keyPath: keyPath,
-	            optionalParams: {
-	                unique: !!optionalParameters.unique,
-	                multiEntry: !!optionalParameters.multiEntry
-	            }
-	        };
-	        var index = new idbModules.IDBIndex(this, indexProperties);
-	        idbModules.IDBIndex.__createIndex(this, index);
-	        return index;
-	    };
-
-	    IDBObjectStore.prototype.deleteIndex = function(indexName) {
-	        if (arguments.length === 0) {
-	            throw new TypeError("No index name was specified");
-	        }
-	        var index = this.__indexes[indexName];
-	        if (!index) {
-	            throw idbModules.util.createDOMException("NotFoundError", "Index \"" + indexName + "\" does not exist on " + this.name);
-	        }
-	        this.transaction.__assertVersionChange();
-
-	        idbModules.IDBIndex.__deleteIndex(this, index);
-	    };
-
-	    idbModules.IDBObjectStore = IDBObjectStore;
-	}(idbModules));
-
-	(function(idbModules) {
-	    'use strict';
-
-	    var uniqueID = 0;
-
-	    /**
-	     * The IndexedDB Transaction
-	     * http://dvcs.w3.org/hg/IndexedDB/raw-file/tip/Overview.html#idl-def-IDBTransaction
-	     * @param {IDBDatabase} db
-	     * @param {string[]} storeNames
-	     * @param {string} mode
-	     * @constructor
-	     */
-	    function IDBTransaction(db, storeNames, mode) {
-	        this.__id = ++uniqueID; // for debugging simultaneous transactions
-	        this.__active = true;
-	        this.__running = false;
-	        this.__errored = false;
-	        this.__requests = [];
-	        this.__storeNames = storeNames;
-	        this.mode = mode;
-	        this.db = db;
-	        this.error = null;
-	        this.onabort = this.onerror = this.oncomplete = null;
-
-	        // Kick off the transaction as soon as all synchronous code is done.
-	        var me = this;
-	        setTimeout(function() { me.__executeRequests(); }, 0);
-	    }
-
-	    IDBTransaction.prototype.__executeRequests = function() {
-	        if (this.__running) {
-	            idbModules.DEBUG && console.log("Looks like the request set is already running", this.mode);
-	            return;
-	        }
-
-	        this.__running = true;
-	        var me = this;
-
-	        me.db.__db.transaction(function executeRequests(tx) {
-	                me.__tx = tx;
-	                var q = null, i = 0;
-
-	                function success(result, req) {
-	                    if (req) {
-	                        q.req = req;// Need to do this in case of cursors
-	                    }
-	                    q.req.readyState = "done";
-	                    q.req.result = result;
-	                    delete q.req.error;
-	                    var e = idbModules.util.createEvent("success");
-	                    idbModules.util.callback("onsuccess", q.req, e);
-	                    i++;
-	                    executeNextRequest();
-	                }
-
-	                function error(tx, err) {
-	                    err = idbModules.util.findError(arguments);
-	                    try {
-	                        // Fire an error event for the current IDBRequest
-	                        q.req.readyState = "done";
-	                        q.req.error = err || "DOMError";
-	                        q.req.result = undefined;
-	                        var e = idbModules.util.createEvent("error", err);
-	                        idbModules.util.callback("onerror", q.req, e);
-	                    }
-	                    finally {
-	                        // Fire an error event for the transaction
-	                        transactionError(err);
-	                    }
-	                }
-
-	                function executeNextRequest() {
-	                    if (i >= me.__requests.length) {
-	                        // All requests in the transaction are done
-	                        me.__requests = [];
-	                        if (me.__active) {
-	                            me.__active = false;
-	                            transactionFinished();
-	                        }
-	                    }
-	                    else {
-	                        try {
-	                            q = me.__requests[i];
-	                            q.op(tx, q.args, success, error);
-	                        }
-	                        catch (e) {
-	                            error(e);
-	                        }
-	                    }
-	                }
-
-	                executeNextRequest();
-	            },
-
-	            function webSqlError(err) {
-	                transactionError(err);
-	            }
-	        );
-
-	        function transactionError(err) {
-	            idbModules.util.logError("Error", "An error occurred in a transaction", err);
-
-	            if (me.__errored) {
-	                // We've already called "onerror", "onabort", or thrown, so don't do it again.
-	                return;
-	            }
-
-	            me.__errored = true;
-
-	            if (!me.__active) {
-	                // The transaction has already completed, so we can't call "onerror" or "onabort".
-	                // So throw the error instead.
-	                throw err;
-	            }
-
-	            try {
-	                me.error = err;
-	                var evt = idbModules.util.createEvent("error");
-	                idbModules.util.callback("onerror", me, evt);
-	                idbModules.util.callback("onerror", me.db, evt);
-	            }
-	            finally {
-	                me.abort();
-	            }
-	        }
-
-	        function transactionFinished() {
-	            idbModules.DEBUG && console.log("Transaction completed");
-	            var evt = idbModules.util.createEvent("complete");
-	            try {
-	                idbModules.util.callback("oncomplete", me, evt);
-	                idbModules.util.callback("__oncomplete", me, evt);
-	            }
-	            catch (e) {
-	                // An error occurred in the "oncomplete" handler.
-	                // It's too late to call "onerror" or "onabort". Throw a global error instead.
-	                // (this may seem odd/bad, but it's how all native IndexedDB implementations work)
-	                me.__errored = true;
-	                throw e;
-	            }
-	        }
-	    };
-
-	    /**
-	     * Creates a new IDBRequest for the transaction.
-	     * NOTE: The transaction is not queued util you call {@link IDBTransaction#__pushToQueue}
-	     * @returns {IDBRequest}
-	     * @protected
-	     */
-	    IDBTransaction.prototype.__createRequest = function() {
-	        var request = new idbModules.IDBRequest();
-	        request.source = this.db;
-	        request.transaction = this;
-	        return request;
-	    };
-
-	    /**
-	     * Adds a callback function to the transaction queue
-	     * @param {function} callback
-	     * @param {*} args
-	     * @returns {IDBRequest}
-	     * @protected
-	     */
-	    IDBTransaction.prototype.__addToTransactionQueue = function(callback, args) {
-	        var request = this.__createRequest();
-	        this.__pushToQueue(request, callback, args);
-	        return request;
-	    };
-
-	    /**
-	     * Adds an IDBRequest to the transaction queue
-	     * @param {IDBRequest} request
-	     * @param {function} callback
-	     * @param {*} args
-	     * @protected
-	     */
-	    IDBTransaction.prototype.__pushToQueue = function(request, callback, args) {
-	        this.__assertActive();
-	        this.__requests.push({
-	            "op": callback,
-	            "args": args,
-	            "req": request
-	        });
-	    };
-
-	    IDBTransaction.prototype.__assertActive = function() {
-	        if (!this.__active) {
-	            throw idbModules.util.createDOMException("TransactionInactiveError", "A request was placed against a transaction which is currently not active, or which is finished");
-	        }
-	    };
-
-	    IDBTransaction.prototype.__assertWritable = function() {
-	        if (this.mode === IDBTransaction.READ_ONLY) {
-	            throw idbModules.util.createDOMException("ReadOnlyError", "The transaction is read only");
-	        }
-	    };
-
-	    IDBTransaction.prototype.__assertVersionChange = function() {
-	        IDBTransaction.__assertVersionChange(this);
-	    };
-
-	    IDBTransaction.__assertVersionChange = function(tx) {
-	        if (!tx || tx.mode !== IDBTransaction.VERSION_CHANGE) {
-	            throw idbModules.util.createDOMException("InvalidStateError", "Not a version transaction");
-	        }
-	    };
-
-	    /**
-	     * Returns the specified object store.
-	     * @param {string} objectStoreName
-	     * @returns {IDBObjectStore}
-	     */
-	    IDBTransaction.prototype.objectStore = function(objectStoreName) {
-	        if (arguments.length === 0) {
-	            throw new TypeError("No object store name was specified");
-	        }
-	        if (!this.__active) {
-	            throw idbModules.util.createDOMException("InvalidStateError", "A request was placed against a transaction which is currently not active, or which is finished");
-	        }
-	        if (this.__storeNames.indexOf(objectStoreName) === -1 && this.mode !== IDBTransaction.VERSION_CHANGE) {
-	            throw idbModules.util.createDOMException("NotFoundError", objectStoreName + " is not participating in this transaction");
-	        }
-	        var store = this.db.__objectStores[objectStoreName];
-	        if (!store) {
-	            throw idbModules.util.createDOMException("NotFoundError", objectStoreName + " does not exist in " + this.db.name);
-	        }
-
-	        return idbModules.IDBObjectStore.__clone(store, this);
-	    };
-
-	    IDBTransaction.prototype.abort = function() {
-	        var me = this;
-	        idbModules.DEBUG && console.log("The transaction was aborted", me);
-	        me.__active = false;
-	        var evt = idbModules.util.createEvent("abort");
-
-	        // Fire the "onabort" event asynchronously, so errors don't bubble
-	        setTimeout(function() {
-	            idbModules.util.callback("onabort", me, evt);
-	        }, 0);
-	    };
-
-	    IDBTransaction.READ_ONLY = "readonly";
-	    IDBTransaction.READ_WRITE = "readwrite";
-	    IDBTransaction.VERSION_CHANGE = "versionchange";
-
-	    idbModules.IDBTransaction = IDBTransaction;
-	}(idbModules));
-
-	(function(idbModules){
-	    'use strict';
-
-	    /**
-	     * IDB Database Object
-	     * http://dvcs.w3.org/hg/IndexedDB/raw-file/tip/Overview.html#database-interface
-	     * @constructor
-	     */
-	    function IDBDatabase(db, name, version, storeProperties){
-	        this.__db = db;
-	        this.__closed = false;
-	        this.version = version;
-	        this.name = name;
-	        this.onabort = this.onerror = this.onversionchange = null;
-
-	        this.__objectStores = {};
-	        this.objectStoreNames = new idbModules.util.StringList();
-	        for (var i = 0; i < storeProperties.rows.length; i++) {
-	            var store = new idbModules.IDBObjectStore(storeProperties.rows.item(i));
-	            this.__objectStores[store.name] = store;
-	            this.objectStoreNames.push(store.name);
-	        }
-	    }
-
-	    /**
-	     * Creates a new object store.
-	     * @param {string} storeName
-	     * @param {object} [createOptions]
-	     * @returns {IDBObjectStore}
-	     */
-	    IDBDatabase.prototype.createObjectStore = function(storeName, createOptions){
-	        if (arguments.length === 0) {
-	            throw new TypeError("No object store name was specified");
-	        }
-	        if (this.__objectStores[storeName]) {
-	            throw idbModules.util.createDOMException("ConstraintError", "Object store \"" + storeName + "\" already exists in " + this.name);
-	        }
-	        this.__versionTransaction.__assertVersionChange();
-
-	        createOptions = createOptions || {};
-	        /** @name IDBObjectStoreProperties **/
-	        var storeProperties = {
-	            name: storeName,
-	            keyPath: JSON.stringify(createOptions.keyPath || null),
-	            autoInc: JSON.stringify(createOptions.autoIncrement),
-	            indexList: "{}"
-	        };
-	        var store = new idbModules.IDBObjectStore(storeProperties, this.__versionTransaction);
-	        idbModules.IDBObjectStore.__createObjectStore(this, store);
-	        return store;
-	    };
-
-	    /**
-	     * Deletes an object store.
-	     * @param {string} storeName
-	     */
-	    IDBDatabase.prototype.deleteObjectStore = function(storeName){
-	        if (arguments.length === 0) {
-	            throw new TypeError("No object store name was specified");
-	        }
-	        var store = this.__objectStores[storeName];
-	        if (!store) {
-	            throw idbModules.util.createDOMException("NotFoundError", "Object store \"" + storeName + "\" does not exist in " + this.name);
-	        }
-	        this.__versionTransaction.__assertVersionChange();
-
-	        idbModules.IDBObjectStore.__deleteObjectStore(this, store);
-	    };
-
-	    IDBDatabase.prototype.close = function(){
-	        this.__closed = true;
-	    };
-
-	    /**
-	     * Starts a new transaction.
-	     * @param {string|string[]} storeNames
-	     * @param {string} mode
-	     * @returns {IDBTransaction}
-	     */
-	    IDBDatabase.prototype.transaction = function(storeNames, mode){
-	        if (this.__closed) {
-	            throw idbModules.util.createDOMException("InvalidStateError", "An attempt was made to start a new transaction on a database connection that is not open");
-	        }
-
-	        if (typeof mode === "number") {
-	            mode = mode === 1 ? IDBTransaction.READ_WRITE : IDBTransaction.READ_ONLY;
-	            idbModules.DEBUG && console.log("Mode should be a string, but was specified as ", mode);
-	        }
-	        else {
-	            mode = mode || IDBTransaction.READ_ONLY;
-	        }
-
-	        if (mode !== IDBTransaction.READ_ONLY && mode !== IDBTransaction.READ_WRITE) {
-	            throw new TypeError("Invalid transaction mode: " + mode);
-	        }
-
-	        storeNames = typeof storeNames === "string" ? [storeNames] : storeNames;
-	        if (storeNames.length === 0) {
-	            throw idbModules.util.createDOMException("InvalidAccessError", "No object store names were specified");
-	        }
-	        for (var i = 0; i < storeNames.length; i++) {
-	            if (!this.objectStoreNames.contains(storeNames[i])) {
-	                throw idbModules.util.createDOMException("NotFoundError", "The \"" + storeNames[i] + "\" object store does not exist");
-	            }
-	        }
-
-	        var transaction = new idbModules.IDBTransaction(this, storeNames, mode);
-	        return transaction;
-	    };
-	    
-	    idbModules.IDBDatabase = IDBDatabase;
-	}(idbModules));
-
-	(function(idbModules) {
-	    'use strict';
-
-	    var DEFAULT_DB_SIZE = 4 * 1024 * 1024;
-	    var sysdb;
-
-	    /**
-	     * Craetes the sysDB to keep track of version numbers for databases
-	     **/
-	    function createSysDB(success, failure) {
-	        function sysDbCreateError(tx, err) {
-	            err = idbModules.util.findError(arguments);
-	            idbModules.DEBUG && console.log("Error in sysdb transaction - when creating dbVersions", err);
-	            failure(err);
-	        }
-
-	        if (sysdb) {
-	            success();
-	        }
-	        else {
-	            sysdb = window.openDatabase("__sysdb__", 1, "System Database", DEFAULT_DB_SIZE);
-	            sysdb.transaction(function(tx) {
-	                tx.executeSql("CREATE TABLE IF NOT EXISTS dbVersions (name VARCHAR(255), version INT);", [], success, sysDbCreateError);
-	            }, sysDbCreateError);
-	        }
-	    }
-
-	    /**
-	     * IDBFactory Class
-	     * https://w3c.github.io/IndexedDB/#idl-def-IDBFactory
-	     * @constructor
-	     */
-	    function IDBFactory() {
-	        this.modules = idbModules;
-	    }
-
-	    /**
-	     * The IndexedDB Method to create a new database and return the DB
-	     * @param {string} name
-	     * @param {number} version
-	     */
-	    IDBFactory.prototype.open = function(name, version) {
-	        var req = new idbModules.IDBOpenDBRequest();
-	        var calledDbCreateError = false;
-
-	        if (arguments.length === 0) {
-	            throw new TypeError('Database name is required');
-	        }
-	        else if (arguments.length === 2) {
-	            version = parseFloat(version);
-	            if (isNaN(version) || !isFinite(version) || version <= 0) {
-	                throw new TypeError('Invalid database version: ' + version);
-	            }
-	        }
-	        name = name + ''; // cast to a string
-
-	        function dbCreateError(tx, err) {
-	            if (calledDbCreateError) {
-	                return;
-	            }
-	            err = idbModules.util.findError(arguments);
-	            calledDbCreateError = true;
-	            var evt = idbModules.util.createEvent("error", arguments);
-	            req.readyState = "done";
-	            req.error = err || "DOMError";
-	            idbModules.util.callback("onerror", req, evt);
-	        }
-
-	        function openDB(oldVersion) {
-	            var db = window.openDatabase(name, 1, name, DEFAULT_DB_SIZE);
-	            req.readyState = "done";
-	            if (typeof version === "undefined") {
-	                version = oldVersion || 1;
-	            }
-	            if (version <= 0 || oldVersion > version) {
-	                var err = idbModules.util.createDOMError("VersionError", "An attempt was made to open a database using a lower version than the existing version.", version);
-	                dbCreateError(err);
-	                return;
-	            }
-
-	            db.transaction(function(tx) {
-	                tx.executeSql("CREATE TABLE IF NOT EXISTS __sys__ (name VARCHAR(255), keyPath VARCHAR(255), autoInc BOOLEAN, indexList BLOB)", [], function() {
-	                    tx.executeSql("SELECT * FROM __sys__", [], function(tx, data) {
-	                        var e = idbModules.util.createEvent("success");
-	                        req.source = req.result = new idbModules.IDBDatabase(db, name, version, data);
-	                        if (oldVersion < version) {
-	                            // DB Upgrade in progress
-	                            sysdb.transaction(function(systx) {
-	                                systx.executeSql("UPDATE dbVersions set version = ? where name = ?", [version, name], function() {
-	                                    var e = idbModules.util.createEvent("upgradeneeded");
-	                                    e.oldVersion = oldVersion;
-	                                    e.newVersion = version;
-	                                    req.transaction = req.result.__versionTransaction = new idbModules.IDBTransaction(req.source, [], idbModules.IDBTransaction.VERSION_CHANGE);
-	                                    req.transaction.__addToTransactionQueue(function onupgradeneeded(tx, args, success) {
-	                                        idbModules.util.callback("onupgradeneeded", req, e);
-	                                        success();
-	                                    });
-	                                    req.transaction.__oncomplete = function() {
-	                                        req.transaction = null;
-	                                        var e = idbModules.util.createEvent("success");
-	                                        idbModules.util.callback("onsuccess", req, e);
-	                                    };
-	                                }, dbCreateError);
-	                            }, dbCreateError);
-	                        } else {
-	                            idbModules.util.callback("onsuccess", req, e);
-	                        }
-	                    }, dbCreateError);
-	                }, dbCreateError);
-	            }, dbCreateError);
-	        }
-
-	        createSysDB(function() {
-	            sysdb.transaction(function(tx) {
-	                tx.executeSql("SELECT * FROM dbVersions where name = ?", [name], function(tx, data) {
-	                    if (data.rows.length === 0) {
-	                        // Database with this name does not exist
-	                        tx.executeSql("INSERT INTO dbVersions VALUES (?,?)", [name, version || 1], function() {
-	                            openDB(0);
-	                        }, dbCreateError);
-	                    } else {
-	                        openDB(data.rows.item(0).version);
-	                    }
-	                }, dbCreateError);
-	            }, dbCreateError);
-	        }, dbCreateError);
-
-	        return req;
-	    };
-
-	    /**
-	     * Deletes a database
-	     * @param {string} name
-	     * @returns {IDBOpenDBRequest}
-	     */
-	    IDBFactory.prototype.deleteDatabase = function(name) {
-	        var req = new idbModules.IDBOpenDBRequest();
-	        var calledDBError = false;
-	        var version = null;
-
-	        if (arguments.length === 0) {
-	            throw new TypeError('Database name is required');
-	        }
-	        name = name + ''; // cast to a string
-
-	        function dbError(tx, err) {
-	            if (calledDBError) {
-	                return;
-	            }
-	            err = idbModules.util.findError(arguments);
-	            req.readyState = "done";
-	            req.error = err || "DOMError";
-	            var e = idbModules.util.createEvent("error");
-	            e.debug = arguments;
-	            idbModules.util.callback("onerror", req, e);
-	            calledDBError = true;
-	        }
-
-	        function deleteFromDbVersions() {
-	            sysdb.transaction(function(systx) {
-	                systx.executeSql("DELETE FROM dbVersions where name = ? ", [name], function() {
-	                    req.result = undefined;
-	                    var e = idbModules.util.createEvent("success");
-	                    e.newVersion = null;
-	                    e.oldVersion = version;
-	                    idbModules.util.callback("onsuccess", req, e);
-	                }, dbError);
-	            }, dbError);
-	        }
-
-	        createSysDB(function() {
-	            sysdb.transaction(function(systx) {
-	                systx.executeSql("SELECT * FROM dbVersions where name = ?", [name], function(tx, data) {
-	                    if (data.rows.length === 0) {
-	                        req.result = undefined;
-	                        var e = idbModules.util.createEvent("success");
-	                        e.newVersion = null;
-	                        e.oldVersion = version;
-	                        idbModules.util.callback("onsuccess", req, e);
-	                        return;
-	                    }
-	                    version = data.rows.item(0).version;
-	                    var db = window.openDatabase(name, 1, name, DEFAULT_DB_SIZE);
-	                    db.transaction(function(tx) {
-	                        tx.executeSql("SELECT * FROM __sys__", [], function(tx, data) {
-	                            var tables = data.rows;
-	                            (function deleteTables(i) {
-	                                if (i >= tables.length) {
-	                                    // If all tables are deleted, delete the housekeeping tables
-	                                    tx.executeSql("DROP TABLE IF EXISTS __sys__", [], function() {
-	                                        // Finally, delete the record for this DB from sysdb
-	                                        deleteFromDbVersions();
-	                                    }, dbError);
-	                                } else {
-	                                    // Delete all tables in this database, maintained in the sys table
-	                                    tx.executeSql("DROP TABLE " + idbModules.util.quote(tables.item(i).name), [], function() {
-	                                        deleteTables(i + 1);
-	                                    }, function() {
-	                                        deleteTables(i + 1);
-	                                    });
-	                                }
-	                            }(0));
-	                        }, function(e) {
-	                            // __sysdb table does not exist, but that does not mean delete did not happen
-	                            deleteFromDbVersions();
-	                        });
-	                    });
-	                }, dbError);
-	            }, dbError);
-	        }, dbError);
-
-	        return req;
-	    };
-
-	    /**
-	     * Compares two keys
-	     * @param key1
-	     * @param key2
-	     * @returns {number}
-	     */
-	    IDBFactory.prototype.cmp = function(key1, key2) {
-	        if (arguments.length < 2) {
-	            throw new TypeError("You must provide two keys to be compared");
-	        }
-
-	        idbModules.Key.validate(key1);
-	        idbModules.Key.validate(key2);
-	        var encodedKey1 = idbModules.Key.encode(key1);
-	        var encodedKey2 = idbModules.Key.encode(key2);
-	        var result = encodedKey1 > encodedKey2 ? 1 : encodedKey1 === encodedKey2 ? 0 : -1;
-	        
-	        if (idbModules.DEBUG) {
-	            // verify that the keys encoded correctly
-	            var decodedKey1 = idbModules.Key.decode(encodedKey1);
-	            var decodedKey2 = idbModules.Key.decode(encodedKey2);
-	            if (typeof key1 === "object") {
-	                key1 = JSON.stringify(key1);
-	                decodedKey1 = JSON.stringify(decodedKey1);
-	            }
-	            if (typeof key2 === "object") {
-	                key2 = JSON.stringify(key2);
-	                decodedKey2 = JSON.stringify(decodedKey2);
-	            }
-
-	            // encoding/decoding mismatches are usually due to a loss of floating-point precision
-	            if (decodedKey1 !== key1) {
-	                console.warn(key1 + ' was incorrectly encoded as ' + decodedKey1);
-	            }
-	            if (decodedKey2 !== key2) {
-	                console.warn(key2 + ' was incorrectly encoded as ' + decodedKey2);
-	            }
-	        }
-	        
-	        return result;
-	    };
-
-
-	    idbModules.shimIndexedDB = new IDBFactory();
-	    idbModules.IDBFactory = IDBFactory;
-	}(idbModules));
-
-	(function(window, idbModules){
-	    'use strict';
-
-	    function shim(name, value) {
-	        try {
-	            // Try setting the property. This will fail if the property is read-only.
-	            window[name] = value;
-	        }
-	        catch (e) {}
-
-	        if (window[name] !== value && Object.defineProperty) {
-	            // Setting a read-only property failed, so try re-defining the property
-	            try {
-	                Object.defineProperty(window, name, {
-	                    value: value
-	                });
-	            }
-	            catch (e) {}
-
-	            if (window[name] !== value) {
-	                window.console && console.warn && console.warn('Unable to shim ' + name);
-	            }
-	        }
-	    }
-
-	    shim('shimIndexedDB', idbModules.shimIndexedDB);
-	    if (window.shimIndexedDB) {
-	        window.shimIndexedDB.__useShim = function(){
-	            if (typeof window.openDatabase !== "undefined") {
-	                // Polyfill ALL of IndexedDB, using WebSQL
-	                shim('indexedDB', idbModules.shimIndexedDB);
-	                shim('IDBFactory', idbModules.IDBFactory);
-	                shim('IDBDatabase', idbModules.IDBDatabase);
-	                shim('IDBObjectStore', idbModules.IDBObjectStore);
-	                shim('IDBIndex', idbModules.IDBIndex);
-	                shim('IDBTransaction', idbModules.IDBTransaction);
-	                shim('IDBCursor', idbModules.IDBCursor);
-	                shim('IDBKeyRange', idbModules.IDBKeyRange);
-	                shim('IDBRequest', idbModules.IDBRequest);
-	                shim('IDBOpenDBRequest', idbModules.IDBOpenDBRequest);
-	                shim('IDBVersionChangeEvent', idbModules.IDBVersionChangeEvent);
-	            }
-	            else if (typeof window.indexedDB === "object") {
-	                // Polyfill the missing IndexedDB features
-	                idbModules.polyfill();
-	            }
-	        };
-
-	        window.shimIndexedDB.__debug = function(val){
-	            idbModules.DEBUG = val;
-	        };
-	    }
-	    
-	    // Workaround to prevent an error in Firefox
-	    if(!('indexedDB' in window)) {
-	        window.indexedDB = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.oIndexedDB || window.msIndexedDB;
-	    }
-	    
-	    // Detect browsers with known IndexedDb issues (e.g. Android pre-4.4)
-	    var poorIndexedDbSupport = false;
-	    if (navigator.userAgent.match(/Android 2/) || navigator.userAgent.match(/Android 3/) || navigator.userAgent.match(/Android 4\.[0-3]/)) {
-	        /* Chrome is an exception. It supports IndexedDb */
-	        if (!navigator.userAgent.match(/Chrome/)) {
-	            poorIndexedDbSupport = true;
-	        }
-	    }
-
-	    if ((typeof window.indexedDB === "undefined" || !window.indexedDB || poorIndexedDbSupport) && typeof window.openDatabase !== "undefined") {
-	        window.shimIndexedDB.__useShim();
-	    }
-	    else {
-	        window.IDBDatabase = window.IDBDatabase || window.webkitIDBDatabase;
-	        window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction;
-	        window.IDBCursor = window.IDBCursor || window.webkitIDBCursor;
-	        window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange;
-	        if(!window.IDBTransaction){
-	            window.IDBTransaction = {};
-	        }
-	        /* Some browsers (e.g. Chrome 18 on Android) support IndexedDb but do not allow writing of these properties */
-	        try {
-	            window.IDBTransaction.READ_ONLY = window.IDBTransaction.READ_ONLY || "readonly";
-	            window.IDBTransaction.READ_WRITE = window.IDBTransaction.READ_WRITE || "readwrite";
-	        } catch (e) {}
-	    }
-	    
-	}(window, idbModules));
-
-
-
-/***/ },
-/* 162 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process, global) {'use strict';
@@ -17740,15 +14416,15 @@
 
 	var _errors = __webpack_require__(5);
 
-	var _keyBy = __webpack_require__(163);
+	var _keyBy = __webpack_require__(162);
 
 	var _keyBy2 = _interopRequireDefault(_keyBy);
 
-	var _merge = __webpack_require__(167);
+	var _merge = __webpack_require__(166);
 
 	var _merge2 = _interopRequireDefault(_merge);
 
-	var _values = __webpack_require__(201);
+	var _values = __webpack_require__(200);
 
 	var _values2 = _interopRequireDefault(_values);
 
@@ -17756,7 +14432,7 @@
 
 	var _forEach2 = _interopRequireDefault(_forEach);
 
-	var _findIndex = __webpack_require__(204);
+	var _findIndex = __webpack_require__(203);
 
 	var _findIndex2 = _interopRequireDefault(_findIndex);
 
@@ -18021,10 +14697,10 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), (function() { return this; }())))
 
 /***/ },
-/* 163 */
+/* 162 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var createAggregator = __webpack_require__(164);
+	var createAggregator = __webpack_require__(163);
 
 	/**
 	 * Creates an object composed of keys generated from the results of running
@@ -18063,11 +14739,11 @@
 
 
 /***/ },
-/* 164 */
+/* 163 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var arrayAggregator = __webpack_require__(165),
-	    baseAggregator = __webpack_require__(166),
+	var arrayAggregator = __webpack_require__(164),
+	    baseAggregator = __webpack_require__(165),
 	    baseIteratee = __webpack_require__(36),
 	    isArray = __webpack_require__(31);
 
@@ -18092,7 +14768,7 @@
 
 
 /***/ },
-/* 165 */
+/* 164 */
 /***/ function(module, exports) {
 
 	/**
@@ -18120,7 +14796,7 @@
 
 
 /***/ },
-/* 166 */
+/* 165 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var baseEach = __webpack_require__(12);
@@ -18147,10 +14823,10 @@
 
 
 /***/ },
-/* 167 */
+/* 166 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseMerge = __webpack_require__(168),
+	var baseMerge = __webpack_require__(167),
 	    createAssigner = __webpack_require__(121);
 
 	/**
@@ -18192,17 +14868,17 @@
 
 
 /***/ },
-/* 168 */
+/* 167 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Stack = __webpack_require__(39),
 	    arrayEach = __webpack_require__(11),
-	    assignMergeValue = __webpack_require__(169),
-	    baseMergeDeep = __webpack_require__(170),
+	    assignMergeValue = __webpack_require__(168),
+	    baseMergeDeep = __webpack_require__(169),
 	    isArray = __webpack_require__(31),
 	    isObject = __webpack_require__(28),
 	    isTypedArray = __webpack_require__(96),
-	    keysIn = __webpack_require__(197);
+	    keysIn = __webpack_require__(196);
 
 	/**
 	 * The base implementation of `_.merge` without support for multiple sources.
@@ -18248,7 +14924,7 @@
 
 
 /***/ },
-/* 169 */
+/* 168 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var eq = __webpack_require__(44);
@@ -18273,20 +14949,20 @@
 
 
 /***/ },
-/* 170 */
+/* 169 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var assignMergeValue = __webpack_require__(169),
-	    baseClone = __webpack_require__(171),
-	    copyArray = __webpack_require__(174),
+	var assignMergeValue = __webpack_require__(168),
+	    baseClone = __webpack_require__(170),
+	    copyArray = __webpack_require__(173),
 	    isArguments = __webpack_require__(22),
 	    isArray = __webpack_require__(31),
 	    isArrayLikeObject = __webpack_require__(23),
 	    isFunction = __webpack_require__(27),
 	    isObject = __webpack_require__(28),
-	    isPlainObject = __webpack_require__(195),
+	    isPlainObject = __webpack_require__(194),
 	    isTypedArray = __webpack_require__(96),
-	    toPlainObject = __webpack_require__(196);
+	    toPlainObject = __webpack_require__(195);
 
 	/**
 	 * A specialized version of `baseMerge` for arrays and objects which performs
@@ -18362,21 +15038,21 @@
 
 
 /***/ },
-/* 171 */
+/* 170 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Stack = __webpack_require__(39),
 	    arrayEach = __webpack_require__(11),
 	    assignValue = __webpack_require__(119),
-	    baseAssign = __webpack_require__(172),
-	    cloneBuffer = __webpack_require__(173),
-	    copyArray = __webpack_require__(174),
-	    copySymbols = __webpack_require__(175),
-	    getAllKeys = __webpack_require__(178),
+	    baseAssign = __webpack_require__(171),
+	    cloneBuffer = __webpack_require__(172),
+	    copyArray = __webpack_require__(173),
+	    copySymbols = __webpack_require__(174),
+	    getAllKeys = __webpack_require__(177),
 	    getTag = __webpack_require__(91),
-	    initCloneArray = __webpack_require__(181),
-	    initCloneByTag = __webpack_require__(182),
-	    initCloneObject = __webpack_require__(193),
+	    initCloneArray = __webpack_require__(180),
+	    initCloneByTag = __webpack_require__(181),
+	    initCloneObject = __webpack_require__(192),
 	    isArray = __webpack_require__(31),
 	    isBuffer = __webpack_require__(131),
 	    isHostObject = __webpack_require__(60),
@@ -18507,7 +15183,7 @@
 
 
 /***/ },
-/* 172 */
+/* 171 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var copyObject = __webpack_require__(120),
@@ -18530,7 +15206,7 @@
 
 
 /***/ },
-/* 173 */
+/* 172 */
 /***/ function(module, exports) {
 
 	/**
@@ -18554,7 +15230,7 @@
 
 
 /***/ },
-/* 174 */
+/* 173 */
 /***/ function(module, exports) {
 
 	/**
@@ -18580,11 +15256,11 @@
 
 
 /***/ },
-/* 175 */
+/* 174 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var copyObject = __webpack_require__(120),
-	    getSymbols = __webpack_require__(176);
+	    getSymbols = __webpack_require__(175);
 
 	/**
 	 * Copies own symbol properties of `source` to `object`.
@@ -18602,10 +15278,10 @@
 
 
 /***/ },
-/* 176 */
+/* 175 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var stubArray = __webpack_require__(177);
+	var stubArray = __webpack_require__(176);
 
 	/** Built-in value references. */
 	var getOwnPropertySymbols = Object.getOwnPropertySymbols;
@@ -18632,7 +15308,7 @@
 
 
 /***/ },
-/* 177 */
+/* 176 */
 /***/ function(module, exports) {
 
 	/**
@@ -18661,11 +15337,11 @@
 
 
 /***/ },
-/* 178 */
+/* 177 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseGetAllKeys = __webpack_require__(179),
-	    getSymbols = __webpack_require__(176),
+	var baseGetAllKeys = __webpack_require__(178),
+	    getSymbols = __webpack_require__(175),
 	    keys = __webpack_require__(16);
 
 	/**
@@ -18683,10 +15359,10 @@
 
 
 /***/ },
-/* 179 */
+/* 178 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var arrayPush = __webpack_require__(180),
+	var arrayPush = __webpack_require__(179),
 	    isArray = __webpack_require__(31);
 
 	/**
@@ -18709,7 +15385,7 @@
 
 
 /***/ },
-/* 180 */
+/* 179 */
 /***/ function(module, exports) {
 
 	/**
@@ -18735,7 +15411,7 @@
 
 
 /***/ },
-/* 181 */
+/* 180 */
 /***/ function(module, exports) {
 
 	/** Used for built-in method references. */
@@ -18767,16 +15443,16 @@
 
 
 /***/ },
-/* 182 */
+/* 181 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var cloneArrayBuffer = __webpack_require__(183),
-	    cloneDataView = __webpack_require__(184),
-	    cloneMap = __webpack_require__(185),
-	    cloneRegExp = __webpack_require__(188),
-	    cloneSet = __webpack_require__(189),
-	    cloneSymbol = __webpack_require__(191),
-	    cloneTypedArray = __webpack_require__(192);
+	var cloneArrayBuffer = __webpack_require__(182),
+	    cloneDataView = __webpack_require__(183),
+	    cloneMap = __webpack_require__(184),
+	    cloneRegExp = __webpack_require__(187),
+	    cloneSet = __webpack_require__(188),
+	    cloneSymbol = __webpack_require__(190),
+	    cloneTypedArray = __webpack_require__(191);
 
 	/** `Object#toString` result references. */
 	var boolTag = '[object Boolean]',
@@ -18853,7 +15529,7 @@
 
 
 /***/ },
-/* 183 */
+/* 182 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Uint8Array = __webpack_require__(87);
@@ -18875,10 +15551,10 @@
 
 
 /***/ },
-/* 184 */
+/* 183 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var cloneArrayBuffer = __webpack_require__(183);
+	var cloneArrayBuffer = __webpack_require__(182);
 
 	/**
 	 * Creates a clone of `dataView`.
@@ -18897,11 +15573,11 @@
 
 
 /***/ },
-/* 185 */
+/* 184 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var addMapEntry = __webpack_require__(186),
-	    arrayReduce = __webpack_require__(187),
+	var addMapEntry = __webpack_require__(185),
+	    arrayReduce = __webpack_require__(186),
 	    mapToArray = __webpack_require__(88);
 
 	/**
@@ -18922,7 +15598,7 @@
 
 
 /***/ },
-/* 186 */
+/* 185 */
 /***/ function(module, exports) {
 
 	/**
@@ -18943,7 +15619,7 @@
 
 
 /***/ },
-/* 187 */
+/* 186 */
 /***/ function(module, exports) {
 
 	/**
@@ -18975,7 +15651,7 @@
 
 
 /***/ },
-/* 188 */
+/* 187 */
 /***/ function(module, exports) {
 
 	/** Used to match `RegExp` flags from their coerced string values. */
@@ -18998,11 +15674,11 @@
 
 
 /***/ },
-/* 189 */
+/* 188 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var addSetEntry = __webpack_require__(190),
-	    arrayReduce = __webpack_require__(187),
+	var addSetEntry = __webpack_require__(189),
+	    arrayReduce = __webpack_require__(186),
 	    setToArray = __webpack_require__(89);
 
 	/**
@@ -19023,7 +15699,7 @@
 
 
 /***/ },
-/* 190 */
+/* 189 */
 /***/ function(module, exports) {
 
 	/**
@@ -19043,7 +15719,7 @@
 
 
 /***/ },
-/* 191 */
+/* 190 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Symbol = __webpack_require__(86);
@@ -19067,10 +15743,10 @@
 
 
 /***/ },
-/* 192 */
+/* 191 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var cloneArrayBuffer = __webpack_require__(183);
+	var cloneArrayBuffer = __webpack_require__(182);
 
 	/**
 	 * Creates a clone of `typedArray`.
@@ -19089,10 +15765,10 @@
 
 
 /***/ },
-/* 193 */
+/* 192 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseCreate = __webpack_require__(194),
+	var baseCreate = __webpack_require__(193),
 	    getPrototype = __webpack_require__(18),
 	    isPrototype = __webpack_require__(34);
 
@@ -19113,7 +15789,7 @@
 
 
 /***/ },
-/* 194 */
+/* 193 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var isObject = __webpack_require__(28);
@@ -19137,7 +15813,7 @@
 
 
 /***/ },
-/* 195 */
+/* 194 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var getPrototype = __webpack_require__(18),
@@ -19213,11 +15889,11 @@
 
 
 /***/ },
-/* 196 */
+/* 195 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var copyObject = __webpack_require__(120),
-	    keysIn = __webpack_require__(197);
+	    keysIn = __webpack_require__(196);
 
 	/**
 	 * Converts `value` to a plain object flattening inherited enumerable string
@@ -19251,10 +15927,10 @@
 
 
 /***/ },
-/* 197 */
+/* 196 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseKeysIn = __webpack_require__(198),
+	var baseKeysIn = __webpack_require__(197),
 	    indexKeys = __webpack_require__(20),
 	    isIndex = __webpack_require__(33),
 	    isPrototype = __webpack_require__(34);
@@ -19312,11 +15988,11 @@
 
 
 /***/ },
-/* 198 */
+/* 197 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Reflect = __webpack_require__(199),
-	    iteratorToArray = __webpack_require__(200);
+	var Reflect = __webpack_require__(198),
+	    iteratorToArray = __webpack_require__(199);
 
 	/** Used for built-in method references. */
 	var objectProto = Object.prototype;
@@ -19354,7 +16030,7 @@
 
 
 /***/ },
-/* 199 */
+/* 198 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var root = __webpack_require__(63);
@@ -19366,7 +16042,7 @@
 
 
 /***/ },
-/* 200 */
+/* 199 */
 /***/ function(module, exports) {
 
 	/**
@@ -19390,10 +16066,10 @@
 
 
 /***/ },
-/* 201 */
+/* 200 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseValues = __webpack_require__(202),
+	var baseValues = __webpack_require__(201),
 	    keys = __webpack_require__(16);
 
 	/**
@@ -19430,10 +16106,10 @@
 
 
 /***/ },
-/* 202 */
+/* 201 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var arrayMap = __webpack_require__(203);
+	var arrayMap = __webpack_require__(202);
 
 	/**
 	 * The base implementation of `_.values` and `_.valuesIn` which creates an
@@ -19455,7 +16131,7 @@
 
 
 /***/ },
-/* 203 */
+/* 202 */
 /***/ function(module, exports) {
 
 	/**
@@ -19482,10 +16158,10 @@
 
 
 /***/ },
-/* 204 */
+/* 203 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseFindIndex = __webpack_require__(205),
+	var baseFindIndex = __webpack_require__(204),
 	    baseIteratee = __webpack_require__(36),
 	    toInteger = __webpack_require__(125);
 
@@ -19544,7 +16220,7 @@
 
 
 /***/ },
-/* 205 */
+/* 204 */
 /***/ function(module, exports) {
 
 	/**
@@ -19574,7 +16250,7 @@
 
 
 /***/ },
-/* 206 */
+/* 205 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -19588,11 +16264,11 @@
 
 	var _errors = __webpack_require__(5);
 
-	var _fastMemoryCache = __webpack_require__(207);
+	var _fastMemoryCache = __webpack_require__(206);
 
 	var _fastMemoryCache2 = _interopRequireDefault(_fastMemoryCache);
 
-	var _keyBy = __webpack_require__(163);
+	var _keyBy = __webpack_require__(162);
 
 	var _keyBy2 = _interopRequireDefault(_keyBy);
 
@@ -19600,11 +16276,11 @@
 
 	var _forEach2 = _interopRequireDefault(_forEach);
 
-	var _values = __webpack_require__(201);
+	var _values = __webpack_require__(200);
 
 	var _values2 = _interopRequireDefault(_values);
 
-	var _find = __webpack_require__(208);
+	var _find = __webpack_require__(207);
 
 	var _find2 = _interopRequireDefault(_find);
 
@@ -19869,7 +16545,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ },
-/* 207 */
+/* 206 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -19949,11 +16625,11 @@
 
 
 /***/ },
-/* 208 */
+/* 207 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var createFind = __webpack_require__(209),
-	    findIndex = __webpack_require__(204);
+	var createFind = __webpack_require__(208),
+	    findIndex = __webpack_require__(203);
 
 	/**
 	 * Iterates over elements of `collection`, returning the first element
@@ -19998,7 +16674,7 @@
 
 
 /***/ },
-/* 209 */
+/* 208 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var baseIteratee = __webpack_require__(36),
@@ -20034,7 +16710,7 @@
 
 
 /***/ },
-/* 210 */
+/* 209 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process, global) {'use strict';
@@ -20048,7 +16724,7 @@
 
 	var _errors = __webpack_require__(5);
 
-	var _map = __webpack_require__(211);
+	var _map = __webpack_require__(210);
 
 	var _map2 = _interopRequireDefault(_map);
 
@@ -20402,12 +17078,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), (function() { return this; }())))
 
 /***/ },
-/* 211 */
+/* 210 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var arrayMap = __webpack_require__(203),
+	var arrayMap = __webpack_require__(202),
 	    baseIteratee = __webpack_require__(36),
-	    baseMap = __webpack_require__(212),
+	    baseMap = __webpack_require__(211),
 	    isArray = __webpack_require__(31);
 
 	/**
@@ -20462,7 +17138,7 @@
 
 
 /***/ },
-/* 212 */
+/* 211 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var baseEach = __webpack_require__(12),
@@ -20490,7 +17166,7 @@
 
 
 /***/ },
-/* 213 */
+/* 212 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -20733,23 +17409,23 @@
 	}(Response);
 
 /***/ },
-/* 214 */
+/* 213 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {module.exports = process.env.PROMISE_QUEUE_COVERAGE ?
-	    __webpack_require__(215) :
-	    __webpack_require__(216);
+	    __webpack_require__(214) :
+	    __webpack_require__(215);
 
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ },
-/* 215 */
+/* 214 */
 /***/ function(module, exports) {
 
 	
 
 /***/ },
-/* 216 */
+/* 215 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/* global define, Promise */
@@ -20933,13 +17609,13 @@
 
 
 /***/ },
-/* 217 */
+/* 216 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var arrayReduce = __webpack_require__(187),
+	var arrayReduce = __webpack_require__(186),
 	    baseEach = __webpack_require__(12),
 	    baseIteratee = __webpack_require__(36),
-	    baseReduce = __webpack_require__(218),
+	    baseReduce = __webpack_require__(217),
 	    isArray = __webpack_require__(31);
 
 	/**
@@ -20990,7 +17666,7 @@
 
 
 /***/ },
-/* 218 */
+/* 217 */
 /***/ function(module, exports) {
 
 	/**
@@ -21019,7 +17695,7 @@
 
 
 /***/ },
-/* 219 */
+/* 218 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -21114,7 +17790,7 @@
 	}(_middleware.KinveyMiddleware);
 
 /***/ },
-/* 220 */
+/* 219 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {'use strict';
@@ -21271,7 +17947,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 221 */
+/* 220 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -21320,16 +17996,16 @@
 	}(_middleware.KinveyMiddleware);
 
 /***/ },
-/* 222 */
+/* 221 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	module.exports = __webpack_require__(223)() ? Symbol : __webpack_require__(224);
+	module.exports = __webpack_require__(222)() ? Symbol : __webpack_require__(223);
 
 
 /***/ },
-/* 223 */
+/* 222 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -21352,15 +18028,15 @@
 
 
 /***/ },
-/* 224 */
+/* 223 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// ES2015 Symbol polyfill for environments that do not support it (or partially support it)
 
 	'use strict';
 
-	var d              = __webpack_require__(225)
-	  , validateSymbol = __webpack_require__(238)
+	var d              = __webpack_require__(224)
+	  , validateSymbol = __webpack_require__(237)
 
 	  , create = Object.create, defineProperties = Object.defineProperties
 	  , defineProperty = Object.defineProperty, objPrototype = Object.prototype
@@ -21476,15 +18152,15 @@
 
 
 /***/ },
-/* 225 */
+/* 224 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var assign        = __webpack_require__(226)
-	  , normalizeOpts = __webpack_require__(233)
-	  , isCallable    = __webpack_require__(234)
-	  , contains      = __webpack_require__(235)
+	var assign        = __webpack_require__(225)
+	  , normalizeOpts = __webpack_require__(232)
+	  , isCallable    = __webpack_require__(233)
+	  , contains      = __webpack_require__(234)
 
 	  , d;
 
@@ -21545,18 +18221,18 @@
 
 
 /***/ },
-/* 226 */
+/* 225 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	module.exports = __webpack_require__(227)()
+	module.exports = __webpack_require__(226)()
 		? Object.assign
-		: __webpack_require__(228);
+		: __webpack_require__(227);
 
 
 /***/ },
-/* 227 */
+/* 226 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -21571,13 +18247,13 @@
 
 
 /***/ },
-/* 228 */
+/* 227 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var keys  = __webpack_require__(229)
-	  , value = __webpack_require__(232)
+	var keys  = __webpack_require__(228)
+	  , value = __webpack_require__(231)
 
 	  , max = Math.max;
 
@@ -21599,18 +18275,18 @@
 
 
 /***/ },
-/* 229 */
+/* 228 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	module.exports = __webpack_require__(230)()
+	module.exports = __webpack_require__(229)()
 		? Object.keys
-		: __webpack_require__(231);
+		: __webpack_require__(230);
 
 
 /***/ },
-/* 230 */
+/* 229 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -21624,7 +18300,7 @@
 
 
 /***/ },
-/* 231 */
+/* 230 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -21637,7 +18313,7 @@
 
 
 /***/ },
-/* 232 */
+/* 231 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -21649,7 +18325,7 @@
 
 
 /***/ },
-/* 233 */
+/* 232 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -21672,7 +18348,7 @@
 
 
 /***/ },
-/* 234 */
+/* 233 */
 /***/ function(module, exports) {
 
 	// Deprecated
@@ -21683,18 +18359,18 @@
 
 
 /***/ },
-/* 235 */
+/* 234 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	module.exports = __webpack_require__(236)()
+	module.exports = __webpack_require__(235)()
 		? String.prototype.contains
-		: __webpack_require__(237);
+		: __webpack_require__(236);
 
 
 /***/ },
-/* 236 */
+/* 235 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -21708,7 +18384,7 @@
 
 
 /***/ },
-/* 237 */
+/* 236 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -21721,12 +18397,12 @@
 
 
 /***/ },
-/* 238 */
+/* 237 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var isSymbol = __webpack_require__(239);
+	var isSymbol = __webpack_require__(238);
 
 	module.exports = function (value) {
 		if (!isSymbol(value)) throw new TypeError(value + " is not a symbol");
@@ -21735,7 +18411,7 @@
 
 
 /***/ },
-/* 239 */
+/* 238 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -21750,14 +18426,14 @@
 
 
 /***/ },
-/* 240 */
+/* 239 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Generated by CoffeeScript 1.10.0
 	var slice = [].slice;
 
 	(function(root, factory) {
-	  if (('function' === "function") && (__webpack_require__(241) != null)) {
+	  if (('function' === "function") && (__webpack_require__(240) != null)) {
 	    return !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	  } else if (typeof exports !== "undefined" && exports !== null) {
 	    return module.exports = factory();
@@ -22192,7 +18868,7 @@
 
 
 /***/ },
-/* 241 */
+/* 240 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(__webpack_amd_options__) {module.exports = __webpack_amd_options__;
@@ -22200,13 +18876,13 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, {}))
 
 /***/ },
-/* 242 */
+/* 241 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Stringify = __webpack_require__(243);
-	var Parse = __webpack_require__(245);
+	var Stringify = __webpack_require__(242);
+	var Parse = __webpack_require__(244);
 
 	module.exports = {
 	    stringify: Stringify,
@@ -22215,12 +18891,12 @@
 
 
 /***/ },
-/* 243 */
+/* 242 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Utils = __webpack_require__(244);
+	var Utils = __webpack_require__(243);
 
 	var arrayPrefixGenerators = {
 	    brackets: function brackets(prefix) {
@@ -22358,7 +19034,7 @@
 
 
 /***/ },
-/* 244 */
+/* 243 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -22528,12 +19204,12 @@
 
 
 /***/ },
-/* 245 */
+/* 244 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Utils = __webpack_require__(244);
+	var Utils = __webpack_require__(243);
 
 	var defaults = {
 	    delimiter: '&',
@@ -22701,11 +19377,11 @@
 
 
 /***/ },
-/* 246 */
+/* 245 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var querystring = __webpack_require__(145)
-	  , extend = __webpack_require__(247)
+	  , extend = __webpack_require__(246)
 	  , url = __webpack_require__(142)
 
 	module.exports = function appendQuery(uri, q) {
@@ -22746,7 +19422,7 @@
 
 
 /***/ },
-/* 247 */
+/* 246 */
 /***/ function(module, exports) {
 
 	var hasOwn = Object.prototype.hasOwnProperty;
@@ -22832,7 +19508,7 @@
 
 
 /***/ },
-/* 248 */
+/* 247 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -22852,7 +19528,7 @@
 
 	var _errors = __webpack_require__(5);
 
-	var _response2 = __webpack_require__(213);
+	var _response2 = __webpack_require__(212);
 
 	var _storage = __webpack_require__(138);
 
@@ -22967,8 +19643,8 @@
 	                  method: _request.RequestMethod.POST,
 	                  authType: _request.AuthType.App,
 	                  url: _url2.default.format({
-	                    protocol: activeSocialIdentity.client.protocol,
-	                    host: activeSocialIdentity.client.host,
+	                    protocol: activeSocialIdentity.client.micProtocol,
+	                    host: activeSocialIdentity.client.micHost,
 	                    pathname: tokenPathname
 	                  }),
 	                  properties: this.properties,
@@ -23086,7 +19762,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ },
-/* 249 */
+/* 248 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -23100,11 +19776,11 @@
 
 	var _errors = __webpack_require__(5);
 
-	var _clone = __webpack_require__(250);
+	var _clone = __webpack_require__(249);
 
 	var _clone2 = _interopRequireDefault(_clone);
 
-	var _isPlainObject = __webpack_require__(195);
+	var _isPlainObject = __webpack_require__(194);
 
 	var _isPlainObject2 = _interopRequireDefault(_isPlainObject);
 
@@ -23190,10 +19866,10 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ },
-/* 250 */
+/* 249 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseClone = __webpack_require__(171);
+	var baseClone = __webpack_require__(170);
 
 	/**
 	 * Creates a shallow clone of `value`.
@@ -23229,7 +19905,7 @@
 
 
 /***/ },
-/* 251 */
+/* 250 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -23247,39 +19923,39 @@
 
 	var _errors = __webpack_require__(5);
 
-	var _cache = __webpack_require__(252);
+	var _cache = __webpack_require__(251);
 
 	var _cache2 = _interopRequireDefault(_cache);
 
-	var _deltafetch = __webpack_require__(253);
+	var _deltafetch = __webpack_require__(252);
 
-	var _network = __webpack_require__(248);
+	var _network = __webpack_require__(247);
 
 	var _request8 = __webpack_require__(149);
 
 	var _query4 = __webpack_require__(8);
 
-	var _observable = __webpack_require__(254);
+	var _observable = __webpack_require__(253);
 
-	var _metadata = __webpack_require__(249);
+	var _metadata = __webpack_require__(248);
 
 	var _client = __webpack_require__(137);
 
 	var _client2 = _interopRequireDefault(_client);
 
-	var _es6Symbol = __webpack_require__(222);
+	var _es6Symbol = __webpack_require__(221);
 
 	var _es6Symbol2 = _interopRequireDefault(_es6Symbol);
 
-	var _sync = __webpack_require__(271);
+	var _sync = __webpack_require__(270);
 
 	var _sync2 = _interopRequireDefault(_sync);
 
-	var _differenceBy = __webpack_require__(280);
+	var _differenceBy = __webpack_require__(279);
 
 	var _differenceBy2 = _interopRequireDefault(_differenceBy);
 
-	var _keyBy = __webpack_require__(163);
+	var _keyBy = __webpack_require__(162);
 
 	var _keyBy2 = _interopRequireDefault(_keyBy);
 
@@ -23291,11 +19967,11 @@
 
 	var _url2 = _interopRequireDefault(_url);
 
-	var _filter = __webpack_require__(290);
+	var _filter = __webpack_require__(289);
 
 	var _filter2 = _interopRequireDefault(_filter);
 
-	var _map = __webpack_require__(211);
+	var _map = __webpack_require__(210);
 
 	var _map2 = _interopRequireDefault(_map);
 
@@ -23307,7 +19983,7 @@
 
 	var _isArray2 = _interopRequireDefault(_isArray);
 
-	var _xorWith = __webpack_require__(293);
+	var _xorWith = __webpack_require__(292);
 
 	var _xorWith2 = _interopRequireDefault(_xorWith);
 
@@ -23717,7 +20393,7 @@
 	                  }
 
 	                  observer.next(null);
-	                  _context2.next = 52;
+	                  _context2.next = 53;
 	                  break;
 
 	                case 4:
@@ -23797,7 +20473,7 @@
 	                  _context2.prev = 29;
 
 	                  if (!_this2.isOnline()) {
-	                    _context2.next = 42;
+	                    _context2.next = 43;
 	                    break;
 	                  }
 
@@ -23830,19 +20506,25 @@
 	                  data = _response2.data;
 
 	                  observer.next(data);
-	                  _context2.next = 42;
+
+	                  if (!_this2.isCacheEnabled()) {
+	                    _context2.next = 43;
+	                    break;
+	                  }
+
+	                  _context2.next = 43;
 	                  return _this2.updateCache(data);
 
-	                case 42:
-	                  _context2.next = 52;
+	                case 43:
+	                  _context2.next = 53;
 	                  break;
 
-	                case 44:
-	                  _context2.prev = 44;
+	                case 45:
+	                  _context2.prev = 45;
 	                  _context2.t1 = _context2['catch'](29);
 
-	                  if (!(_context2.t1 instanceof _errors.NotFoundError)) {
-	                    _context2.next = 51;
+	                  if (!(_context2.t1 instanceof _errors.NotFoundError && _this2.isCacheEnabled())) {
+	                    _context2.next = 52;
 	                    break;
 	                  }
 
@@ -23859,21 +20541,21 @@
 	                    timeout: options.timeout
 	                  });
 	                  _request4 = new _cache2.default(_config4);
-	                  _context2.next = 51;
+	                  _context2.next = 52;
 	                  return _request4.execute();
 
-	                case 51:
+	                case 52:
 	                  return _context2.abrupt('return', observer.error(_context2.t1));
 
-	                case 52:
+	                case 53:
 	                  return _context2.abrupt('return', observer.complete());
 
-	                case 53:
+	                case 54:
 	                case 'end':
 	                  return _context2.stop();
 	              }
 	            }
-	          }, _callee2, _this2, [[4, 26], [29, 44]]);
+	          }, _callee2, _this2, [[4, 26], [29, 45]]);
 	        }));
 
 	        return function (_x4) {
@@ -25347,7 +22029,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ },
-/* 252 */
+/* 251 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -25366,7 +22048,7 @@
 
 	var _errors = __webpack_require__(5);
 
-	var _response = __webpack_require__(213);
+	var _response = __webpack_require__(212);
 
 	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
 
@@ -25502,7 +22184,7 @@
 	exports.default = CacheRequest;
 
 /***/ },
-/* 253 */
+/* 252 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -25522,23 +22204,23 @@
 
 	var _request = __webpack_require__(149);
 
-	var _cache = __webpack_require__(252);
+	var _cache = __webpack_require__(251);
 
 	var _cache2 = _interopRequireDefault(_cache);
 
-	var _network = __webpack_require__(248);
+	var _network = __webpack_require__(247);
 
-	var _response = __webpack_require__(213);
+	var _response = __webpack_require__(212);
 
 	var _errors = __webpack_require__(5);
 
 	var _query3 = __webpack_require__(8);
 
-	var _keyBy = __webpack_require__(163);
+	var _keyBy = __webpack_require__(162);
 
 	var _keyBy2 = _interopRequireDefault(_keyBy);
 
-	var _reduce = __webpack_require__(217);
+	var _reduce = __webpack_require__(216);
 
 	var _reduce2 = _interopRequireDefault(_reduce);
 
@@ -25546,7 +22228,7 @@
 
 	var _result2 = _interopRequireDefault(_result);
 
-	var _values = __webpack_require__(201);
+	var _values = __webpack_require__(200);
 
 	var _values2 = _interopRequireDefault(_values);
 
@@ -25830,7 +22512,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ },
-/* 254 */
+/* 253 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -25842,9 +22524,9 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _Observable2 = __webpack_require__(255);
+	var _Observable2 = __webpack_require__(254);
 
-	var _toPromise2 = __webpack_require__(270);
+	var _toPromise2 = __webpack_require__(269);
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -25877,13 +22559,13 @@
 	}(_Observable2.Observable);
 
 /***/ },
-/* 255 */
+/* 254 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var root_1 = __webpack_require__(256);
-	var toSubscriber_1 = __webpack_require__(257);
-	var $$observable = __webpack_require__(268);
+	var root_1 = __webpack_require__(255);
+	var toSubscriber_1 = __webpack_require__(256);
+	var $$observable = __webpack_require__(267);
 	/**
 	 * A representation of any set of values over any amount of time. This the most basic building block
 	 * of RxJS.
@@ -26022,7 +22704,7 @@
 	//# sourceMappingURL=Observable.js.map
 
 /***/ },
-/* 256 */
+/* 255 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(module, global) {"use strict";
@@ -26046,12 +22728,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(132)(module), (function() { return this; }())))
 
 /***/ },
-/* 257 */
+/* 256 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var Subscriber_1 = __webpack_require__(258);
-	var rxSubscriber_1 = __webpack_require__(267);
+	var Subscriber_1 = __webpack_require__(257);
+	var rxSubscriber_1 = __webpack_require__(266);
 	function toSubscriber(nextOrObserver, error, complete) {
 	    if (nextOrObserver) {
 	        if (nextOrObserver instanceof Subscriber_1.Subscriber) {
@@ -26070,7 +22752,7 @@
 	//# sourceMappingURL=toSubscriber.js.map
 
 /***/ },
-/* 258 */
+/* 257 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -26079,10 +22761,10 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var isFunction_1 = __webpack_require__(259);
-	var Subscription_1 = __webpack_require__(260);
-	var Observer_1 = __webpack_require__(266);
-	var rxSubscriber_1 = __webpack_require__(267);
+	var isFunction_1 = __webpack_require__(258);
+	var Subscription_1 = __webpack_require__(259);
+	var Observer_1 = __webpack_require__(265);
+	var rxSubscriber_1 = __webpack_require__(266);
 	/**
 	 * Implements the {@link Observer} interface and extends the
 	 * {@link Subscription} class. While the {@link Observer} is the public API for
@@ -26324,7 +23006,7 @@
 	//# sourceMappingURL=Subscriber.js.map
 
 /***/ },
-/* 259 */
+/* 258 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -26335,16 +23017,16 @@
 	//# sourceMappingURL=isFunction.js.map
 
 /***/ },
-/* 260 */
+/* 259 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var isArray_1 = __webpack_require__(261);
-	var isObject_1 = __webpack_require__(262);
-	var isFunction_1 = __webpack_require__(259);
-	var tryCatch_1 = __webpack_require__(263);
-	var errorObject_1 = __webpack_require__(264);
-	var UnsubscriptionError_1 = __webpack_require__(265);
+	var isArray_1 = __webpack_require__(260);
+	var isObject_1 = __webpack_require__(261);
+	var isFunction_1 = __webpack_require__(258);
+	var tryCatch_1 = __webpack_require__(262);
+	var errorObject_1 = __webpack_require__(263);
+	var UnsubscriptionError_1 = __webpack_require__(264);
 	/**
 	 * Represents a disposable resource, such as the execution of an Observable. A
 	 * Subscription has one important method, `unsubscribe`, that takes no argument
@@ -26490,7 +23172,7 @@
 	//# sourceMappingURL=Subscription.js.map
 
 /***/ },
-/* 261 */
+/* 260 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -26498,7 +23180,7 @@
 	//# sourceMappingURL=isArray.js.map
 
 /***/ },
-/* 262 */
+/* 261 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -26509,11 +23191,11 @@
 	//# sourceMappingURL=isObject.js.map
 
 /***/ },
-/* 263 */
+/* 262 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var errorObject_1 = __webpack_require__(264);
+	var errorObject_1 = __webpack_require__(263);
 	var tryCatchTarget;
 	function tryCatcher() {
 	    try {
@@ -26533,7 +23215,7 @@
 	//# sourceMappingURL=tryCatch.js.map
 
 /***/ },
-/* 264 */
+/* 263 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -26542,7 +23224,7 @@
 	//# sourceMappingURL=errorObject.js.map
 
 /***/ },
-/* 265 */
+/* 264 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -26569,7 +23251,7 @@
 	//# sourceMappingURL=UnsubscriptionError.js.map
 
 /***/ },
-/* 266 */
+/* 265 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -26582,29 +23264,29 @@
 	//# sourceMappingURL=Observer.js.map
 
 /***/ },
-/* 267 */
+/* 266 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var root_1 = __webpack_require__(256);
+	var root_1 = __webpack_require__(255);
 	var Symbol = root_1.root.Symbol;
 	exports.$$rxSubscriber = (typeof Symbol === 'function' && typeof Symbol.for === 'function') ?
 	    Symbol.for('rxSubscriber') : '@@rxSubscriber';
 	//# sourceMappingURL=rxSubscriber.js.map
 
 /***/ },
-/* 268 */
+/* 267 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {/* global window */
 	'use strict';
 
-	module.exports = __webpack_require__(269)(global || window || this);
+	module.exports = __webpack_require__(268)(global || window || this);
 
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 269 */
+/* 268 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -26629,11 +23311,11 @@
 
 
 /***/ },
-/* 270 */
+/* 269 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var root_1 = __webpack_require__(256);
+	var root_1 = __webpack_require__(255);
 	/**
 	 * @param PromiseCtor
 	 * @return {Promise<T>}
@@ -26662,7 +23344,7 @@
 	//# sourceMappingURL=toPromise.js.map
 
 /***/ },
-/* 271 */
+/* 270 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -26680,11 +23362,11 @@
 
 	var _errors = __webpack_require__(5);
 
-	var _cache = __webpack_require__(252);
+	var _cache = __webpack_require__(251);
 
 	var _cache2 = _interopRequireDefault(_cache);
 
-	var _network = __webpack_require__(248);
+	var _network = __webpack_require__(247);
 
 	var _client = __webpack_require__(137);
 
@@ -26696,7 +23378,7 @@
 
 	var _url2 = _interopRequireDefault(_url);
 
-	var _map = __webpack_require__(211);
+	var _map = __webpack_require__(210);
 
 	var _map2 = _interopRequireDefault(_map);
 
@@ -26704,11 +23386,11 @@
 
 	var _isArray2 = _interopRequireDefault(_isArray);
 
-	var _orderBy = __webpack_require__(272);
+	var _orderBy = __webpack_require__(271);
 
 	var _orderBy2 = _interopRequireDefault(_orderBy);
 
-	var _sortedUniqBy = __webpack_require__(278);
+	var _sortedUniqBy = __webpack_require__(277);
 
 	var _sortedUniqBy2 = _interopRequireDefault(_sortedUniqBy);
 
@@ -27572,10 +24254,10 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ },
-/* 272 */
+/* 271 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseOrderBy = __webpack_require__(273),
+	var baseOrderBy = __webpack_require__(272),
 	    isArray = __webpack_require__(31);
 
 	/**
@@ -27625,15 +24307,15 @@
 
 
 /***/ },
-/* 273 */
+/* 272 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var arrayMap = __webpack_require__(203),
+	var arrayMap = __webpack_require__(202),
 	    baseIteratee = __webpack_require__(36),
-	    baseMap = __webpack_require__(212),
-	    baseSortBy = __webpack_require__(274),
-	    baseUnary = __webpack_require__(275),
-	    compareMultiple = __webpack_require__(276),
+	    baseMap = __webpack_require__(211),
+	    baseSortBy = __webpack_require__(273),
+	    baseUnary = __webpack_require__(274),
+	    compareMultiple = __webpack_require__(275),
 	    identity = __webpack_require__(114);
 
 	/**
@@ -27665,7 +24347,7 @@
 
 
 /***/ },
-/* 274 */
+/* 273 */
 /***/ function(module, exports) {
 
 	/**
@@ -27692,7 +24374,7 @@
 
 
 /***/ },
-/* 275 */
+/* 274 */
 /***/ function(module, exports) {
 
 	/**
@@ -27712,10 +24394,10 @@
 
 
 /***/ },
-/* 276 */
+/* 275 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var compareAscending = __webpack_require__(277);
+	var compareAscending = __webpack_require__(276);
 
 	/**
 	 * Used by `_.orderBy` to compare multiple properties of a value to another
@@ -27762,7 +24444,7 @@
 
 
 /***/ },
-/* 277 */
+/* 276 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var isSymbol = __webpack_require__(108);
@@ -27809,11 +24491,11 @@
 
 
 /***/ },
-/* 278 */
+/* 277 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var baseIteratee = __webpack_require__(36),
-	    baseSortedUniq = __webpack_require__(279);
+	    baseSortedUniq = __webpack_require__(278);
 
 	/**
 	 * This method is like `_.uniqBy` except that it's designed and optimized
@@ -27841,7 +24523,7 @@
 
 
 /***/ },
-/* 279 */
+/* 278 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var eq = __webpack_require__(44);
@@ -27877,14 +24559,14 @@
 
 
 /***/ },
-/* 280 */
+/* 279 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseDifference = __webpack_require__(281),
-	    baseFlatten = __webpack_require__(287),
+	var baseDifference = __webpack_require__(280),
+	    baseFlatten = __webpack_require__(286),
 	    baseIteratee = __webpack_require__(36),
 	    isArrayLikeObject = __webpack_require__(23),
-	    last = __webpack_require__(289),
+	    last = __webpack_require__(288),
 	    rest = __webpack_require__(123);
 
 	/**
@@ -27925,15 +24607,15 @@
 
 
 /***/ },
-/* 281 */
+/* 280 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var SetCache = __webpack_require__(81),
-	    arrayIncludes = __webpack_require__(282),
-	    arrayIncludesWith = __webpack_require__(285),
-	    arrayMap = __webpack_require__(203),
-	    baseUnary = __webpack_require__(275),
-	    cacheHas = __webpack_require__(286);
+	    arrayIncludes = __webpack_require__(281),
+	    arrayIncludesWith = __webpack_require__(284),
+	    arrayMap = __webpack_require__(202),
+	    baseUnary = __webpack_require__(274),
+	    cacheHas = __webpack_require__(285);
 
 	/** Used as the size to enable large array optimizations. */
 	var LARGE_ARRAY_SIZE = 200;
@@ -27998,10 +24680,10 @@
 
 
 /***/ },
-/* 282 */
+/* 281 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseIndexOf = __webpack_require__(283);
+	var baseIndexOf = __webpack_require__(282);
 
 	/**
 	 * A specialized version of `_.includes` for arrays without support for
@@ -28021,10 +24703,10 @@
 
 
 /***/ },
-/* 283 */
+/* 282 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var indexOfNaN = __webpack_require__(284);
+	var indexOfNaN = __webpack_require__(283);
 
 	/**
 	 * The base implementation of `_.indexOf` without `fromIndex` bounds checks.
@@ -28054,7 +24736,7 @@
 
 
 /***/ },
-/* 284 */
+/* 283 */
 /***/ function(module, exports) {
 
 	/**
@@ -28083,7 +24765,7 @@
 
 
 /***/ },
-/* 285 */
+/* 284 */
 /***/ function(module, exports) {
 
 	/**
@@ -28111,7 +24793,7 @@
 
 
 /***/ },
-/* 286 */
+/* 285 */
 /***/ function(module, exports) {
 
 	/**
@@ -28130,11 +24812,11 @@
 
 
 /***/ },
-/* 287 */
+/* 286 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var arrayPush = __webpack_require__(180),
-	    isFlattenable = __webpack_require__(288);
+	var arrayPush = __webpack_require__(179),
+	    isFlattenable = __webpack_require__(287);
 
 	/**
 	 * The base implementation of `_.flatten` with support for restricting flattening.
@@ -28174,7 +24856,7 @@
 
 
 /***/ },
-/* 288 */
+/* 287 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var isArguments = __webpack_require__(22),
@@ -28195,7 +24877,7 @@
 
 
 /***/ },
-/* 289 */
+/* 288 */
 /***/ function(module, exports) {
 
 	/**
@@ -28221,11 +24903,11 @@
 
 
 /***/ },
-/* 290 */
+/* 289 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var arrayFilter = __webpack_require__(291),
-	    baseFilter = __webpack_require__(292),
+	var arrayFilter = __webpack_require__(290),
+	    baseFilter = __webpack_require__(291),
 	    baseIteratee = __webpack_require__(36),
 	    isArray = __webpack_require__(31);
 
@@ -28274,7 +24956,7 @@
 
 
 /***/ },
-/* 291 */
+/* 290 */
 /***/ function(module, exports) {
 
 	/**
@@ -28305,7 +24987,7 @@
 
 
 /***/ },
-/* 292 */
+/* 291 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var baseEach = __webpack_require__(12);
@@ -28332,13 +25014,13 @@
 
 
 /***/ },
-/* 293 */
+/* 292 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var arrayFilter = __webpack_require__(291),
-	    baseXor = __webpack_require__(294),
+	var arrayFilter = __webpack_require__(290),
+	    baseXor = __webpack_require__(293),
 	    isArrayLikeObject = __webpack_require__(23),
-	    last = __webpack_require__(289),
+	    last = __webpack_require__(288),
 	    rest = __webpack_require__(123);
 
 	/**
@@ -28373,12 +25055,12 @@
 
 
 /***/ },
-/* 294 */
+/* 293 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var arrayPush = __webpack_require__(180),
-	    baseDifference = __webpack_require__(281),
-	    baseUniq = __webpack_require__(295);
+	var arrayPush = __webpack_require__(179),
+	    baseDifference = __webpack_require__(280),
+	    baseUniq = __webpack_require__(294);
 
 	/**
 	 * The base implementation of methods like `_.xor`, without support for
@@ -28409,14 +25091,14 @@
 
 
 /***/ },
-/* 295 */
+/* 294 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var SetCache = __webpack_require__(81),
-	    arrayIncludes = __webpack_require__(282),
-	    arrayIncludesWith = __webpack_require__(285),
-	    cacheHas = __webpack_require__(286),
-	    createSet = __webpack_require__(296),
+	    arrayIncludes = __webpack_require__(281),
+	    arrayIncludesWith = __webpack_require__(284),
+	    cacheHas = __webpack_require__(285),
+	    createSet = __webpack_require__(295),
 	    setToArray = __webpack_require__(89);
 
 	/** Used as the size to enable large array optimizations. */
@@ -28487,11 +25169,11 @@
 
 
 /***/ },
-/* 296 */
+/* 295 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Set = __webpack_require__(94),
-	    noop = __webpack_require__(297),
+	    noop = __webpack_require__(296),
 	    setToArray = __webpack_require__(89);
 
 	/** Used as references for various `Number` constants. */
@@ -28512,7 +25194,7 @@
 
 
 /***/ },
-/* 297 */
+/* 296 */
 /***/ function(module, exports) {
 
 	/**
@@ -28535,7 +25217,7 @@
 
 
 /***/ },
-/* 298 */
+/* 297 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -28549,17 +25231,17 @@
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-	var _network = __webpack_require__(248);
+	var _network = __webpack_require__(247);
 
 	var _request = __webpack_require__(149);
 
-	var _datastore = __webpack_require__(251);
+	var _datastore = __webpack_require__(250);
 
 	var _url = __webpack_require__(142);
 
 	var _url2 = _interopRequireDefault(_url);
 
-	var _map = __webpack_require__(211);
+	var _map = __webpack_require__(210);
 
 	var _map2 = _interopRequireDefault(_map);
 
@@ -28977,7 +25659,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ },
-/* 299 */
+/* 298 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -29000,19 +25682,19 @@
 
 	var _query = __webpack_require__(8);
 
-	var _acl = __webpack_require__(300);
+	var _acl = __webpack_require__(299);
 
-	var _metadata = __webpack_require__(249);
+	var _metadata = __webpack_require__(248);
 
 	var _errors = __webpack_require__(5);
 
-	var _mic = __webpack_require__(301);
+	var _mic = __webpack_require__(300);
 
 	var _request = __webpack_require__(149);
 
-	var _datastore = __webpack_require__(251);
+	var _datastore = __webpack_require__(250);
 
-	var _network = __webpack_require__(248);
+	var _network = __webpack_require__(247);
 
 	var _storage = __webpack_require__(138);
 
@@ -29036,13 +25718,17 @@
 
 	var _isArray2 = _interopRequireDefault(_isArray);
 
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	var _isString = __webpack_require__(32);
 
-	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
+	var _isString2 = _interopRequireDefault(_isString);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -29058,7 +25744,7 @@
 	var hello = void 0;
 
 	if (typeof window !== 'undefined') {
-	  hello = __webpack_require__(303); // eslint-disable-line global-require
+	  hello = __webpack_require__(302); // eslint-disable-line global-require
 	}
 
 	/**
@@ -29680,29 +26366,6 @@
 	      });
 	      return promise;
 	    }
-	  }, {
-	    key: 'resetPassword',
-	    value: function resetPassword() {
-	      var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-	      var request = new _network.NetworkRequest({
-	        method: _request.RequestMethod.POST,
-	        authType: _request.AuthType.App,
-	        url: _url2.default.format({
-	          protocol: this.client.protocol,
-	          host: this.client.host,
-	          pathname: '/' + rpcNamespace + '/' + this.client.appKey + '/' + this.username + '/user-password-reset-initiate'
-	        }),
-	        properties: options.properties,
-	        timeout: options.timeout,
-	        client: this.client
-	      });
-
-	      var promise = request.execute().then(function (response) {
-	        return response.data;
-	      });
-	      return promise;
-	    }
 
 	    // refreshAuthToken(options = {}) {
 	    //   const socialIdentity = this.data[socialIdentityAttribute];
@@ -29899,8 +26562,12 @@
 	    }
 	  }, {
 	    key: 'loginWithMIC',
-	    value: function loginWithMIC(redirectUri, authorizationGrant, options) {
+	    value: function loginWithMIC(redirectUri, authorizationGrant) {
+	      var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+
+	      var client = options.client || _client2.default.sharedInstance();
 	      var user = new User();
+	      user.client = client;
 	      return user.loginWithMIC(redirectUri, authorizationGrant, options);
 	    }
 	  }, {
@@ -29995,6 +26662,66 @@
 	      var user = new User();
 	      return user.signupWithIdentity(identity, tokens, options);
 	    }
+	  }, {
+	    key: 'resetPassword',
+	    value: function () {
+	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(username) {
+	        var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	        var client, request, response;
+	        return regeneratorRuntime.wrap(function _callee$(_context) {
+	          while (1) {
+	            switch (_context.prev = _context.next) {
+	              case 0:
+	                if (username) {
+	                  _context.next = 2;
+	                  break;
+	                }
+
+	                throw new _errors.KinveyError('A username was not provided.', 'Please provide a username for the user that you would like to reset their password.');
+
+	              case 2:
+	                if ((0, _isString2.default)(username)) {
+	                  _context.next = 4;
+	                  break;
+	                }
+
+	                throw new _errors.KinveyError('The provided username is not a string.');
+
+	              case 4:
+	                client = options.client || _client2.default.sharedInstance();
+	                request = new _network.NetworkRequest({
+	                  method: _request.RequestMethod.POST,
+	                  authType: _request.AuthType.App,
+	                  url: _url2.default.format({
+	                    protocol: client.protocol,
+	                    host: client.host,
+	                    pathname: '/' + rpcNamespace + '/' + client.appKey + '/' + username + '/user-password-reset-initiate'
+	                  }),
+	                  properties: options.properties,
+	                  timeout: options.timeout,
+	                  client: client
+	                });
+	                _context.next = 8;
+	                return request.execute();
+
+	              case 8:
+	                response = _context.sent;
+	                return _context.abrupt('return', response.data);
+
+	              case 10:
+	              case 'end':
+	                return _context.stop();
+	            }
+	          }
+	        }, _callee, this);
+	      }));
+
+	      function resetPassword(_x17, _x18) {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return resetPassword;
+	    }()
 	  }]);
 
 	  return User;
@@ -30053,19 +26780,19 @@
 	  }, {
 	    key: 'create',
 	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
-	        return regeneratorRuntime.wrap(function _callee$(_context) {
+	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee2() {
+	        return regeneratorRuntime.wrap(function _callee2$(_context2) {
 	          while (1) {
-	            switch (_context.prev = _context.next) {
+	            switch (_context2.prev = _context2.next) {
 	              case 0:
 	                throw new _errors.KinveyError('Please use `User.signup()` to create a user.');
 
 	              case 1:
 	              case 'end':
-	                return _context.stop();
+	                return _context2.stop();
 	            }
 	          }
-	        }, _callee, this);
+	        }, _callee2, this);
 	      }));
 
 	      function create() {
@@ -30077,17 +26804,17 @@
 	  }, {
 	    key: 'update',
 	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(user) {
+	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee3(user) {
 	        var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
 	        var socialIdentity, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, _step$value, key;
 
-	        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+	        return regeneratorRuntime.wrap(function _callee3$(_context3) {
 	          while (1) {
-	            switch (_context2.prev = _context2.next) {
+	            switch (_context3.prev = _context3.next) {
 	              case 0:
 	                if (user) {
-	                  _context2.next = 2;
+	                  _context3.next = 2;
 	                  break;
 	                }
 
@@ -30095,7 +26822,7 @@
 
 	              case 2:
 	                if (!(0, _isArray2.default)(user)) {
-	                  _context2.next = 4;
+	                  _context3.next = 4;
 	                  break;
 	                }
 
@@ -30103,7 +26830,7 @@
 
 	              case 4:
 	                if (user[idAttribute]) {
-	                  _context2.next = 6;
+	                  _context3.next = 6;
 	                  break;
 	                }
 
@@ -30111,21 +26838,21 @@
 
 	              case 6:
 	                if (!options._identity) {
-	                  _context2.next = 28;
+	                  _context3.next = 28;
 	                  break;
 	                }
 
 	                socialIdentity = user[socialIdentityAttribute];
 
 	                if (!socialIdentity) {
-	                  _context2.next = 28;
+	                  _context3.next = 28;
 	                  break;
 	                }
 
 	                _iteratorNormalCompletion = true;
 	                _didIteratorError = false;
 	                _iteratorError = undefined;
-	                _context2.prev = 12;
+	                _context3.prev = 12;
 
 	                for (_iterator = socialIdentity[Symbol.iterator](); !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
 	                  _step$value = _slicedToArray(_step.value, 1);
@@ -30135,51 +26862,51 @@
 	                    delete socialIdentity[key];
 	                  }
 	                }
-	                _context2.next = 20;
+	                _context3.next = 20;
 	                break;
 
 	              case 16:
-	                _context2.prev = 16;
-	                _context2.t0 = _context2['catch'](12);
+	                _context3.prev = 16;
+	                _context3.t0 = _context3['catch'](12);
 	                _didIteratorError = true;
-	                _iteratorError = _context2.t0;
+	                _iteratorError = _context3.t0;
 
 	              case 20:
-	                _context2.prev = 20;
-	                _context2.prev = 21;
+	                _context3.prev = 20;
+	                _context3.prev = 21;
 
 	                if (!_iteratorNormalCompletion && _iterator.return) {
 	                  _iterator.return();
 	                }
 
 	              case 23:
-	                _context2.prev = 23;
+	                _context3.prev = 23;
 
 	                if (!_didIteratorError) {
-	                  _context2.next = 26;
+	                  _context3.next = 26;
 	                  break;
 	                }
 
 	                throw _iteratorError;
 
 	              case 26:
-	                return _context2.finish(23);
+	                return _context3.finish(23);
 
 	              case 27:
-	                return _context2.finish(20);
+	                return _context3.finish(20);
 
 	              case 28:
-	                return _context2.abrupt('return', _get(Object.getPrototypeOf(UserStore.prototype), 'update', this).call(this, user, options));
+	                return _context3.abrupt('return', _get(Object.getPrototypeOf(UserStore.prototype), 'update', this).call(this, user, options));
 
 	              case 29:
 	              case 'end':
-	                return _context2.stop();
+	                return _context3.stop();
 	            }
 	          }
-	        }, _callee2, this, [[12, 16, 20, 28], [21,, 23, 27]]);
+	        }, _callee3, this, [[12, 16, 20, 28], [21,, 23, 27]]);
 	      }));
 
-	      function update(_x17, _x18) {
+	      function update(_x20, _x21) {
 	        return ref.apply(this, arguments);
 	      }
 
@@ -30188,11 +26915,11 @@
 	  }, {
 	    key: 'exists',
 	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee3(username, options) {
+	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee4(username, options) {
 	        var config, request, response, data;
-	        return regeneratorRuntime.wrap(function _callee3$(_context3) {
+	        return regeneratorRuntime.wrap(function _callee4$(_context4) {
 	          while (1) {
-	            switch (_context3.prev = _context3.next) {
+	            switch (_context4.prev = _context4.next) {
 	              case 0:
 	                config = new _request.KinveyRequestConfig({
 	                  method: _request.RequestMethod.POST,
@@ -30208,23 +26935,23 @@
 	                  client: this.client
 	                });
 	                request = new _network.NetworkRequest(config);
-	                _context3.next = 4;
+	                _context4.next = 4;
 	                return request.execute();
 
 	              case 4:
-	                response = _context3.sent;
+	                response = _context4.sent;
 	                data = response.data || {};
-	                return _context3.abrupt('return', !!data.usernameExists);
+	                return _context4.abrupt('return', !!data.usernameExists);
 
 	              case 7:
 	              case 'end':
-	                return _context3.stop();
+	                return _context4.stop();
 	            }
 	          }
-	        }, _callee3, this);
+	        }, _callee4, this);
 	      }));
 
-	      function exists(_x20, _x21) {
+	      function exists(_x23, _x24) {
 	        return ref.apply(this, arguments);
 	      }
 
@@ -30233,12 +26960,12 @@
 	  }, {
 	    key: 'restore',
 	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee4(id) {
+	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee5(id) {
 	        var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 	        var config, request, response;
-	        return regeneratorRuntime.wrap(function _callee4$(_context4) {
+	        return regeneratorRuntime.wrap(function _callee5$(_context5) {
 	          while (1) {
-	            switch (_context4.prev = _context4.next) {
+	            switch (_context5.prev = _context5.next) {
 	              case 0:
 	                config = new _request.KinveyRequestConfig({
 	                  method: _request.RequestMethod.POST,
@@ -30253,22 +26980,22 @@
 	                  client: this.client
 	                });
 	                request = new _network.NetworkRequest(config);
-	                _context4.next = 4;
+	                _context5.next = 4;
 	                return request.execute();
 
 	              case 4:
-	                response = _context4.sent;
-	                return _context4.abrupt('return', response.data);
+	                response = _context5.sent;
+	                return _context5.abrupt('return', response.data);
 
 	              case 6:
 	              case 'end':
-	                return _context4.stop();
+	                return _context5.stop();
 	            }
 	          }
-	        }, _callee4, this);
+	        }, _callee5, this);
 	      }));
 
-	      function restore(_x22, _x23) {
+	      function restore(_x25, _x26) {
 	        return ref.apply(this, arguments);
 	      }
 
@@ -30286,7 +27013,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ },
-/* 300 */
+/* 299 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -30300,11 +27027,11 @@
 
 	var _errors = __webpack_require__(5);
 
-	var _clone = __webpack_require__(250);
+	var _clone = __webpack_require__(249);
 
 	var _clone2 = _interopRequireDefault(_clone);
 
-	var _isPlainObject = __webpack_require__(195);
+	var _isPlainObject = __webpack_require__(194);
 
 	var _isPlainObject2 = _interopRequireDefault(_isPlainObject);
 
@@ -30506,7 +27233,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ },
-/* 301 */
+/* 300 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process, global) {'use strict';
@@ -30520,7 +27247,7 @@
 
 	var _errors = __webpack_require__(5);
 
-	var _network = __webpack_require__(248);
+	var _network = __webpack_require__(247);
 
 	var _request = __webpack_require__(149);
 
@@ -30528,7 +27255,7 @@
 
 	var _client2 = _interopRequireDefault(_client);
 
-	var _path = __webpack_require__(302);
+	var _path = __webpack_require__(301);
 
 	var _path2 = _interopRequireDefault(_path);
 
@@ -30579,14 +27306,7 @@
 
 	    _classCallCheck(this, MobileIdentityConnect);
 
-	    this.client = new _client2.default({
-	      protocol: process.env.KINVEY_MIC_PROTOCOL || 'https:',
-	      host: process.env.KINVEY_MIC_HOST || 'auth.kinvey.com',
-	      appKey: client.appKey,
-	      appSecret: client.appSecret,
-	      masterSecret: client.masterSecret,
-	      encryptionKey: client.encryptionKey
-	    });
+	    this.client = client;
 	  }
 
 	  _createClass(MobileIdentityConnect, [{
@@ -30637,8 +27357,8 @@
 	      var config = new _request.KinveyRequestConfig({
 	        method: _request.RequestMethod.POST,
 	        url: _url2.default.format({
-	          protocol: this.client.protocol,
-	          host: this.client.host,
+	          protocol: this.client.micProtocol,
+	          host: this.client.micHost,
 	          pathname: _path2.default.join(pathname, authPathname)
 	        }),
 	        properties: options.properties,
@@ -30677,8 +27397,8 @@
 	        if (global.KinveyPopup) {
 	          var popup = new global.KinveyPopup();
 	          return popup.open(_url2.default.format({
-	            protocol: _this2.client.protocol,
-	            host: _this2.client.host,
+	            protocol: _this2.client.micProtocol,
+	            host: _this2.client.micHost,
 	            pathname: _path2.default.join(pathname, authPathname),
 	            query: {
 	              client_id: clientId,
@@ -30693,30 +27413,45 @@
 	        var promise = new Promise(function (resolve, reject) {
 	          var redirected = false;
 
-	          function loadedCallback(loadedUrl) {
-	            if (loadedUrl.indexOf(redirectUri) === 0) {
-	              redirected = true;
-	              popup.removeAllListeners();
-	              popup.close();
-	              resolve(_url2.default.parse(loadedUrl, true).query.code);
+	          function loadCallback(event) {
+	            try {
+	              if (event.url && event.url.indexOf(redirectUri) === 0 && redirected === false) {
+	                redirected = true;
+	                popup.removeAllListeners();
+	                popup.close();
+	                resolve(_url2.default.parse(event.url, true).query.code);
+	              }
+	            } catch (error) {
+	              // Just catch the error
 	            }
 	          }
 
-	          function errorCallback(message) {
-	            popup.removeAllListeners();
-	            popup.close();
-	            reject(new Error(message));
+	          function errorCallback(event) {
+	            try {
+	              if (event.url && event.url.indexOf(redirectUri) === 0 && redirected === false) {
+	                redirected = true;
+	                popup.removeAllListeners();
+	                popup.close();
+	                resolve(_url2.default.parse(event.url, true).query.code);
+	              } else if (redirected === false) {
+	                popup.removeAllListeners();
+	                popup.close();
+	                reject(new _errors.KinveyError(event.message, '', event.code));
+	              }
+	            } catch (error) {
+	              // Just catch the error
+	            }
 	          }
 
 	          function closedCallback() {
-	            popup.removeAllListeners();
-
-	            if (!redirected) {
-	              reject(new Error('Login has been cancelled.'));
+	            if (redirected === false) {
+	              popup.removeAllListeners();
+	              reject(new _errors.KinveyError('Login has been cancelled.'));
 	            }
 	          }
 
-	          popup.on('loaded', loadedCallback);
+	          popup.on('loadstart', loadCallback);
+	          popup.on('loadstop', loadCallback);
 	          popup.on('error', errorCallback);
 	          popup.on('closed', closedCallback);
 	        });
@@ -30768,8 +27503,8 @@
 	        method: _request.RequestMethod.POST,
 	        authType: _request.AuthType.App,
 	        url: _url2.default.format({
-	          protocol: this.client.protocol,
-	          host: this.client.host,
+	          protocol: this.client.micProtocol,
+	          host: this.client.micHost,
 	          pathname: tokenPathname
 	        }),
 	        properties: options.properties,
@@ -30800,7 +27535,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), (function() { return this; }())))
 
 /***/ },
-/* 302 */
+/* 301 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {// Copyright Joyent, Inc. and other Node contributors.
@@ -31031,7 +27766,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ },
-/* 303 */
+/* 302 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(process, setImmediate) {/*! hellojs v1.13.1 | (c) 2012-2016 Andrew Dodson | MIT https://adodson.com/hello.js/LICENSE */
@@ -36852,10 +33587,10 @@
 		module.exports = hello;
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(304).setImmediate))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(303).setImmediate))
 
 /***/ },
-/* 304 */
+/* 303 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(setImmediate, clearImmediate) {var nextTick = __webpack_require__(2).nextTick;
@@ -36934,10 +33669,10 @@
 	exports.clearImmediate = typeof clearImmediate === "function" ? clearImmediate : function(id) {
 	  delete immediateIds[id];
 	};
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(304).setImmediate, __webpack_require__(304).clearImmediate))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(303).setImmediate, __webpack_require__(303).clearImmediate))
 
 /***/ },
-/* 305 */
+/* 304 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -36953,7 +33688,7 @@
 
 	var _middleware = __webpack_require__(155);
 
-	var _parseHeaders = __webpack_require__(306);
+	var _parseHeaders = __webpack_require__(305);
 
 	var _parseHeaders2 = _interopRequireDefault(_parseHeaders);
 
@@ -37057,11 +33792,11 @@
 	}(_middleware.KinveyMiddleware);
 
 /***/ },
-/* 306 */
+/* 305 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var trim = __webpack_require__(307)
-	  , forEach = __webpack_require__(308)
+	var trim = __webpack_require__(306)
+	  , forEach = __webpack_require__(307)
 	  , isArray = function(arg) {
 	      return Object.prototype.toString.call(arg) === '[object Array]';
 	    }
@@ -37093,7 +33828,7 @@
 	}
 
 /***/ },
-/* 307 */
+/* 306 */
 /***/ function(module, exports) {
 
 	
@@ -37113,10 +33848,10 @@
 
 
 /***/ },
-/* 308 */
+/* 307 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isFunction = __webpack_require__(309)
+	var isFunction = __webpack_require__(308)
 
 	module.exports = forEach
 
@@ -37165,7 +33900,7 @@
 
 
 /***/ },
-/* 309 */
+/* 308 */
 /***/ function(module, exports) {
 
 	module.exports = isFunction
@@ -37186,7 +33921,7 @@
 
 
 /***/ },
-/* 310 */
+/* 309 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process, global) {'use strict';
@@ -37198,17 +33933,17 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _device = __webpack_require__(311);
+	var _device = __webpack_require__(310);
 
 	var _errors = __webpack_require__(5);
 
-	var _events = __webpack_require__(313);
+	var _events = __webpack_require__(312);
 
 	var _request = __webpack_require__(149);
 
-	var _user = __webpack_require__(299);
+	var _user = __webpack_require__(298);
 
-	var _network = __webpack_require__(248);
+	var _network = __webpack_require__(247);
 
 	var _client = __webpack_require__(137);
 
@@ -37218,7 +33953,7 @@
 
 	var _url2 = _interopRequireDefault(_url);
 
-	var _bind = __webpack_require__(314);
+	var _bind = __webpack_require__(313);
 
 	var _bind2 = _interopRequireDefault(_bind);
 
@@ -37438,7 +34173,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), (function() { return this; }())))
 
 /***/ },
-/* 311 */
+/* 310 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {'use strict';
@@ -37450,7 +34185,7 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _package = __webpack_require__(312);
+	var _package = __webpack_require__(311);
 
 	var _package2 = _interopRequireDefault(_package);
 
@@ -37527,12 +34262,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 312 */
+/* 311 */
 /***/ function(module, exports) {
 
 	module.exports = {
 		"name": "kinvey-phonegap-sdk",
-		"version": "3.0.0-beta.29",
+		"version": "3.0.0-beta.30",
 		"description": "Kinvey JavaScript SDK for PhoneGap/Cordova applications.",
 		"homepage": "http://www.kinvey.com",
 		"bugs": {
@@ -37546,22 +34281,21 @@
 		"main": "./es5/index.js",
 		"repository": {
 			"type": "git",
-			"url": "git@github.com:Kinvey/kinvey-phonegap-sdk"
+			"url": "git@github.com:Kinvey/phonegap-sdk"
 		},
 		"scripts": {
 			"test": "./node_modules/mocha/bin/mocha --compilers js:babel-core/register -r babel-polyfill -s 100 --recursive test",
 			"test:watch": "./node_modules/mocha/bin/mocha -w --compilers js:babel-core/register -r babel-polyfill -s 100 --recursive test",
-			"test:jenkins": "istanbul cover _mocha -- --reporter tap --compilers js:babel-core/register -r babel-polyfill -s 100 --recursive test > test.tap && istanbul report clover",
-			"postpublish": "PACKAGE_VERSION=$(cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[\",]//g' | tr -d '[[:space:]]') && git tag $PACKAGE_VERSION && git push --tags"
+			"test:jenkins": "istanbul cover _mocha -- --reporter tap --compilers js:babel-core/register -r babel-polyfill -s 100 --recursive test > test.tap && istanbul report clover"
 		},
 		"dependencies": {
 			"babel-regenerator-runtime": "^6.5.0",
-			"kinvey-javascript-sdk-core": "3.0.0-beta.25",
+			"kinvey-javascript-sdk-core": "*",
 			"lodash": "^4.0.0",
 			"parse-headers": "^2.0.0"
 		},
 		"peerDependencies": {
-			"kinvey-javascript-sdk-core": "3.0.0-beta.25"
+			"kinvey-javascript-sdk-core": "*"
 		},
 		"devDependencies": {
 			"babel-core": "^6.9.0",
@@ -37590,6 +34324,7 @@
 			"gulp-rename": "^1.2.2",
 			"gulp-s3-upload": "^1.6.0",
 			"gulp-sourcemaps": "^1.6.0",
+			"gulp-tag-version": "^1.3.0",
 			"gulp-uglify": "^1.5.1",
 			"gulp-util": "^3.0.6",
 			"istanbul": "^0.4.3",
@@ -37618,7 +34353,7 @@
 	};
 
 /***/ },
-/* 313 */
+/* 312 */
 /***/ function(module, exports) {
 
 	// Copyright Joyent, Inc. and other Node contributors.
@@ -37922,12 +34657,12 @@
 
 
 /***/ },
-/* 314 */
+/* 313 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var createWrapper = __webpack_require__(315),
-	    getHolder = __webpack_require__(337),
-	    replaceHolders = __webpack_require__(339),
+	var createWrapper = __webpack_require__(314),
+	    getHolder = __webpack_require__(336),
+	    replaceHolders = __webpack_require__(338),
 	    rest = __webpack_require__(123);
 
 	/** Used to compose bitmasks for wrapper metadata. */
@@ -37985,17 +34720,17 @@
 
 
 /***/ },
-/* 315 */
+/* 314 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseSetData = __webpack_require__(316),
-	    createBaseWrapper = __webpack_require__(318),
-	    createCurryWrapper = __webpack_require__(320),
-	    createHybridWrapper = __webpack_require__(321),
-	    createPartialWrapper = __webpack_require__(340),
-	    getData = __webpack_require__(329),
-	    mergeData = __webpack_require__(341),
-	    setData = __webpack_require__(335),
+	var baseSetData = __webpack_require__(315),
+	    createBaseWrapper = __webpack_require__(317),
+	    createCurryWrapper = __webpack_require__(319),
+	    createHybridWrapper = __webpack_require__(320),
+	    createPartialWrapper = __webpack_require__(339),
+	    getData = __webpack_require__(328),
+	    mergeData = __webpack_require__(340),
+	    setData = __webpack_require__(334),
 	    toInteger = __webpack_require__(125);
 
 	/** Used as the `TypeError` message for "Functions" methods. */
@@ -38097,11 +34832,11 @@
 
 
 /***/ },
-/* 316 */
+/* 315 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var identity = __webpack_require__(114),
-	    metaMap = __webpack_require__(317);
+	    metaMap = __webpack_require__(316);
 
 	/**
 	 * The base implementation of `setData` without support for hot loop detection.
@@ -38120,7 +34855,7 @@
 
 
 /***/ },
-/* 317 */
+/* 316 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var WeakMap = __webpack_require__(95);
@@ -38132,10 +34867,10 @@
 
 
 /***/ },
-/* 318 */
+/* 317 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var createCtorWrapper = __webpack_require__(319),
+	var createCtorWrapper = __webpack_require__(318),
 	    root = __webpack_require__(63);
 
 	/** Used to compose bitmasks for wrapper metadata. */
@@ -38167,10 +34902,10 @@
 
 
 /***/ },
-/* 319 */
+/* 318 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseCreate = __webpack_require__(194),
+	var baseCreate = __webpack_require__(193),
 	    isObject = __webpack_require__(28);
 
 	/**
@@ -38210,15 +34945,15 @@
 
 
 /***/ },
-/* 320 */
+/* 319 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var apply = __webpack_require__(124),
-	    createCtorWrapper = __webpack_require__(319),
-	    createHybridWrapper = __webpack_require__(321),
-	    createRecurryWrapper = __webpack_require__(325),
-	    getHolder = __webpack_require__(337),
-	    replaceHolders = __webpack_require__(339),
+	    createCtorWrapper = __webpack_require__(318),
+	    createHybridWrapper = __webpack_require__(320),
+	    createRecurryWrapper = __webpack_require__(324),
+	    getHolder = __webpack_require__(336),
+	    replaceHolders = __webpack_require__(338),
 	    root = __webpack_require__(63);
 
 	/**
@@ -38263,17 +34998,17 @@
 
 
 /***/ },
-/* 321 */
+/* 320 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var composeArgs = __webpack_require__(322),
-	    composeArgsRight = __webpack_require__(323),
-	    countHolders = __webpack_require__(324),
-	    createCtorWrapper = __webpack_require__(319),
-	    createRecurryWrapper = __webpack_require__(325),
-	    getHolder = __webpack_require__(337),
-	    reorder = __webpack_require__(338),
-	    replaceHolders = __webpack_require__(339),
+	var composeArgs = __webpack_require__(321),
+	    composeArgsRight = __webpack_require__(322),
+	    countHolders = __webpack_require__(323),
+	    createCtorWrapper = __webpack_require__(318),
+	    createRecurryWrapper = __webpack_require__(324),
+	    getHolder = __webpack_require__(336),
+	    reorder = __webpack_require__(337),
+	    replaceHolders = __webpack_require__(338),
 	    root = __webpack_require__(63);
 
 	/** Used to compose bitmasks for wrapper metadata. */
@@ -38362,7 +35097,7 @@
 
 
 /***/ },
-/* 322 */
+/* 321 */
 /***/ function(module, exports) {
 
 	/* Built-in method references for those with the same name as other `lodash` methods. */
@@ -38407,7 +35142,7 @@
 
 
 /***/ },
-/* 323 */
+/* 322 */
 /***/ function(module, exports) {
 
 	/* Built-in method references for those with the same name as other `lodash` methods. */
@@ -38454,7 +35189,7 @@
 
 
 /***/ },
-/* 324 */
+/* 323 */
 /***/ function(module, exports) {
 
 	/**
@@ -38481,11 +35216,11 @@
 
 
 /***/ },
-/* 325 */
+/* 324 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isLaziable = __webpack_require__(326),
-	    setData = __webpack_require__(335);
+	var isLaziable = __webpack_require__(325),
+	    setData = __webpack_require__(334);
 
 	/** Used to compose bitmasks for wrapper metadata. */
 	var BIND_FLAG = 1,
@@ -38543,13 +35278,13 @@
 
 
 /***/ },
-/* 326 */
+/* 325 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var LazyWrapper = __webpack_require__(327),
-	    getData = __webpack_require__(329),
-	    getFuncName = __webpack_require__(330),
-	    lodash = __webpack_require__(332);
+	var LazyWrapper = __webpack_require__(326),
+	    getData = __webpack_require__(328),
+	    getFuncName = __webpack_require__(329),
+	    lodash = __webpack_require__(331);
 
 	/**
 	 * Checks if `func` has a lazy counterpart.
@@ -38577,11 +35312,11 @@
 
 
 /***/ },
-/* 327 */
+/* 326 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseCreate = __webpack_require__(194),
-	    baseLodash = __webpack_require__(328);
+	var baseCreate = __webpack_require__(193),
+	    baseLodash = __webpack_require__(327);
 
 	/** Used as references for the maximum length and index of an array. */
 	var MAX_ARRAY_LENGTH = 4294967295;
@@ -38611,7 +35346,7 @@
 
 
 /***/ },
-/* 328 */
+/* 327 */
 /***/ function(module, exports) {
 
 	/**
@@ -38627,11 +35362,11 @@
 
 
 /***/ },
-/* 329 */
+/* 328 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var metaMap = __webpack_require__(317),
-	    noop = __webpack_require__(297);
+	var metaMap = __webpack_require__(316),
+	    noop = __webpack_require__(296);
 
 	/**
 	 * Gets metadata for `func`.
@@ -38648,10 +35383,10 @@
 
 
 /***/ },
-/* 330 */
+/* 329 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var realNames = __webpack_require__(331);
+	var realNames = __webpack_require__(330);
 
 	/** Used for built-in method references. */
 	var objectProto = Object.prototype;
@@ -38685,7 +35420,7 @@
 
 
 /***/ },
-/* 331 */
+/* 330 */
 /***/ function(module, exports) {
 
 	/** Used to lookup unminified function names. */
@@ -38695,15 +35430,15 @@
 
 
 /***/ },
-/* 332 */
+/* 331 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var LazyWrapper = __webpack_require__(327),
-	    LodashWrapper = __webpack_require__(333),
-	    baseLodash = __webpack_require__(328),
+	var LazyWrapper = __webpack_require__(326),
+	    LodashWrapper = __webpack_require__(332),
+	    baseLodash = __webpack_require__(327),
 	    isArray = __webpack_require__(31),
 	    isObjectLike = __webpack_require__(30),
-	    wrapperClone = __webpack_require__(334);
+	    wrapperClone = __webpack_require__(333);
 
 	/** Used for built-in method references. */
 	var objectProto = Object.prototype;
@@ -38848,11 +35583,11 @@
 
 
 /***/ },
-/* 333 */
+/* 332 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseCreate = __webpack_require__(194),
-	    baseLodash = __webpack_require__(328);
+	var baseCreate = __webpack_require__(193),
+	    baseLodash = __webpack_require__(327);
 
 	/**
 	 * The base constructor for creating `lodash` wrapper objects.
@@ -38876,12 +35611,12 @@
 
 
 /***/ },
-/* 334 */
+/* 333 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var LazyWrapper = __webpack_require__(327),
-	    LodashWrapper = __webpack_require__(333),
-	    copyArray = __webpack_require__(174);
+	var LazyWrapper = __webpack_require__(326),
+	    LodashWrapper = __webpack_require__(332),
+	    copyArray = __webpack_require__(173);
 
 	/**
 	 * Creates a clone of `wrapper`.
@@ -38905,11 +35640,11 @@
 
 
 /***/ },
-/* 335 */
+/* 334 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseSetData = __webpack_require__(316),
-	    now = __webpack_require__(336);
+	var baseSetData = __webpack_require__(315),
+	    now = __webpack_require__(335);
 
 	/** Used to detect hot functions by number of calls within a span of milliseconds. */
 	var HOT_COUNT = 150,
@@ -38953,7 +35688,7 @@
 
 
 /***/ },
-/* 336 */
+/* 335 */
 /***/ function(module, exports) {
 
 	/**
@@ -38980,7 +35715,7 @@
 
 
 /***/ },
-/* 337 */
+/* 336 */
 /***/ function(module, exports) {
 
 	/**
@@ -38999,10 +35734,10 @@
 
 
 /***/ },
-/* 338 */
+/* 337 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var copyArray = __webpack_require__(174),
+	var copyArray = __webpack_require__(173),
 	    isIndex = __webpack_require__(33);
 
 	/* Built-in method references for those with the same name as other `lodash` methods. */
@@ -39034,7 +35769,7 @@
 
 
 /***/ },
-/* 339 */
+/* 338 */
 /***/ function(module, exports) {
 
 	/** Used as the internal argument placeholder. */
@@ -39069,11 +35804,11 @@
 
 
 /***/ },
-/* 340 */
+/* 339 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var apply = __webpack_require__(124),
-	    createCtorWrapper = __webpack_require__(319),
+	    createCtorWrapper = __webpack_require__(318),
 	    root = __webpack_require__(63);
 
 	/** Used to compose bitmasks for wrapper metadata. */
@@ -39119,12 +35854,12 @@
 
 
 /***/ },
-/* 341 */
+/* 340 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var composeArgs = __webpack_require__(322),
-	    composeArgsRight = __webpack_require__(323),
-	    replaceHolders = __webpack_require__(339);
+	var composeArgs = __webpack_require__(321),
+	    composeArgsRight = __webpack_require__(322),
+	    replaceHolders = __webpack_require__(338);
 
 	/** Used as the internal argument placeholder. */
 	var PLACEHOLDER = '__lodash_placeholder__';
@@ -39215,7 +35950,7 @@
 
 
 /***/ },
-/* 342 */
+/* 341 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {'use strict';
@@ -39227,11 +35962,11 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _events = __webpack_require__(313);
+	var _events = __webpack_require__(312);
 
-	var _device = __webpack_require__(311);
+	var _device = __webpack_require__(310);
 
-	var _bind = __webpack_require__(314);
+	var _bind = __webpack_require__(313);
 
 	var _bind2 = _interopRequireDefault(_bind);
 
@@ -39256,6 +35991,7 @@
 	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(PhoneGapPopup).call(this));
 
 	    _this.eventListeners = {
+	      loadStartCallback: (0, _bind2.default)(_this.loadStartCallback, _this),
 	      loadStopCallback: (0, _bind2.default)(_this.loadStopCallback, _this),
 	      loadErrorCallback: (0, _bind2.default)(_this.loadErrorCallback, _this),
 	      exitCallback: (0, _bind2.default)(_this.exitCallback, _this)
@@ -39281,8 +36017,6 @@
 	    key: 'open',
 	    value: function () {
 	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
-	        var _this2 = this;
-
 	        var url = arguments.length <= 0 || arguments[0] === undefined ? '/' : arguments[0];
 	        return regeneratorRuntime.wrap(function _callee$(_context) {
 	          while (1) {
@@ -39292,19 +36026,14 @@
 	                return this.deviceReady;
 
 	              case 2:
-	                if (!_device.PhoneGapDevice.isPhoneGap()) {
-	                  _context.next = 15;
-	                  break;
-	                }
-
 	                if (!(global.cordova && !global.cordova.InAppBrowser)) {
-	                  _context.next = 5;
+	                  _context.next = 4;
 	                  break;
 	                }
 
-	                throw new Error('PhoneGap InAppBrowser Plugin is not installed.', 'Please refer to http://http://devcenter.kinvey.com/phonegap/guides/getting-started for help with ' + 'setting up your project.');
+	                throw new Error('PhoneGap InAppBrowser Plugin is not installed.' + ' Please refer to http://http://devcenter.kinvey.com/phonegap/guides/getting-started for help with' + ' setting up your project.');
 
-	              case 5:
+	              case 4:
 
 	                // Open the popup
 	                this.popup = global.open(url, '_blank', 'location=yes');
@@ -39316,6 +36045,7 @@
 	                  break;
 	                }
 
+	                this.popup.addEventListener('loadstart', this.eventListeners.loadStartCallback);
 	                this.popup.addEventListener('loadstop', this.eventListeners.loadStopCallback);
 	                this.popup.addEventListener('loaderror', this.eventListeners.loadErrorCallback);
 	                this.popup.addEventListener('exit', this.eventListeners.exitCallback);
@@ -39326,42 +36056,9 @@
 	                throw new Error('The popup was blocked.');
 
 	              case 13:
-	                _context.next = 21;
-	                break;
-
-	              case 15:
-	                // Open the popup
-	                this.popup = global.open(url, '_blank', 'toolbar=no,location=no');
-
-	                if (!this.popup) {
-	                  _context.next = 20;
-	                  break;
-	                }
-
-	                // Check if the popup is closed or redirect every 100ms
-	                this.interval = setInterval(function () {
-	                  if (_this2.popup.closed) {
-	                    _this2.exitCallback();
-	                  } else {
-	                    try {
-	                      _this2.loadStopCallback({
-	                        url: _this2.popup.location.href
-	                      });
-	                    } catch (error) {
-	                      // Just catch the error
-	                    }
-	                  }
-	                }, 100);
-	                _context.next = 21;
-	                break;
-
-	              case 20:
-	                throw new Error('The popup was blocked.');
-
-	              case 21:
 	                return _context.abrupt('return', this);
 
-	              case 22:
+	              case 14:
 	              case 'end':
 	                return _context.stop();
 	            }
@@ -39404,14 +36101,19 @@
 	      return close;
 	    }()
 	  }, {
+	    key: 'loadStartCallback',
+	    value: function loadStartCallback(event) {
+	      this.emit('loadstart', event);
+	    }
+	  }, {
 	    key: 'loadStopCallback',
 	    value: function loadStopCallback(event) {
-	      this.emit('loaded', event.url);
+	      this.emit('loadstop', event);
 	    }
 	  }, {
 	    key: 'loadErrorCallback',
 	    value: function loadErrorCallback(event) {
-	      this.emit('error', event.message);
+	      this.emit('error', event);
 	    }
 	  }, {
 	    key: 'exitCallback',
@@ -39419,6 +36121,7 @@
 	      clearInterval(this.interval);
 
 	      if (_device.PhoneGapDevice.isPhoneGap()) {
+	        this.popup.removeEventListener('loadstart', this.eventListeners.loadStopCallback);
 	        this.popup.removeEventListener('loadstop', this.eventListeners.loadStopCallback);
 	        this.popup.removeEventListener('loaderror', this.eventListeners.loadErrorCallback);
 	        this.popup.removeEventListener('exit', this.eventListeners.exitCallback);

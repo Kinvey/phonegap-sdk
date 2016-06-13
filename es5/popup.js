@@ -36,6 +36,7 @@ var PhoneGapPopup = exports.PhoneGapPopup = function (_EventEmitter) {
     var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(PhoneGapPopup).call(this));
 
     _this.eventListeners = {
+      loadStartCallback: (0, _bind2.default)(_this.loadStartCallback, _this),
       loadStopCallback: (0, _bind2.default)(_this.loadStopCallback, _this),
       loadErrorCallback: (0, _bind2.default)(_this.loadErrorCallback, _this),
       exitCallback: (0, _bind2.default)(_this.exitCallback, _this)
@@ -61,8 +62,6 @@ var PhoneGapPopup = exports.PhoneGapPopup = function (_EventEmitter) {
     key: 'open',
     value: function () {
       var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
-        var _this2 = this;
-
         var url = arguments.length <= 0 || arguments[0] === undefined ? '/' : arguments[0];
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
@@ -72,19 +71,14 @@ var PhoneGapPopup = exports.PhoneGapPopup = function (_EventEmitter) {
                 return this.deviceReady;
 
               case 2:
-                if (!_device.PhoneGapDevice.isPhoneGap()) {
-                  _context.next = 15;
-                  break;
-                }
-
                 if (!(global.cordova && !global.cordova.InAppBrowser)) {
-                  _context.next = 5;
+                  _context.next = 4;
                   break;
                 }
 
-                throw new Error('PhoneGap InAppBrowser Plugin is not installed.', 'Please refer to http://http://devcenter.kinvey.com/phonegap/guides/getting-started for help with ' + 'setting up your project.');
+                throw new Error('PhoneGap InAppBrowser Plugin is not installed.' + ' Please refer to http://http://devcenter.kinvey.com/phonegap/guides/getting-started for help with' + ' setting up your project.');
 
-              case 5:
+              case 4:
 
                 // Open the popup
                 this.popup = global.open(url, '_blank', 'location=yes');
@@ -96,6 +90,7 @@ var PhoneGapPopup = exports.PhoneGapPopup = function (_EventEmitter) {
                   break;
                 }
 
+                this.popup.addEventListener('loadstart', this.eventListeners.loadStartCallback);
                 this.popup.addEventListener('loadstop', this.eventListeners.loadStopCallback);
                 this.popup.addEventListener('loaderror', this.eventListeners.loadErrorCallback);
                 this.popup.addEventListener('exit', this.eventListeners.exitCallback);
@@ -106,42 +101,9 @@ var PhoneGapPopup = exports.PhoneGapPopup = function (_EventEmitter) {
                 throw new Error('The popup was blocked.');
 
               case 13:
-                _context.next = 21;
-                break;
-
-              case 15:
-                // Open the popup
-                this.popup = global.open(url, '_blank', 'toolbar=no,location=no');
-
-                if (!this.popup) {
-                  _context.next = 20;
-                  break;
-                }
-
-                // Check if the popup is closed or redirect every 100ms
-                this.interval = setInterval(function () {
-                  if (_this2.popup.closed) {
-                    _this2.exitCallback();
-                  } else {
-                    try {
-                      _this2.loadStopCallback({
-                        url: _this2.popup.location.href
-                      });
-                    } catch (error) {
-                      // Just catch the error
-                    }
-                  }
-                }, 100);
-                _context.next = 21;
-                break;
-
-              case 20:
-                throw new Error('The popup was blocked.');
-
-              case 21:
                 return _context.abrupt('return', this);
 
-              case 22:
+              case 14:
               case 'end':
                 return _context.stop();
             }
@@ -184,14 +146,19 @@ var PhoneGapPopup = exports.PhoneGapPopup = function (_EventEmitter) {
       return close;
     }()
   }, {
+    key: 'loadStartCallback',
+    value: function loadStartCallback(event) {
+      this.emit('loadstart', event);
+    }
+  }, {
     key: 'loadStopCallback',
     value: function loadStopCallback(event) {
-      this.emit('loaded', event.url);
+      this.emit('loadstop', event);
     }
   }, {
     key: 'loadErrorCallback',
     value: function loadErrorCallback(event) {
-      this.emit('error', event.message);
+      this.emit('error', event);
     }
   }, {
     key: 'exitCallback',
@@ -199,6 +166,7 @@ var PhoneGapPopup = exports.PhoneGapPopup = function (_EventEmitter) {
       clearInterval(this.interval);
 
       if (_device.PhoneGapDevice.isPhoneGap()) {
+        this.popup.removeEventListener('loadstart', this.eventListeners.loadStopCallback);
         this.popup.removeEventListener('loadstop', this.eventListeners.loadStopCallback);
         this.popup.removeEventListener('loaderror', this.eventListeners.loadErrorCallback);
         this.popup.removeEventListener('exit', this.eventListeners.exitCallback);

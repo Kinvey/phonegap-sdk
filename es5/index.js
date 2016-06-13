@@ -34,6 +34,21 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var networkRack = _rack.NetworkRack.sharedInstance();
 networkRack.swap(_http.HttpMiddleware, new _http2.PhoneGapHttpMiddleware());
 
+// Check that the cordova device plugin is installed
+if (_device.PhoneGapDevice.isPhoneGap()) {
+  (function () {
+    var onDeviceReady = function onDeviceReady() {
+      document.removeEventListener('deviceready', onDeviceReady);
+
+      if (typeof global.device === 'undefined') {
+        throw new _errors.KinveyError('Cordova Device Plugin is not installed.' + ' Please refer to devcenter.kinvey.com/phonegap-v3.0/guides/getting-started for help with' + ' setting up your project.');
+      }
+    };
+
+    document.addEventListener('deviceready', onDeviceReady, false);
+  })();
+}
+
 // Extend the Kinvey class
 
 var PhoneGapKinvey = function (_Kinvey) {
@@ -48,20 +63,6 @@ var PhoneGapKinvey = function (_Kinvey) {
   _createClass(PhoneGapKinvey, null, [{
     key: 'init',
     value: function init(options) {
-      if (_device.PhoneGapDevice.isPhoneGap()) {
-        (function () {
-          var onDeviceReady = function onDeviceReady() {
-            document.removeEventListener('deviceready', onDeviceReady);
-
-            if (typeof global.device === 'undefined') {
-              throw new _errors.KinveyError('Cordova Device Plugin is not installed.', 'Please refer to http://devcenter.kinvey.com/phonegap-v3.0/guides/push#ProjectSetUp for help with' + ' setting up your project.');
-            }
-          };
-
-          document.addEventListener('deviceready', onDeviceReady, false);
-        })();
-      }
-
       // Initialize Kinvey
       var client = _get(Object.getPrototypeOf(PhoneGapKinvey), 'init', this).call(this, options);
 
