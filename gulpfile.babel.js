@@ -132,4 +132,3 @@ gulp.task('upload', ['bundle'], () => {
 });
 
 gulp.task('default', ['bundle']);
-gulp.task('release', ['default', 'tag']);
