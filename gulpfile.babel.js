@@ -14,7 +14,6 @@ import banner from 'gulp-banner';
 import pkg from './package.json';
 import bump from 'gulp-bump';
 import tag from 'gulp-tag-version';
-import filter from 'gulp-filter';
 import { argv as args } from 'yargs';
 
 function errorHandler(err) {
