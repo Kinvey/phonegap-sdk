@@ -13,6 +13,8 @@ import s3Upload from 'gulp-s3-upload';
 import banner from 'gulp-banner';
 import pkg from './package.json';
 import bump from 'gulp-bump';
+import tag from 'gulp-tag-version';
+import filter from 'gulp-filter';
 import { argv as args } from 'yargs';
 
 function errorHandler(err) {
@@ -94,6 +96,8 @@ gulp.task('bump', () => {
       version: args.version
     }))
     .pipe(gulp.dest(`${__dirname}/`))
+    .pipe(filter('package.json'))
+    .pipe(tag())
     .on('error', errorHandler);
   return stream;
 });
