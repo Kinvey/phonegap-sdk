@@ -96,7 +96,12 @@ gulp.task('bump', () => {
       version: args.version
     }))
     .pipe(gulp.dest(`${__dirname}/`))
-    .pipe(filter('package.json'))
+    .on('error', errorHandler);
+  return stream;
+});
+
+gulp.task('tag', () => {
+  const stream = gulp.src('./package.json')
     .pipe(tag())
     .on('error', errorHandler);
   return stream;
@@ -128,3 +133,4 @@ gulp.task('upload', ['bundle'], () => {
 });
 
 gulp.task('default', ['bundle']);
+gulp.task('release', ['default', 'tag']);
