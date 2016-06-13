@@ -14,8 +14,6 @@ import banner from 'gulp-banner';
 import pkg from './package.json';
 import bump from 'gulp-bump';
 import { argv as args } from 'yargs';
-import dotenv from 'dotenv';
-dotenv.config();
 
 function errorHandler(err) {
   util.log(err.toString());
