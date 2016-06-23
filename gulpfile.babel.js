@@ -29,12 +29,12 @@ gulp.task('lint', () => {
   return stream;
 });
 
-gulp.task('clean', (done) => del(['es5', 'dist'], done));
+gulp.task('clean', (done) => del(['dist'], done));
 
 gulp.task('build', ['clean', 'lint'], () => {
   const stream = gulp.src('src/**/*.js')
     .pipe(babel())
-    .pipe(gulp.dest('./es5'));
+    .pipe(gulp.dest('./dist'));
   return stream;
 });
 
@@ -50,13 +50,10 @@ gulp.task('bundle', ['build'], () => {
     + ' * Released under the <%= pkg.license %> license.\n'
     + ' */\n';
 
-  const stream = gulp.src('./es5/index.js')
+  const stream = gulp.src('./dist/index.js')
     .pipe(gulpWebpack({
-      context: `${__dirname}/es5`,
-      entry: [
-        'babel-regenerator-runtime/runtime.js',
-        './index.js'
-      ],
+      context: `${__dirname}/dist`,
+      entry: ['./index.js'],
       output: {
         filename: 'kinvey-phonegap-sdk.js',
         libraryTarget: 'var',

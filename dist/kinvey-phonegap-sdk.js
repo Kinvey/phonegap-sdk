@@ -55,12 +55,98 @@ var Kinvey =
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	__webpack_require__(1);
-	module.exports = __webpack_require__(3);
+	module.exports = __webpack_require__(1);
 
 
 /***/ },
 /* 1 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(global) {'use strict';
+
+	__webpack_require__(2);
+
+	var _kinvey = __webpack_require__(5);
+
+	var _errors = __webpack_require__(7);
+
+	var _rack = __webpack_require__(156);
+
+	var _cache = __webpack_require__(165);
+
+	var _cache2 = __webpack_require__(312);
+
+	var _http = __webpack_require__(188);
+
+	var _http2 = __webpack_require__(326);
+
+	var _popup = __webpack_require__(331);
+
+	var _device = __webpack_require__(281);
+
+	// Swap Cache Middelware
+	var cacheRack = _rack.KinveyRackManager.cacheRack;
+	cacheRack.swap(_cache.CacheMiddleware, new _cache2.CacheMiddleware());
+
+	// Swap Http middleware
+	var networkRack = _rack.KinveyRackManager.networkRack;
+	networkRack.swap(_http.HttpMiddleware, new _http2.HttpMiddleware());
+
+	// Check that the cordova device plugin is installed
+	_device.Device.ready().then(function () {
+	  if (typeof global.device === 'undefined') {
+	    throw new _errors.KinveyError('Cordova Device Plugin is not installed.' + ' Please refer to devcenter.kinvey.com/phonegap-v3.0/guides/getting-started for help with' + ' setting up your project.');
+	  }
+	});
+
+	// Expose some globals
+	global.KinveyDevice = _device.Device;
+	global.KinveyPopup = _popup.Popup;
+
+	// Export
+	module.exports = _kinvey.Kinvey;
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
+
+/***/ },
+/* 2 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(global) {// This method of obtaining a reference to the global object needs to be
+	// kept identical to the way it is obtained in runtime.js
+	var g =
+	  typeof global === "object" ? global :
+	  typeof window === "object" ? window :
+	  typeof self === "object" ? self : this;
+
+	// Use `getOwnPropertyNames` because not all browsers support calling
+	// `hasOwnProperty` on the global `self` object in a worker. See #183.
+	var hadRuntime = g.regeneratorRuntime &&
+	  Object.getOwnPropertyNames(g).indexOf("regeneratorRuntime") >= 0;
+
+	// Save the old regeneratorRuntime in case it needs to be restored later.
+	var oldRuntime = hadRuntime && g.regeneratorRuntime;
+
+	// Force reevalutation of runtime.js.
+	g.regeneratorRuntime = undefined;
+
+	module.exports = __webpack_require__(3);
+
+	if (hadRuntime) {
+	  // Restore the original runtime.
+	  g.regeneratorRuntime = oldRuntime;
+	} else {
+	  // Remove the global property added by runtime.js.
+	  try {
+	    delete g.regeneratorRuntime;
+	  } catch(e) {
+	    g.regeneratorRuntime = undefined;
+	  }
+	}
+
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
+
+/***/ },
+/* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global, process) {/**
@@ -78,8 +164,9 @@ var Kinvey =
 
 	  var hasOwn = Object.prototype.hasOwnProperty;
 	  var undefined; // More compressible than void 0.
-	  var iteratorSymbol =
-	    typeof Symbol === "function" && Symbol.iterator || "@@iterator";
+	  var $Symbol = typeof Symbol === "function" ? Symbol : {};
+	  var iteratorSymbol = $Symbol.iterator || "@@iterator";
+	  var toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
 
 	  var inModule = typeof module === "object";
 	  var runtime = global.regeneratorRuntime;
@@ -149,7 +236,7 @@ var Kinvey =
 	  var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype;
 	  GeneratorFunction.prototype = Gp.constructor = GeneratorFunctionPrototype;
 	  GeneratorFunctionPrototype.constructor = GeneratorFunction;
-	  GeneratorFunction.displayName = "GeneratorFunction";
+	  GeneratorFunctionPrototype[toStringTagSymbol] = GeneratorFunction.displayName = "GeneratorFunction";
 
 	  // Helper for defining the .next, .throw, and .return methods of the
 	  // Iterator interface in terms of a single ._invoke method.
@@ -176,6 +263,9 @@ var Kinvey =
 	      Object.setPrototypeOf(genFun, GeneratorFunctionPrototype);
 	    } else {
 	      genFun.__proto__ = GeneratorFunctionPrototype;
+	      if (!(toStringTagSymbol in genFun)) {
+	        genFun[toStringTagSymbol] = "GeneratorFunction";
+	      }
 	    }
 	    genFun.prototype = Object.create(Gp);
 	    return genFun;
@@ -195,46 +285,54 @@ var Kinvey =
 	  }
 
 	  function AsyncIterator(generator) {
-	    // This invoke function is written in a style that assumes some
-	    // calling function (or Promise) will handle exceptions.
-	    function invoke(method, arg) {
-	      var result = generator[method](arg);
-	      var value = result.value;
-	      return value instanceof AwaitArgument
-	        ? Promise.resolve(value.arg).then(invokeNext, invokeThrow)
-	        : Promise.resolve(value).then(function(unwrapped) {
-	            // When a yielded Promise is resolved, its final value becomes
-	            // the .value of the Promise<{value,done}> result for the
-	            // current iteration. If the Promise is rejected, however, the
-	            // result for this iteration will be rejected with the same
-	            // reason. Note that rejections of yielded Promises are not
-	            // thrown back into the generator function, as is the case
-	            // when an awaited Promise is rejected. This difference in
-	            // behavior between yield and await is important, because it
-	            // allows the consumer to decide what to do with the yielded
-	            // rejection (swallow it and continue, manually .throw it back
-	            // into the generator, abandon iteration, whatever). With
-	            // await, by contrast, there is no opportunity to examine the
-	            // rejection reason outside the generator function, so the
-	            // only option is to throw it from the await expression, and
-	            // let the generator function handle the exception.
-	            result.value = unwrapped;
-	            return result;
+	    function invoke(method, arg, resolve, reject) {
+	      var record = tryCatch(generator[method], generator, arg);
+	      if (record.type === "throw") {
+	        reject(record.arg);
+	      } else {
+	        var result = record.arg;
+	        var value = result.value;
+	        if (value instanceof AwaitArgument) {
+	          return Promise.resolve(value.arg).then(function(value) {
+	            invoke("next", value, resolve, reject);
+	          }, function(err) {
+	            invoke("throw", err, resolve, reject);
 	          });
+	        }
+
+	        return Promise.resolve(value).then(function(unwrapped) {
+	          // When a yielded Promise is resolved, its final value becomes
+	          // the .value of the Promise<{value,done}> result for the
+	          // current iteration. If the Promise is rejected, however, the
+	          // result for this iteration will be rejected with the same
+	          // reason. Note that rejections of yielded Promises are not
+	          // thrown back into the generator function, as is the case
+	          // when an awaited Promise is rejected. This difference in
+	          // behavior between yield and await is important, because it
+	          // allows the consumer to decide what to do with the yielded
+	          // rejection (swallow it and continue, manually .throw it back
+	          // into the generator, abandon iteration, whatever). With
+	          // await, by contrast, there is no opportunity to examine the
+	          // rejection reason outside the generator function, so the
+	          // only option is to throw it from the await expression, and
+	          // let the generator function handle the exception.
+	          result.value = unwrapped;
+	          resolve(result);
+	        }, reject);
+	      }
 	    }
 
 	    if (typeof process === "object" && process.domain) {
 	      invoke = process.domain.bind(invoke);
 	    }
 
-	    var invokeNext = invoke.bind(generator, "next");
-	    var invokeThrow = invoke.bind(generator, "throw");
-	    var invokeReturn = invoke.bind(generator, "return");
 	    var previousPromise;
 
 	    function enqueue(method, arg) {
 	      function callInvokeWithMethodAndArg() {
-	        return invoke(method, arg);
+	        return new Promise(function(resolve, reject) {
+	          invoke(method, arg, resolve, reject);
+	        });
 	      }
 
 	      return previousPromise =
@@ -255,9 +353,7 @@ var Kinvey =
 	          // Avoid propagating failures to Promises returned by later
 	          // invocations of the iterator.
 	          callInvokeWithMethodAndArg
-	        ) : new Promise(function (resolve) {
-	          resolve(callInvokeWithMethodAndArg());
-	        });
+	        ) : callInvokeWithMethodAndArg();
 	    }
 
 	    // Define the unified helper method that is used to implement .next,
@@ -365,13 +461,10 @@ var Kinvey =
 	        }
 
 	        if (method === "next") {
-	          context._sent = arg;
+	          // Setting context._sent for legacy support of Babel's
+	          // function.sent implementation.
+	          context.sent = context._sent = arg;
 
-	          if (state === GenStateSuspendedYield) {
-	            context.sent = arg;
-	          } else {
-	            context.sent = undefined;
-	          }
 	        } else if (method === "throw") {
 	          if (state === GenStateSuspendedStart) {
 	            state = GenStateCompleted;
@@ -432,6 +525,8 @@ var Kinvey =
 	  Gp[iteratorSymbol] = function() {
 	    return this;
 	  };
+
+	  Gp[toStringTagSymbol] = "Generator";
 
 	  Gp.toString = function() {
 	    return "[object Generator]";
@@ -541,7 +636,9 @@ var Kinvey =
 	    reset: function(skipTempReset) {
 	      this.prev = 0;
 	      this.next = 0;
-	      this.sent = undefined;
+	      // Resetting context._sent for legacy support of Babel's
+	      // function.sent implementation.
+	      this.sent = this._sent = undefined;
 	      this.done = false;
 	      this.delegate = null;
 
@@ -721,20 +818,40 @@ var Kinvey =
 	  typeof self === "object" ? self : this
 	);
 
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(2)))
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(4)))
 
 /***/ },
-/* 2 */
+/* 4 */
 /***/ function(module, exports) {
 
 	// shim for using process in browser
 
 	var process = module.exports = {};
 
-	// cached from whatever global is present so that test runners that stub it don't break things.
-	var cachedSetTimeout = setTimeout;
-	var cachedClearTimeout = clearTimeout;
+	// cached from whatever global is present so that test runners that stub it
+	// don't break things.  But we need to wrap it in a try catch in case it is
+	// wrapped in strict mode code which doesn't define any globals.  It's inside a
+	// function because try/catches deoptimize in certain engines.
 
+	var cachedSetTimeout;
+	var cachedClearTimeout;
+
+	(function () {
+	  try {
+	    cachedSetTimeout = setTimeout;
+	  } catch (e) {
+	    cachedSetTimeout = function () {
+	      throw new Error('setTimeout is not defined');
+	    }
+	  }
+	  try {
+	    cachedClearTimeout = clearTimeout;
+	  } catch (e) {
+	    cachedClearTimeout = function () {
+	      throw new Error('clearTimeout is not defined');
+	    }
+	  }
+	} ())
 	var queue = [];
 	var draining = false;
 	var currentQueue;
@@ -829,34 +946,23 @@ var Kinvey =
 
 
 /***/ },
-/* 3 */
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(global) {'use strict';
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.Kinvey = undefined;
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-	var _kinveyJavascriptSdkCore = __webpack_require__(4);
+	var _kinveyJavascriptSdkCore = __webpack_require__(6);
 
-	var _kinveyJavascriptSdkCore2 = _interopRequireDefault(_kinveyJavascriptSdkCore);
-
-	var _errors = __webpack_require__(5);
-
-	var _rack = __webpack_require__(154);
-
-	var _http = __webpack_require__(220);
-
-	var _http2 = __webpack_require__(304);
-
-	var _push = __webpack_require__(309);
-
-	var _popup = __webpack_require__(341);
-
-	var _device = __webpack_require__(310);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	var _push = __webpack_require__(280);
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -864,65 +970,36 @@ var Kinvey =
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	// Add Http middleware
-	var networkRack = _rack.NetworkRack.sharedInstance();
-	networkRack.swap(_http.HttpMiddleware, new _http2.PhoneGapHttpMiddleware());
+	// Extend the CoreKinvey class
 
-	// Check that the cordova device plugin is installed
-	if (_device.PhoneGapDevice.isPhoneGap()) {
-	  (function () {
-	    var onDeviceReady = function onDeviceReady() {
-	      document.removeEventListener('deviceready', onDeviceReady);
+	var Kinvey = exports.Kinvey = function (_CoreKinvey) {
+	  _inherits(Kinvey, _CoreKinvey);
 
-	      if (typeof global.device === 'undefined') {
-	        throw new _errors.KinveyError('Cordova Device Plugin is not installed.' + ' Please refer to devcenter.kinvey.com/phonegap-v3.0/guides/getting-started for help with' + ' setting up your project.');
-	      }
-	    };
+	  function Kinvey() {
+	    _classCallCheck(this, Kinvey);
 
-	    document.addEventListener('deviceready', onDeviceReady, false);
-	  })();
-	}
-
-	// Extend the Kinvey class
-
-	var PhoneGapKinvey = function (_Kinvey) {
-	  _inherits(PhoneGapKinvey, _Kinvey);
-
-	  function PhoneGapKinvey() {
-	    _classCallCheck(this, PhoneGapKinvey);
-
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(PhoneGapKinvey).apply(this, arguments));
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(Kinvey).apply(this, arguments));
 	  }
 
-	  _createClass(PhoneGapKinvey, null, [{
+	  _createClass(Kinvey, null, [{
 	    key: 'init',
 	    value: function init(options) {
 	      // Initialize Kinvey
-	      var client = _get(Object.getPrototypeOf(PhoneGapKinvey), 'init', this).call(this, options);
+	      var client = _get(Object.getPrototypeOf(Kinvey), 'init', this).call(this, options);
 
 	      // Add Push module to Kinvey
-	      this.Push = new _push.PhoneGapPush();
+	      this.Push = new _push.Push();
 
 	      // Return the client
 	      return client;
 	    }
 	  }]);
 
-	  return PhoneGapKinvey;
-	}(_kinveyJavascriptSdkCore2.default);
-
-	// Expose some globals
-
-
-	global.KinveyDevice = _device.PhoneGapDevice;
-	global.KinveyPopup = _popup.PhoneGapPopup;
-
-	// Export
-	module.exports = PhoneGapKinvey;
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
+	  return Kinvey;
+	}(_kinveyJavascriptSdkCore.Kinvey);
 
 /***/ },
-/* 4 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -930,44 +1007,46 @@ var Kinvey =
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
+	exports.Kinvey = undefined;
 
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); // eslint-disable-line no-unused-vars
 
-	var _errors = __webpack_require__(5);
 
-	var _aggregation = __webpack_require__(7);
+	var _errors = __webpack_require__(7);
 
-	var _client = __webpack_require__(137);
+	var _aggregation = __webpack_require__(9);
 
-	var _client2 = _interopRequireDefault(_client);
+	var _client = __webpack_require__(139);
 
-	var _endpoint = __webpack_require__(148);
+	var _endpoint = __webpack_require__(150);
 
-	var _endpoint2 = _interopRequireDefault(_endpoint);
+	var _log = __webpack_require__(199);
 
-	var _log = __webpack_require__(159);
+	var _metadata = __webpack_require__(201);
 
-	var _metadata = __webpack_require__(248);
+	var _query = __webpack_require__(10);
 
-	var _query = __webpack_require__(8);
+	var _datastore = __webpack_require__(226);
 
-	var _datastore = __webpack_require__(250);
+	var _filestore = __webpack_require__(273);
 
-	var _filestore = __webpack_require__(297);
+	var _sync = __webpack_require__(246);
 
-	var _sync = __webpack_require__(270);
+	var _user = __webpack_require__(274);
 
-	var _sync2 = _interopRequireDefault(_sync);
+	var _mic = __webpack_require__(276);
 
-	var _user = __webpack_require__(298);
+	var _network = __webpack_require__(198);
 
-	var _mic = __webpack_require__(300);
+	var _request = __webpack_require__(151);
 
-	var _network = __webpack_require__(247);
+	var _rack = __webpack_require__(156);
 
-	var _request = __webpack_require__(149);
+	var _regeneratorRuntime = __webpack_require__(2);
 
-	var _url = __webpack_require__(142);
+	var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
+
+	var _url = __webpack_require__(144);
 
 	var _url2 = _interopRequireDefault(_url);
 
@@ -980,7 +1059,7 @@ var Kinvey =
 	var appdataNamespace = process.env.KINVEY_DATASTORE_NAMESPACE || 'appdata';
 	var client = null;
 
-	var Kinvey = function () {
+	var Kinvey = exports.Kinvey = function () {
 	  function Kinvey() {
 	    _classCallCheck(this, Kinvey);
 	  }
@@ -1021,20 +1100,19 @@ var Kinvey =
 	      }
 
 	      // Initialize the client
-	      client = _client2.default.init(options);
+	      client = _client.Client.init(options);
 
 	      // Add all the modules to the Kinvey namespace
 	      this.Aggregation = _aggregation.Aggregation;
 	      this.AuthorizationGrant = _mic.AuthorizationGrant;
-	      this.CustomEndpoint = _endpoint2.default;
-	      this.DataStore = _datastore.DataStore;
+	      this.CustomEndpoint = _endpoint.CustomEndpoint;
+	      this.DataStore = _datastore.DataStoreManager;
 	      this.DataStoreType = _datastore.DataStoreType;
 	      this.FileStore = _filestore.FileStore;
-	      this.Log = _log.Log;
 	      this.Metadata = _metadata.Metadata;
 	      this.Query = _query.Query;
 	      this.SocialIdentity = _mic.SocialIdentity;
-	      this.Sync = _sync2.default;
+	      this.Sync = _sync.Sync;
 	      this.User = _user.User;
 	      this.UserStore = _user.UserStore;
 
@@ -1051,10 +1129,10 @@ var Kinvey =
 	  }, {
 	    key: 'ping',
 	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
-	        var client = arguments.length <= 0 || arguments[0] === undefined ? _client2.default.sharedInstance() : arguments[0];
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee() {
+	        var client = arguments.length <= 0 || arguments[0] === undefined ? _client.Client.sharedInstance() : arguments[0];
 	        var request, response;
-	        return regeneratorRuntime.wrap(function _callee$(_context) {
+	        return _regeneratorRuntime2.default.wrap(function _callee$(_context) {
 	          while (1) {
 	            switch (_context.prev = _context.next) {
 	              case 0:
@@ -1105,16 +1183,24 @@ var Kinvey =
 	    set: function set(appVersion) {
 	      this.client.appVersion = appVersion;
 	    }
+	  }, {
+	    key: 'RackManager',
+	    get: function get() {
+	      return _rack.KinveyRackManager;
+	    }
+	  }, {
+	    key: 'Log',
+	    get: function get() {
+	      return _log.Log;
+	    }
 	  }]);
 
 	  return Kinvey;
 	}();
-
-	exports.default = Kinvey;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ },
-/* 5 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1124,7 +1210,7 @@ var Kinvey =
 	});
 	exports.SyncError = exports.ParameterValueOutOfRangeError = exports.NoResponseError = exports.NotFoundError = exports.NoActiveUserError = exports.NoNetworkConnectionError = exports.MissingRequestParameterError = exports.MissingRequestHeaderError = exports.MissingQueryError = exports.JSONParseError = exports.InvalidQuerySyntaxError = exports.InvalidIdentifierError = exports.InvalidCredentialsError = exports.InsufficientCredentialsError = exports.IncompleteRequestBodyError = exports.FeatureUnavailableError = exports.ActiveUserError = exports.KinveyError = undefined;
 
-	var _es6Error = __webpack_require__(6);
+	var _es6Error = __webpack_require__(8);
 
 	var _es6Error2 = _interopRequireDefault(_es6Error);
 
@@ -1412,7 +1498,7 @@ var Kinvey =
 	}(KinveyError);
 
 /***/ },
-/* 6 */
+/* 8 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -1497,7 +1583,7 @@ var Kinvey =
 	module.exports = exports['default'];
 
 /***/ },
-/* 7 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1509,31 +1595,31 @@ var Kinvey =
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _errors = __webpack_require__(5);
+	var _errors = __webpack_require__(7);
 
-	var _query = __webpack_require__(8);
+	var _query = __webpack_require__(10);
 
-	var _result = __webpack_require__(136);
+	var _result = __webpack_require__(138);
 
 	var _result2 = _interopRequireDefault(_result);
 
-	var _assign = __webpack_require__(118);
+	var _assign = __webpack_require__(120);
 
 	var _assign2 = _interopRequireDefault(_assign);
 
-	var _forEach = __webpack_require__(10);
+	var _forEach = __webpack_require__(12);
 
 	var _forEach2 = _interopRequireDefault(_forEach);
 
-	var _isString = __webpack_require__(32);
+	var _isString = __webpack_require__(34);
 
 	var _isString2 = _interopRequireDefault(_isString);
 
-	var _isObject = __webpack_require__(28);
+	var _isObject = __webpack_require__(30);
 
 	var _isObject2 = _interopRequireDefault(_isObject);
 
-	var _isFunction = __webpack_require__(27);
+	var _isFunction = __webpack_require__(29);
 
 	var _isFunction2 = _interopRequireDefault(_isFunction);
 
@@ -1741,7 +1827,7 @@ var Kinvey =
 	}();
 
 /***/ },
-/* 8 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1755,45 +1841,45 @@ var Kinvey =
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _object = __webpack_require__(9);
+	var _object = __webpack_require__(11);
 
-	var _sift = __webpack_require__(117);
+	var _sift = __webpack_require__(119);
 
 	var _sift2 = _interopRequireDefault(_sift);
 
-	var _assign = __webpack_require__(118);
+	var _assign = __webpack_require__(120);
 
 	var _assign2 = _interopRequireDefault(_assign);
 
-	var _isArray = __webpack_require__(31);
+	var _isArray = __webpack_require__(33);
 
 	var _isArray2 = _interopRequireDefault(_isArray);
 
-	var _isNumber = __webpack_require__(128);
+	var _isNumber = __webpack_require__(130);
 
 	var _isNumber2 = _interopRequireDefault(_isNumber);
 
-	var _isString = __webpack_require__(32);
+	var _isString = __webpack_require__(34);
 
 	var _isString2 = _interopRequireDefault(_isString);
 
-	var _isObject = __webpack_require__(28);
+	var _isObject = __webpack_require__(30);
 
 	var _isObject2 = _interopRequireDefault(_isObject);
 
-	var _isRegExp = __webpack_require__(129);
+	var _isRegExp = __webpack_require__(131);
 
 	var _isRegExp2 = _interopRequireDefault(_isRegExp);
 
-	var _isEmpty = __webpack_require__(130);
+	var _isEmpty = __webpack_require__(132);
 
 	var _isEmpty2 = _interopRequireDefault(_isEmpty);
 
-	var _forEach = __webpack_require__(10);
+	var _forEach = __webpack_require__(12);
 
 	var _forEach2 = _interopRequireDefault(_forEach);
 
-	var _findKey = __webpack_require__(134);
+	var _findKey = __webpack_require__(136);
 
 	var _findKey2 = _interopRequireDefault(_findKey);
 
@@ -2521,7 +2607,7 @@ var Kinvey =
 	exports.Query = Query;
 
 /***/ },
-/* 9 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2533,11 +2619,11 @@ var Kinvey =
 	exports.isDefined = isDefined;
 	exports.use = use;
 
-	var _forEach = __webpack_require__(10);
+	var _forEach = __webpack_require__(12);
 
 	var _forEach2 = _interopRequireDefault(_forEach);
 
-	var _isFunction = __webpack_require__(27);
+	var _isFunction = __webpack_require__(29);
 
 	var _isFunction2 = _interopRequireDefault(_isFunction);
 
@@ -2593,13 +2679,13 @@ var Kinvey =
 	}
 
 /***/ },
-/* 10 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var arrayEach = __webpack_require__(11),
-	    baseEach = __webpack_require__(12),
-	    baseIteratee = __webpack_require__(36),
-	    isArray = __webpack_require__(31);
+	var arrayEach = __webpack_require__(13),
+	    baseEach = __webpack_require__(14),
+	    baseIteratee = __webpack_require__(38),
+	    isArray = __webpack_require__(33);
 
 	/**
 	 * Iterates over elements of `collection` and invokes `iteratee` for each element.
@@ -2640,7 +2726,7 @@ var Kinvey =
 
 
 /***/ },
-/* 11 */
+/* 13 */
 /***/ function(module, exports) {
 
 	/**
@@ -2668,11 +2754,11 @@ var Kinvey =
 
 
 /***/ },
-/* 12 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseForOwn = __webpack_require__(13),
-	    createBaseEach = __webpack_require__(35);
+	var baseForOwn = __webpack_require__(15),
+	    createBaseEach = __webpack_require__(37);
 
 	/**
 	 * The base implementation of `_.forEach` without support for iteratee shorthands.
@@ -2688,11 +2774,11 @@ var Kinvey =
 
 
 /***/ },
-/* 13 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseFor = __webpack_require__(14),
-	    keys = __webpack_require__(16);
+	var baseFor = __webpack_require__(16),
+	    keys = __webpack_require__(18);
 
 	/**
 	 * The base implementation of `_.forOwn` without support for iteratee shorthands.
@@ -2710,10 +2796,10 @@ var Kinvey =
 
 
 /***/ },
-/* 14 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var createBaseFor = __webpack_require__(15);
+	var createBaseFor = __webpack_require__(17);
 
 	/**
 	 * The base implementation of `baseForOwn` which iterates over `object`
@@ -2732,7 +2818,7 @@ var Kinvey =
 
 
 /***/ },
-/* 15 */
+/* 17 */
 /***/ function(module, exports) {
 
 	/**
@@ -2763,15 +2849,15 @@ var Kinvey =
 
 
 /***/ },
-/* 16 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseHas = __webpack_require__(17),
-	    baseKeys = __webpack_require__(19),
-	    indexKeys = __webpack_require__(20),
-	    isArrayLike = __webpack_require__(24),
-	    isIndex = __webpack_require__(33),
-	    isPrototype = __webpack_require__(34);
+	var baseHas = __webpack_require__(19),
+	    baseKeys = __webpack_require__(21),
+	    indexKeys = __webpack_require__(22),
+	    isArrayLike = __webpack_require__(26),
+	    isIndex = __webpack_require__(35),
+	    isPrototype = __webpack_require__(36);
 
 	/**
 	 * Creates an array of the own enumerable property names of `object`.
@@ -2825,10 +2911,10 @@ var Kinvey =
 
 
 /***/ },
-/* 17 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var getPrototype = __webpack_require__(18);
+	var getPrototype = __webpack_require__(20);
 
 	/** Used for built-in method references. */
 	var objectProto = Object.prototype;
@@ -2857,7 +2943,7 @@ var Kinvey =
 
 
 /***/ },
-/* 18 */
+/* 20 */
 /***/ function(module, exports) {
 
 	/* Built-in method references for those with the same name as other `lodash` methods. */
@@ -2878,7 +2964,7 @@ var Kinvey =
 
 
 /***/ },
-/* 19 */
+/* 21 */
 /***/ function(module, exports) {
 
 	/* Built-in method references for those with the same name as other `lodash` methods. */
@@ -2900,14 +2986,14 @@ var Kinvey =
 
 
 /***/ },
-/* 20 */
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseTimes = __webpack_require__(21),
-	    isArguments = __webpack_require__(22),
-	    isArray = __webpack_require__(31),
-	    isLength = __webpack_require__(29),
-	    isString = __webpack_require__(32);
+	var baseTimes = __webpack_require__(23),
+	    isArguments = __webpack_require__(24),
+	    isArray = __webpack_require__(33),
+	    isLength = __webpack_require__(31),
+	    isString = __webpack_require__(34);
 
 	/**
 	 * Creates an array of index keys for `object` values of arrays,
@@ -2930,7 +3016,7 @@ var Kinvey =
 
 
 /***/ },
-/* 21 */
+/* 23 */
 /***/ function(module, exports) {
 
 	/**
@@ -2956,10 +3042,10 @@ var Kinvey =
 
 
 /***/ },
-/* 22 */
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isArrayLikeObject = __webpack_require__(23);
+	var isArrayLikeObject = __webpack_require__(25);
 
 	/** `Object#toString` result references. */
 	var argsTag = '[object Arguments]';
@@ -3008,11 +3094,11 @@ var Kinvey =
 
 
 /***/ },
-/* 23 */
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isArrayLike = __webpack_require__(24),
-	    isObjectLike = __webpack_require__(30);
+	var isArrayLike = __webpack_require__(26),
+	    isObjectLike = __webpack_require__(32);
 
 	/**
 	 * This method is like `_.isArrayLike` except that it also checks if `value`
@@ -3047,12 +3133,12 @@ var Kinvey =
 
 
 /***/ },
-/* 24 */
+/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var getLength = __webpack_require__(25),
-	    isFunction = __webpack_require__(27),
-	    isLength = __webpack_require__(29);
+	var getLength = __webpack_require__(27),
+	    isFunction = __webpack_require__(29),
+	    isLength = __webpack_require__(31);
 
 	/**
 	 * Checks if `value` is array-like. A value is considered array-like if it's
@@ -3087,10 +3173,10 @@ var Kinvey =
 
 
 /***/ },
-/* 25 */
+/* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseProperty = __webpack_require__(26);
+	var baseProperty = __webpack_require__(28);
 
 	/**
 	 * Gets the "length" property value of `object`.
@@ -3109,7 +3195,7 @@ var Kinvey =
 
 
 /***/ },
-/* 26 */
+/* 28 */
 /***/ function(module, exports) {
 
 	/**
@@ -3129,10 +3215,10 @@ var Kinvey =
 
 
 /***/ },
-/* 27 */
+/* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isObject = __webpack_require__(28);
+	var isObject = __webpack_require__(30);
 
 	/** `Object#toString` result references. */
 	var funcTag = '[object Function]',
@@ -3178,7 +3264,7 @@ var Kinvey =
 
 
 /***/ },
-/* 28 */
+/* 30 */
 /***/ function(module, exports) {
 
 	/**
@@ -3215,7 +3301,7 @@ var Kinvey =
 
 
 /***/ },
-/* 29 */
+/* 31 */
 /***/ function(module, exports) {
 
 	/** Used as references for various `Number` constants. */
@@ -3257,7 +3343,7 @@ var Kinvey =
 
 
 /***/ },
-/* 30 */
+/* 32 */
 /***/ function(module, exports) {
 
 	/**
@@ -3292,7 +3378,7 @@ var Kinvey =
 
 
 /***/ },
-/* 31 */
+/* 33 */
 /***/ function(module, exports) {
 
 	/**
@@ -3326,11 +3412,11 @@ var Kinvey =
 
 
 /***/ },
-/* 32 */
+/* 34 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isArray = __webpack_require__(31),
-	    isObjectLike = __webpack_require__(30);
+	var isArray = __webpack_require__(33),
+	    isObjectLike = __webpack_require__(32);
 
 	/** `Object#toString` result references. */
 	var stringTag = '[object String]';
@@ -3372,7 +3458,7 @@ var Kinvey =
 
 
 /***/ },
-/* 33 */
+/* 35 */
 /***/ function(module, exports) {
 
 	/** Used as references for various `Number` constants. */
@@ -3400,7 +3486,7 @@ var Kinvey =
 
 
 /***/ },
-/* 34 */
+/* 36 */
 /***/ function(module, exports) {
 
 	/** Used for built-in method references. */
@@ -3424,10 +3510,10 @@ var Kinvey =
 
 
 /***/ },
-/* 35 */
+/* 37 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isArrayLike = __webpack_require__(24);
+	var isArrayLike = __webpack_require__(26);
 
 	/**
 	 * Creates a `baseEach` or `baseEachRight` function.
@@ -3462,14 +3548,14 @@ var Kinvey =
 
 
 /***/ },
-/* 36 */
+/* 38 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseMatches = __webpack_require__(37),
-	    baseMatchesProperty = __webpack_require__(100),
-	    identity = __webpack_require__(114),
-	    isArray = __webpack_require__(31),
-	    property = __webpack_require__(115);
+	var baseMatches = __webpack_require__(39),
+	    baseMatchesProperty = __webpack_require__(102),
+	    identity = __webpack_require__(116),
+	    isArray = __webpack_require__(33),
+	    property = __webpack_require__(117);
 
 	/**
 	 * The base implementation of `_.iteratee`.
@@ -3499,12 +3585,12 @@ var Kinvey =
 
 
 /***/ },
-/* 37 */
+/* 39 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseIsMatch = __webpack_require__(38),
-	    getMatchData = __webpack_require__(97),
-	    matchesStrictComparable = __webpack_require__(99);
+	var baseIsMatch = __webpack_require__(40),
+	    getMatchData = __webpack_require__(99),
+	    matchesStrictComparable = __webpack_require__(101);
 
 	/**
 	 * The base implementation of `_.matches` which doesn't clone `source`.
@@ -3527,11 +3613,11 @@ var Kinvey =
 
 
 /***/ },
-/* 38 */
+/* 40 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Stack = __webpack_require__(39),
-	    baseIsEqual = __webpack_require__(78);
+	var Stack = __webpack_require__(41),
+	    baseIsEqual = __webpack_require__(80);
 
 	/** Used to compose bitmasks for comparison styles. */
 	var UNORDERED_COMPARE_FLAG = 1,
@@ -3595,15 +3681,15 @@ var Kinvey =
 
 
 /***/ },
-/* 39 */
+/* 41 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var ListCache = __webpack_require__(40),
-	    stackClear = __webpack_require__(48),
-	    stackDelete = __webpack_require__(49),
-	    stackGet = __webpack_require__(50),
-	    stackHas = __webpack_require__(51),
-	    stackSet = __webpack_require__(52);
+	var ListCache = __webpack_require__(42),
+	    stackClear = __webpack_require__(50),
+	    stackDelete = __webpack_require__(51),
+	    stackGet = __webpack_require__(52),
+	    stackHas = __webpack_require__(53),
+	    stackSet = __webpack_require__(54);
 
 	/**
 	 * Creates a stack cache object to store key-value pairs.
@@ -3627,14 +3713,14 @@ var Kinvey =
 
 
 /***/ },
-/* 40 */
+/* 42 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var listCacheClear = __webpack_require__(41),
-	    listCacheDelete = __webpack_require__(42),
-	    listCacheGet = __webpack_require__(45),
-	    listCacheHas = __webpack_require__(46),
-	    listCacheSet = __webpack_require__(47);
+	var listCacheClear = __webpack_require__(43),
+	    listCacheDelete = __webpack_require__(44),
+	    listCacheGet = __webpack_require__(47),
+	    listCacheHas = __webpack_require__(48),
+	    listCacheSet = __webpack_require__(49);
 
 	/**
 	 * Creates an list cache object.
@@ -3665,7 +3751,7 @@ var Kinvey =
 
 
 /***/ },
-/* 41 */
+/* 43 */
 /***/ function(module, exports) {
 
 	/**
@@ -3683,10 +3769,10 @@ var Kinvey =
 
 
 /***/ },
-/* 42 */
+/* 44 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var assocIndexOf = __webpack_require__(43);
+	var assocIndexOf = __webpack_require__(45);
 
 	/** Used for built-in method references. */
 	var arrayProto = Array.prototype;
@@ -3723,10 +3809,10 @@ var Kinvey =
 
 
 /***/ },
-/* 43 */
+/* 45 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var eq = __webpack_require__(44);
+	var eq = __webpack_require__(46);
 
 	/**
 	 * Gets the index at which the `key` is found in `array` of key-value pairs.
@@ -3750,7 +3836,7 @@ var Kinvey =
 
 
 /***/ },
-/* 44 */
+/* 46 */
 /***/ function(module, exports) {
 
 	/**
@@ -3793,10 +3879,10 @@ var Kinvey =
 
 
 /***/ },
-/* 45 */
+/* 47 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var assocIndexOf = __webpack_require__(43);
+	var assocIndexOf = __webpack_require__(45);
 
 	/**
 	 * Gets the list cache value for `key`.
@@ -3818,10 +3904,10 @@ var Kinvey =
 
 
 /***/ },
-/* 46 */
+/* 48 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var assocIndexOf = __webpack_require__(43);
+	var assocIndexOf = __webpack_require__(45);
 
 	/**
 	 * Checks if a list cache value for `key` exists.
@@ -3840,10 +3926,10 @@ var Kinvey =
 
 
 /***/ },
-/* 47 */
+/* 49 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var assocIndexOf = __webpack_require__(43);
+	var assocIndexOf = __webpack_require__(45);
 
 	/**
 	 * Sets the list cache `key` to `value`.
@@ -3871,10 +3957,10 @@ var Kinvey =
 
 
 /***/ },
-/* 48 */
+/* 50 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var ListCache = __webpack_require__(40);
+	var ListCache = __webpack_require__(42);
 
 	/**
 	 * Removes all key-value entries from the stack.
@@ -3891,7 +3977,7 @@ var Kinvey =
 
 
 /***/ },
-/* 49 */
+/* 51 */
 /***/ function(module, exports) {
 
 	/**
@@ -3911,7 +3997,7 @@ var Kinvey =
 
 
 /***/ },
-/* 50 */
+/* 52 */
 /***/ function(module, exports) {
 
 	/**
@@ -3931,7 +4017,7 @@ var Kinvey =
 
 
 /***/ },
-/* 51 */
+/* 53 */
 /***/ function(module, exports) {
 
 	/**
@@ -3951,11 +4037,11 @@ var Kinvey =
 
 
 /***/ },
-/* 52 */
+/* 54 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var ListCache = __webpack_require__(40),
-	    MapCache = __webpack_require__(53);
+	var ListCache = __webpack_require__(42),
+	    MapCache = __webpack_require__(55);
 
 	/** Used as the size to enable large array optimizations. */
 	var LARGE_ARRAY_SIZE = 200;
@@ -3983,14 +4069,14 @@ var Kinvey =
 
 
 /***/ },
-/* 53 */
+/* 55 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var mapCacheClear = __webpack_require__(54),
-	    mapCacheDelete = __webpack_require__(72),
-	    mapCacheGet = __webpack_require__(75),
-	    mapCacheHas = __webpack_require__(76),
-	    mapCacheSet = __webpack_require__(77);
+	var mapCacheClear = __webpack_require__(56),
+	    mapCacheDelete = __webpack_require__(74),
+	    mapCacheGet = __webpack_require__(77),
+	    mapCacheHas = __webpack_require__(78),
+	    mapCacheSet = __webpack_require__(79);
 
 	/**
 	 * Creates a map cache object to store key-value pairs.
@@ -4021,12 +4107,12 @@ var Kinvey =
 
 
 /***/ },
-/* 54 */
+/* 56 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Hash = __webpack_require__(55),
-	    ListCache = __webpack_require__(40),
-	    Map = __webpack_require__(71);
+	var Hash = __webpack_require__(57),
+	    ListCache = __webpack_require__(42),
+	    Map = __webpack_require__(73);
 
 	/**
 	 * Removes all key-value entries from the map.
@@ -4047,14 +4133,14 @@ var Kinvey =
 
 
 /***/ },
-/* 55 */
+/* 57 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var hashClear = __webpack_require__(56),
-	    hashDelete = __webpack_require__(67),
-	    hashGet = __webpack_require__(68),
-	    hashHas = __webpack_require__(69),
-	    hashSet = __webpack_require__(70);
+	var hashClear = __webpack_require__(58),
+	    hashDelete = __webpack_require__(69),
+	    hashGet = __webpack_require__(70),
+	    hashHas = __webpack_require__(71),
+	    hashSet = __webpack_require__(72);
 
 	/**
 	 * Creates a hash object.
@@ -4085,10 +4171,10 @@ var Kinvey =
 
 
 /***/ },
-/* 56 */
+/* 58 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var nativeCreate = __webpack_require__(57);
+	var nativeCreate = __webpack_require__(59);
 
 	/**
 	 * Removes all key-value entries from the hash.
@@ -4105,10 +4191,10 @@ var Kinvey =
 
 
 /***/ },
-/* 57 */
+/* 59 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var getNative = __webpack_require__(58);
+	var getNative = __webpack_require__(60);
 
 	/* Built-in method references that are verified to be native. */
 	var nativeCreate = getNative(Object, 'create');
@@ -4117,11 +4203,11 @@ var Kinvey =
 
 
 /***/ },
-/* 58 */
+/* 60 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseIsNative = __webpack_require__(59),
-	    getValue = __webpack_require__(66);
+	var baseIsNative = __webpack_require__(61),
+	    getValue = __webpack_require__(68);
 
 	/**
 	 * Gets the native function at `key` of `object`.
@@ -4140,14 +4226,14 @@ var Kinvey =
 
 
 /***/ },
-/* 59 */
+/* 61 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isFunction = __webpack_require__(27),
-	    isHostObject = __webpack_require__(60),
-	    isMasked = __webpack_require__(61),
-	    isObject = __webpack_require__(28),
-	    toSource = __webpack_require__(65);
+	var isFunction = __webpack_require__(29),
+	    isHostObject = __webpack_require__(62),
+	    isMasked = __webpack_require__(63),
+	    isObject = __webpack_require__(30),
+	    toSource = __webpack_require__(67);
 
 	/**
 	 * Used to match `RegExp`
@@ -4193,7 +4279,7 @@ var Kinvey =
 
 
 /***/ },
-/* 60 */
+/* 62 */
 /***/ function(module, exports) {
 
 	/**
@@ -4219,10 +4305,10 @@ var Kinvey =
 
 
 /***/ },
-/* 61 */
+/* 63 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var coreJsData = __webpack_require__(62);
+	var coreJsData = __webpack_require__(64);
 
 	/** Used to detect methods masquerading as native. */
 	var maskSrcKey = (function() {
@@ -4245,10 +4331,10 @@ var Kinvey =
 
 
 /***/ },
-/* 62 */
+/* 64 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var root = __webpack_require__(63);
+	var root = __webpack_require__(65);
 
 	/** Used to detect overreaching core-js shims. */
 	var coreJsData = root['__core-js_shared__'];
@@ -4257,10 +4343,10 @@ var Kinvey =
 
 
 /***/ },
-/* 63 */
+/* 65 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(global) {var checkGlobal = __webpack_require__(64);
+	/* WEBPACK VAR INJECTION */(function(global) {var checkGlobal = __webpack_require__(66);
 
 	/** Detect free variable `global` from Node.js. */
 	var freeGlobal = checkGlobal(typeof global == 'object' && global);
@@ -4279,7 +4365,7 @@ var Kinvey =
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 64 */
+/* 66 */
 /***/ function(module, exports) {
 
 	/**
@@ -4297,7 +4383,7 @@ var Kinvey =
 
 
 /***/ },
-/* 65 */
+/* 67 */
 /***/ function(module, exports) {
 
 	/** Used to resolve the decompiled source of functions. */
@@ -4326,7 +4412,7 @@ var Kinvey =
 
 
 /***/ },
-/* 66 */
+/* 68 */
 /***/ function(module, exports) {
 
 	/**
@@ -4345,7 +4431,7 @@ var Kinvey =
 
 
 /***/ },
-/* 67 */
+/* 69 */
 /***/ function(module, exports) {
 
 	/**
@@ -4366,10 +4452,10 @@ var Kinvey =
 
 
 /***/ },
-/* 68 */
+/* 70 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var nativeCreate = __webpack_require__(57);
+	var nativeCreate = __webpack_require__(59);
 
 	/** Used to stand-in for `undefined` hash values. */
 	var HASH_UNDEFINED = '__lodash_hash_undefined__';
@@ -4402,10 +4488,10 @@ var Kinvey =
 
 
 /***/ },
-/* 69 */
+/* 71 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var nativeCreate = __webpack_require__(57);
+	var nativeCreate = __webpack_require__(59);
 
 	/** Used for built-in method references. */
 	var objectProto = Object.prototype;
@@ -4431,10 +4517,10 @@ var Kinvey =
 
 
 /***/ },
-/* 70 */
+/* 72 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var nativeCreate = __webpack_require__(57);
+	var nativeCreate = __webpack_require__(59);
 
 	/** Used to stand-in for `undefined` hash values. */
 	var HASH_UNDEFINED = '__lodash_hash_undefined__';
@@ -4459,11 +4545,11 @@ var Kinvey =
 
 
 /***/ },
-/* 71 */
+/* 73 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var getNative = __webpack_require__(58),
-	    root = __webpack_require__(63);
+	var getNative = __webpack_require__(60),
+	    root = __webpack_require__(65);
 
 	/* Built-in method references that are verified to be native. */
 	var Map = getNative(root, 'Map');
@@ -4472,10 +4558,10 @@ var Kinvey =
 
 
 /***/ },
-/* 72 */
+/* 74 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var getMapData = __webpack_require__(73);
+	var getMapData = __webpack_require__(75);
 
 	/**
 	 * Removes `key` and its value from the map.
@@ -4494,10 +4580,10 @@ var Kinvey =
 
 
 /***/ },
-/* 73 */
+/* 75 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isKeyable = __webpack_require__(74);
+	var isKeyable = __webpack_require__(76);
 
 	/**
 	 * Gets the data for `map`.
@@ -4518,7 +4604,7 @@ var Kinvey =
 
 
 /***/ },
-/* 74 */
+/* 76 */
 /***/ function(module, exports) {
 
 	/**
@@ -4539,10 +4625,10 @@ var Kinvey =
 
 
 /***/ },
-/* 75 */
+/* 77 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var getMapData = __webpack_require__(73);
+	var getMapData = __webpack_require__(75);
 
 	/**
 	 * Gets the map value for `key`.
@@ -4561,10 +4647,10 @@ var Kinvey =
 
 
 /***/ },
-/* 76 */
+/* 78 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var getMapData = __webpack_require__(73);
+	var getMapData = __webpack_require__(75);
 
 	/**
 	 * Checks if a map value for `key` exists.
@@ -4583,10 +4669,10 @@ var Kinvey =
 
 
 /***/ },
-/* 77 */
+/* 79 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var getMapData = __webpack_require__(73);
+	var getMapData = __webpack_require__(75);
 
 	/**
 	 * Sets the map `key` to `value`.
@@ -4607,12 +4693,12 @@ var Kinvey =
 
 
 /***/ },
-/* 78 */
+/* 80 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseIsEqualDeep = __webpack_require__(79),
-	    isObject = __webpack_require__(28),
-	    isObjectLike = __webpack_require__(30);
+	var baseIsEqualDeep = __webpack_require__(81),
+	    isObject = __webpack_require__(30),
+	    isObjectLike = __webpack_require__(32);
 
 	/**
 	 * The base implementation of `_.isEqual` which supports partial comparisons
@@ -4643,17 +4729,17 @@ var Kinvey =
 
 
 /***/ },
-/* 79 */
+/* 81 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Stack = __webpack_require__(39),
-	    equalArrays = __webpack_require__(80),
-	    equalByTag = __webpack_require__(85),
-	    equalObjects = __webpack_require__(90),
-	    getTag = __webpack_require__(91),
-	    isArray = __webpack_require__(31),
-	    isHostObject = __webpack_require__(60),
-	    isTypedArray = __webpack_require__(96);
+	var Stack = __webpack_require__(41),
+	    equalArrays = __webpack_require__(82),
+	    equalByTag = __webpack_require__(87),
+	    equalObjects = __webpack_require__(92),
+	    getTag = __webpack_require__(93),
+	    isArray = __webpack_require__(33),
+	    isHostObject = __webpack_require__(62),
+	    isTypedArray = __webpack_require__(98);
 
 	/** Used to compose bitmasks for comparison styles. */
 	var PARTIAL_COMPARE_FLAG = 2;
@@ -4731,11 +4817,11 @@ var Kinvey =
 
 
 /***/ },
-/* 80 */
+/* 82 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var SetCache = __webpack_require__(81),
-	    arraySome = __webpack_require__(84);
+	var SetCache = __webpack_require__(83),
+	    arraySome = __webpack_require__(86);
 
 	/** Used to compose bitmasks for comparison styles. */
 	var UNORDERED_COMPARE_FLAG = 1,
@@ -4818,12 +4904,12 @@ var Kinvey =
 
 
 /***/ },
-/* 81 */
+/* 83 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var MapCache = __webpack_require__(53),
-	    setCacheAdd = __webpack_require__(82),
-	    setCacheHas = __webpack_require__(83);
+	var MapCache = __webpack_require__(55),
+	    setCacheAdd = __webpack_require__(84),
+	    setCacheHas = __webpack_require__(85);
 
 	/**
 	 *
@@ -4851,7 +4937,7 @@ var Kinvey =
 
 
 /***/ },
-/* 82 */
+/* 84 */
 /***/ function(module, exports) {
 
 	/** Used to stand-in for `undefined` hash values. */
@@ -4876,7 +4962,7 @@ var Kinvey =
 
 
 /***/ },
-/* 83 */
+/* 85 */
 /***/ function(module, exports) {
 
 	/**
@@ -4896,7 +4982,7 @@ var Kinvey =
 
 
 /***/ },
-/* 84 */
+/* 86 */
 /***/ function(module, exports) {
 
 	/**
@@ -4925,14 +5011,14 @@ var Kinvey =
 
 
 /***/ },
-/* 85 */
+/* 87 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Symbol = __webpack_require__(86),
-	    Uint8Array = __webpack_require__(87),
-	    equalArrays = __webpack_require__(80),
-	    mapToArray = __webpack_require__(88),
-	    setToArray = __webpack_require__(89);
+	var Symbol = __webpack_require__(88),
+	    Uint8Array = __webpack_require__(89),
+	    equalArrays = __webpack_require__(82),
+	    mapToArray = __webpack_require__(90),
+	    setToArray = __webpack_require__(91);
 
 	/** Used to compose bitmasks for comparison styles. */
 	var UNORDERED_COMPARE_FLAG = 1,
@@ -5045,10 +5131,10 @@ var Kinvey =
 
 
 /***/ },
-/* 86 */
+/* 88 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var root = __webpack_require__(63);
+	var root = __webpack_require__(65);
 
 	/** Built-in value references. */
 	var Symbol = root.Symbol;
@@ -5057,10 +5143,10 @@ var Kinvey =
 
 
 /***/ },
-/* 87 */
+/* 89 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var root = __webpack_require__(63);
+	var root = __webpack_require__(65);
 
 	/** Built-in value references. */
 	var Uint8Array = root.Uint8Array;
@@ -5069,7 +5155,7 @@ var Kinvey =
 
 
 /***/ },
-/* 88 */
+/* 90 */
 /***/ function(module, exports) {
 
 	/**
@@ -5093,7 +5179,7 @@ var Kinvey =
 
 
 /***/ },
-/* 89 */
+/* 91 */
 /***/ function(module, exports) {
 
 	/**
@@ -5117,11 +5203,11 @@ var Kinvey =
 
 
 /***/ },
-/* 90 */
+/* 92 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseHas = __webpack_require__(17),
-	    keys = __webpack_require__(16);
+	var baseHas = __webpack_require__(19),
+	    keys = __webpack_require__(18);
 
 	/** Used to compose bitmasks for comparison styles. */
 	var PARTIAL_COMPARE_FLAG = 2;
@@ -5206,15 +5292,15 @@ var Kinvey =
 
 
 /***/ },
-/* 91 */
+/* 93 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var DataView = __webpack_require__(92),
-	    Map = __webpack_require__(71),
-	    Promise = __webpack_require__(93),
-	    Set = __webpack_require__(94),
-	    WeakMap = __webpack_require__(95),
-	    toSource = __webpack_require__(65);
+	var DataView = __webpack_require__(94),
+	    Map = __webpack_require__(73),
+	    Promise = __webpack_require__(95),
+	    Set = __webpack_require__(96),
+	    WeakMap = __webpack_require__(97),
+	    toSource = __webpack_require__(67);
 
 	/** `Object#toString` result references. */
 	var mapTag = '[object Map]',
@@ -5282,11 +5368,11 @@ var Kinvey =
 
 
 /***/ },
-/* 92 */
+/* 94 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var getNative = __webpack_require__(58),
-	    root = __webpack_require__(63);
+	var getNative = __webpack_require__(60),
+	    root = __webpack_require__(65);
 
 	/* Built-in method references that are verified to be native. */
 	var DataView = getNative(root, 'DataView');
@@ -5295,11 +5381,11 @@ var Kinvey =
 
 
 /***/ },
-/* 93 */
+/* 95 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var getNative = __webpack_require__(58),
-	    root = __webpack_require__(63);
+	var getNative = __webpack_require__(60),
+	    root = __webpack_require__(65);
 
 	/* Built-in method references that are verified to be native. */
 	var Promise = getNative(root, 'Promise');
@@ -5308,11 +5394,11 @@ var Kinvey =
 
 
 /***/ },
-/* 94 */
+/* 96 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var getNative = __webpack_require__(58),
-	    root = __webpack_require__(63);
+	var getNative = __webpack_require__(60),
+	    root = __webpack_require__(65);
 
 	/* Built-in method references that are verified to be native. */
 	var Set = getNative(root, 'Set');
@@ -5321,11 +5407,11 @@ var Kinvey =
 
 
 /***/ },
-/* 95 */
+/* 97 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var getNative = __webpack_require__(58),
-	    root = __webpack_require__(63);
+	var getNative = __webpack_require__(60),
+	    root = __webpack_require__(65);
 
 	/* Built-in method references that are verified to be native. */
 	var WeakMap = getNative(root, 'WeakMap');
@@ -5334,11 +5420,11 @@ var Kinvey =
 
 
 /***/ },
-/* 96 */
+/* 98 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isLength = __webpack_require__(29),
-	    isObjectLike = __webpack_require__(30);
+	var isLength = __webpack_require__(31),
+	    isObjectLike = __webpack_require__(32);
 
 	/** `Object#toString` result references. */
 	var argsTag = '[object Arguments]',
@@ -5420,11 +5506,11 @@ var Kinvey =
 
 
 /***/ },
-/* 97 */
+/* 99 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isStrictComparable = __webpack_require__(98),
-	    keys = __webpack_require__(16);
+	var isStrictComparable = __webpack_require__(100),
+	    keys = __webpack_require__(18);
 
 	/**
 	 * Gets the property names, values, and compare flags of `object`.
@@ -5450,10 +5536,10 @@ var Kinvey =
 
 
 /***/ },
-/* 98 */
+/* 100 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isObject = __webpack_require__(28);
+	var isObject = __webpack_require__(30);
 
 	/**
 	 * Checks if `value` is suitable for strict equality comparisons, i.e. `===`.
@@ -5471,7 +5557,7 @@ var Kinvey =
 
 
 /***/ },
-/* 99 */
+/* 101 */
 /***/ function(module, exports) {
 
 	/**
@@ -5497,16 +5583,16 @@ var Kinvey =
 
 
 /***/ },
-/* 100 */
+/* 102 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseIsEqual = __webpack_require__(78),
-	    get = __webpack_require__(101),
-	    hasIn = __webpack_require__(111),
-	    isKey = __webpack_require__(109),
-	    isStrictComparable = __webpack_require__(98),
-	    matchesStrictComparable = __webpack_require__(99),
-	    toKey = __webpack_require__(110);
+	var baseIsEqual = __webpack_require__(80),
+	    get = __webpack_require__(103),
+	    hasIn = __webpack_require__(113),
+	    isKey = __webpack_require__(111),
+	    isStrictComparable = __webpack_require__(100),
+	    matchesStrictComparable = __webpack_require__(101),
+	    toKey = __webpack_require__(112);
 
 	/** Used to compose bitmasks for comparison styles. */
 	var UNORDERED_COMPARE_FLAG = 1,
@@ -5536,10 +5622,10 @@ var Kinvey =
 
 
 /***/ },
-/* 101 */
+/* 103 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseGet = __webpack_require__(102);
+	var baseGet = __webpack_require__(104);
 
 	/**
 	 * Gets the value at `path` of `object`. If the resolved value is
@@ -5575,12 +5661,12 @@ var Kinvey =
 
 
 /***/ },
-/* 102 */
+/* 104 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var castPath = __webpack_require__(103),
-	    isKey = __webpack_require__(109),
-	    toKey = __webpack_require__(110);
+	var castPath = __webpack_require__(105),
+	    isKey = __webpack_require__(111),
+	    toKey = __webpack_require__(112);
 
 	/**
 	 * The base implementation of `_.get` without support for default values.
@@ -5606,11 +5692,11 @@ var Kinvey =
 
 
 /***/ },
-/* 103 */
+/* 105 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isArray = __webpack_require__(31),
-	    stringToPath = __webpack_require__(104);
+	var isArray = __webpack_require__(33),
+	    stringToPath = __webpack_require__(106);
 
 	/**
 	 * Casts `value` to a path array if it's not one.
@@ -5627,11 +5713,11 @@ var Kinvey =
 
 
 /***/ },
-/* 104 */
+/* 106 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var memoize = __webpack_require__(105),
-	    toString = __webpack_require__(106);
+	var memoize = __webpack_require__(107),
+	    toString = __webpack_require__(108);
 
 	/** Used to match property names within property paths. */
 	var rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(\.|\[\])(?:\4|$))/g;
@@ -5658,10 +5744,10 @@ var Kinvey =
 
 
 /***/ },
-/* 105 */
+/* 107 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var MapCache = __webpack_require__(53);
+	var MapCache = __webpack_require__(55);
 
 	/** Used as the `TypeError` message for "Functions" methods. */
 	var FUNC_ERROR_TEXT = 'Expected a function';
@@ -5737,10 +5823,10 @@ var Kinvey =
 
 
 /***/ },
-/* 106 */
+/* 108 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseToString = __webpack_require__(107);
+	var baseToString = __webpack_require__(109);
 
 	/**
 	 * Converts `value` to a string. An empty string is returned for `null`
@@ -5771,11 +5857,11 @@ var Kinvey =
 
 
 /***/ },
-/* 107 */
+/* 109 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Symbol = __webpack_require__(86),
-	    isSymbol = __webpack_require__(108);
+	var Symbol = __webpack_require__(88),
+	    isSymbol = __webpack_require__(110);
 
 	/** Used as references for various `Number` constants. */
 	var INFINITY = 1 / 0;
@@ -5808,10 +5894,10 @@ var Kinvey =
 
 
 /***/ },
-/* 108 */
+/* 110 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isObjectLike = __webpack_require__(30);
+	var isObjectLike = __webpack_require__(32);
 
 	/** `Object#toString` result references. */
 	var symbolTag = '[object Symbol]';
@@ -5853,11 +5939,11 @@ var Kinvey =
 
 
 /***/ },
-/* 109 */
+/* 111 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isArray = __webpack_require__(31),
-	    isSymbol = __webpack_require__(108);
+	var isArray = __webpack_require__(33),
+	    isSymbol = __webpack_require__(110);
 
 	/** Used to match property names within property paths. */
 	var reIsDeepProp = /\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/,
@@ -5888,10 +5974,10 @@ var Kinvey =
 
 
 /***/ },
-/* 110 */
+/* 112 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isSymbol = __webpack_require__(108);
+	var isSymbol = __webpack_require__(110);
 
 	/** Used as references for various `Number` constants. */
 	var INFINITY = 1 / 0;
@@ -5915,11 +6001,11 @@ var Kinvey =
 
 
 /***/ },
-/* 111 */
+/* 113 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseHasIn = __webpack_require__(112),
-	    hasPath = __webpack_require__(113);
+	var baseHasIn = __webpack_require__(114),
+	    hasPath = __webpack_require__(115);
 
 	/**
 	 * Checks if `path` is a direct or inherited property of `object`.
@@ -5955,7 +6041,7 @@ var Kinvey =
 
 
 /***/ },
-/* 112 */
+/* 114 */
 /***/ function(module, exports) {
 
 	/**
@@ -5974,17 +6060,17 @@ var Kinvey =
 
 
 /***/ },
-/* 113 */
+/* 115 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var castPath = __webpack_require__(103),
-	    isArguments = __webpack_require__(22),
-	    isArray = __webpack_require__(31),
-	    isIndex = __webpack_require__(33),
-	    isKey = __webpack_require__(109),
-	    isLength = __webpack_require__(29),
-	    isString = __webpack_require__(32),
-	    toKey = __webpack_require__(110);
+	var castPath = __webpack_require__(105),
+	    isArguments = __webpack_require__(24),
+	    isArray = __webpack_require__(33),
+	    isIndex = __webpack_require__(35),
+	    isKey = __webpack_require__(111),
+	    isLength = __webpack_require__(31),
+	    isString = __webpack_require__(34),
+	    toKey = __webpack_require__(112);
 
 	/**
 	 * Checks if `path` exists on `object`.
@@ -6021,7 +6107,7 @@ var Kinvey =
 
 
 /***/ },
-/* 114 */
+/* 116 */
 /***/ function(module, exports) {
 
 	/**
@@ -6048,13 +6134,13 @@ var Kinvey =
 
 
 /***/ },
-/* 115 */
+/* 117 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseProperty = __webpack_require__(26),
-	    basePropertyDeep = __webpack_require__(116),
-	    isKey = __webpack_require__(109),
-	    toKey = __webpack_require__(110);
+	var baseProperty = __webpack_require__(28),
+	    basePropertyDeep = __webpack_require__(118),
+	    isKey = __webpack_require__(111),
+	    toKey = __webpack_require__(112);
 
 	/**
 	 * Creates a function that returns the value at `path` of a given object.
@@ -6086,10 +6172,10 @@ var Kinvey =
 
 
 /***/ },
-/* 116 */
+/* 118 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseGet = __webpack_require__(102);
+	var baseGet = __webpack_require__(104);
 
 	/**
 	 * A specialized version of `baseProperty` which supports deep paths.
@@ -6108,7 +6194,7 @@ var Kinvey =
 
 
 /***/ },
-/* 117 */
+/* 119 */
 /***/ function(module, exports) {
 
 	/*
@@ -6621,15 +6707,15 @@ var Kinvey =
 
 
 /***/ },
-/* 118 */
+/* 120 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var assignValue = __webpack_require__(119),
-	    copyObject = __webpack_require__(120),
-	    createAssigner = __webpack_require__(121),
-	    isArrayLike = __webpack_require__(24),
-	    isPrototype = __webpack_require__(34),
-	    keys = __webpack_require__(16);
+	var assignValue = __webpack_require__(121),
+	    copyObject = __webpack_require__(122),
+	    createAssigner = __webpack_require__(123),
+	    isArrayLike = __webpack_require__(26),
+	    isPrototype = __webpack_require__(36),
+	    keys = __webpack_require__(18);
 
 	/** Used for built-in method references. */
 	var objectProto = Object.prototype;
@@ -6691,10 +6777,10 @@ var Kinvey =
 
 
 /***/ },
-/* 119 */
+/* 121 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var eq = __webpack_require__(44);
+	var eq = __webpack_require__(46);
 
 	/** Used for built-in method references. */
 	var objectProto = Object.prototype;
@@ -6724,10 +6810,10 @@ var Kinvey =
 
 
 /***/ },
-/* 120 */
+/* 122 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var assignValue = __webpack_require__(119);
+	var assignValue = __webpack_require__(121);
 
 	/**
 	 * Copies properties of `source` to `object`.
@@ -6761,11 +6847,11 @@ var Kinvey =
 
 
 /***/ },
-/* 121 */
+/* 123 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isIterateeCall = __webpack_require__(122),
-	    rest = __webpack_require__(123);
+	var isIterateeCall = __webpack_require__(124),
+	    rest = __webpack_require__(125);
 
 	/**
 	 * Creates a function like `_.assign`.
@@ -6804,13 +6890,13 @@ var Kinvey =
 
 
 /***/ },
-/* 122 */
+/* 124 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var eq = __webpack_require__(44),
-	    isArrayLike = __webpack_require__(24),
-	    isIndex = __webpack_require__(33),
-	    isObject = __webpack_require__(28);
+	var eq = __webpack_require__(46),
+	    isArrayLike = __webpack_require__(26),
+	    isIndex = __webpack_require__(35),
+	    isObject = __webpack_require__(30);
 
 	/**
 	 * Checks if the given arguments are from an iteratee call.
@@ -6840,11 +6926,11 @@ var Kinvey =
 
 
 /***/ },
-/* 123 */
+/* 125 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var apply = __webpack_require__(124),
-	    toInteger = __webpack_require__(125);
+	var apply = __webpack_require__(126),
+	    toInteger = __webpack_require__(127);
 
 	/** Used as the `TypeError` message for "Functions" methods. */
 	var FUNC_ERROR_TEXT = 'Expected a function';
@@ -6910,7 +6996,7 @@ var Kinvey =
 
 
 /***/ },
-/* 124 */
+/* 126 */
 /***/ function(module, exports) {
 
 	/**
@@ -6938,10 +7024,10 @@ var Kinvey =
 
 
 /***/ },
-/* 125 */
+/* 127 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var toFinite = __webpack_require__(126);
+	var toFinite = __webpack_require__(128);
 
 	/**
 	 * Converts `value` to an integer.
@@ -6980,10 +7066,10 @@ var Kinvey =
 
 
 /***/ },
-/* 126 */
+/* 128 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var toNumber = __webpack_require__(127);
+	var toNumber = __webpack_require__(129);
 
 	/** Used as references for various `Number` constants. */
 	var INFINITY = 1 / 0,
@@ -7028,12 +7114,12 @@ var Kinvey =
 
 
 /***/ },
-/* 127 */
+/* 129 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isFunction = __webpack_require__(27),
-	    isObject = __webpack_require__(28),
-	    isSymbol = __webpack_require__(108);
+	var isFunction = __webpack_require__(29),
+	    isObject = __webpack_require__(30),
+	    isSymbol = __webpack_require__(110);
 
 	/** Used as references for various `Number` constants. */
 	var NAN = 0 / 0;
@@ -7101,10 +7187,10 @@ var Kinvey =
 
 
 /***/ },
-/* 128 */
+/* 130 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isObjectLike = __webpack_require__(30);
+	var isObjectLike = __webpack_require__(32);
 
 	/** `Object#toString` result references. */
 	var numberTag = '[object Number]';
@@ -7155,10 +7241,10 @@ var Kinvey =
 
 
 /***/ },
-/* 129 */
+/* 131 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isObject = __webpack_require__(28);
+	var isObject = __webpack_require__(30);
 
 	/** `Object#toString` result references. */
 	var regexpTag = '[object RegExp]';
@@ -7199,18 +7285,18 @@ var Kinvey =
 
 
 /***/ },
-/* 130 */
+/* 132 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var getTag = __webpack_require__(91),
-	    isArguments = __webpack_require__(22),
-	    isArray = __webpack_require__(31),
-	    isArrayLike = __webpack_require__(24),
-	    isBuffer = __webpack_require__(131),
-	    isFunction = __webpack_require__(27),
-	    isObjectLike = __webpack_require__(30),
-	    isString = __webpack_require__(32),
-	    keys = __webpack_require__(16);
+	var getTag = __webpack_require__(93),
+	    isArguments = __webpack_require__(24),
+	    isArray = __webpack_require__(33),
+	    isArrayLike = __webpack_require__(26),
+	    isBuffer = __webpack_require__(133),
+	    isFunction = __webpack_require__(29),
+	    isObjectLike = __webpack_require__(32),
+	    isString = __webpack_require__(34),
+	    keys = __webpack_require__(18);
 
 	/** `Object#toString` result references. */
 	var mapTag = '[object Map]',
@@ -7285,11 +7371,11 @@ var Kinvey =
 
 
 /***/ },
-/* 131 */
+/* 133 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(module) {var root = __webpack_require__(63),
-	    stubFalse = __webpack_require__(133);
+	/* WEBPACK VAR INJECTION */(function(module) {var root = __webpack_require__(65),
+	    stubFalse = __webpack_require__(135);
 
 	/** Detect free variable `exports`. */
 	var freeExports = typeof exports == 'object' && exports;
@@ -7326,10 +7412,10 @@ var Kinvey =
 
 	module.exports = isBuffer;
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(132)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(134)(module)))
 
 /***/ },
-/* 132 */
+/* 134 */
 /***/ function(module, exports) {
 
 	module.exports = function(module) {
@@ -7345,7 +7431,7 @@ var Kinvey =
 
 
 /***/ },
-/* 133 */
+/* 135 */
 /***/ function(module, exports) {
 
 	/**
@@ -7369,12 +7455,12 @@ var Kinvey =
 
 
 /***/ },
-/* 134 */
+/* 136 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseFindKey = __webpack_require__(135),
-	    baseForOwn = __webpack_require__(13),
-	    baseIteratee = __webpack_require__(36);
+	var baseFindKey = __webpack_require__(137),
+	    baseForOwn = __webpack_require__(15),
+	    baseIteratee = __webpack_require__(38);
 
 	/**
 	 * This method is like `_.find` except that it returns the key of the first
@@ -7420,7 +7506,7 @@ var Kinvey =
 
 
 /***/ },
-/* 135 */
+/* 137 */
 /***/ function(module, exports) {
 
 	/**
@@ -7449,13 +7535,13 @@ var Kinvey =
 
 
 /***/ },
-/* 136 */
+/* 138 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var castPath = __webpack_require__(103),
-	    isFunction = __webpack_require__(27),
-	    isKey = __webpack_require__(109),
-	    toKey = __webpack_require__(110);
+	var castPath = __webpack_require__(105),
+	    isFunction = __webpack_require__(29),
+	    isKey = __webpack_require__(111),
+	    toKey = __webpack_require__(112);
 
 	/**
 	 * This method is like `_.get` except that if the resolved value is a
@@ -7512,7 +7598,7 @@ var Kinvey =
 
 
 /***/ },
-/* 137 */
+/* 139 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -7520,22 +7606,23 @@ var Kinvey =
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
+	exports.Client = undefined;
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _errors = __webpack_require__(5);
+	var _errors = __webpack_require__(7);
 
-	var _storage = __webpack_require__(138);
+	var _storage = __webpack_require__(140);
 
-	var _url = __webpack_require__(142);
+	var _url = __webpack_require__(144);
 
 	var _url2 = _interopRequireDefault(_url);
 
-	var _assign = __webpack_require__(118);
+	var _assign = __webpack_require__(120);
 
 	var _assign2 = _interopRequireDefault(_assign);
 
-	var _isString = __webpack_require__(32);
+	var _isString = __webpack_require__(34);
 
 	var _isString2 = _interopRequireDefault(_isString);
 
@@ -7556,7 +7643,7 @@ var Kinvey =
 	 * });
 	 */
 
-	var Client = function () {
+	var Client = exports.Client = function () {
 	  /**
 	   * Creates a new instance of the Client class. An `options.appKey` must be provided along with
 	   * either and `options.appSecret` or `options.masterSecret`.
@@ -7751,12 +7838,10 @@ var Kinvey =
 
 	  return Client;
 	}();
-
-	exports.default = Client;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ },
-/* 138 */
+/* 140 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -7771,7 +7856,7 @@ var Kinvey =
 	exports.getSyncKey = getSyncKey;
 	exports.setSyncKey = setSyncKey;
 
-	var _localStorage = __webpack_require__(139);
+	var _localStorage = __webpack_require__(141);
 
 	var _localStorage2 = _interopRequireDefault(_localStorage);
 
@@ -7834,16 +7919,16 @@ var Kinvey =
 
 	  return _localStorage2.default.remove('' + client.appKey + syncKeyCollectionName);
 	}
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ },
-/* 139 */
+/* 141 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {'use strict';
 
-	var stub = __webpack_require__(140);
-	var tracking = __webpack_require__(141);
+	var stub = __webpack_require__(142);
+	var tracking = __webpack_require__(143);
 	var ls = 'localStorage' in global && global.localStorage ? global.localStorage : stub;
 
 	function accessor (key, value) {
@@ -7886,7 +7971,7 @@ var Kinvey =
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 140 */
+/* 142 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -7924,7 +8009,7 @@ var Kinvey =
 
 
 /***/ },
-/* 141 */
+/* 143 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {'use strict';
@@ -7984,7 +8069,7 @@ var Kinvey =
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 142 */
+/* 144 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// Copyright Joyent, Inc. and other Node contributors.
@@ -8010,8 +8095,8 @@ var Kinvey =
 
 	'use strict';
 
-	var punycode = __webpack_require__(143);
-	var util = __webpack_require__(144);
+	var punycode = __webpack_require__(145);
+	var util = __webpack_require__(146);
 
 	exports.parse = urlParse;
 	exports.resolve = urlResolve;
@@ -8086,7 +8171,7 @@ var Kinvey =
 	      'gopher:': true,
 	      'file:': true
 	    },
-	    querystring = __webpack_require__(145);
+	    querystring = __webpack_require__(147);
 
 	function urlParse(url, parseQueryString, slashesDenoteHost) {
 	  if (url && util.isObject(url) && url instanceof Url) return url;
@@ -8722,7 +8807,7 @@ var Kinvey =
 
 
 /***/ },
-/* 143 */
+/* 145 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(module, global) {/*! https://mths.be/punycode v1.3.2 by @mathias */
@@ -9254,10 +9339,10 @@ var Kinvey =
 
 	}(this));
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(132)(module), (function() { return this; }())))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(134)(module), (function() { return this; }())))
 
 /***/ },
-/* 144 */
+/* 146 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -9279,17 +9364,17 @@ var Kinvey =
 
 
 /***/ },
-/* 145 */
+/* 147 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	exports.decode = exports.parse = __webpack_require__(146);
-	exports.encode = exports.stringify = __webpack_require__(147);
+	exports.decode = exports.parse = __webpack_require__(148);
+	exports.encode = exports.stringify = __webpack_require__(149);
 
 
 /***/ },
-/* 146 */
+/* 148 */
 /***/ function(module, exports) {
 
 	// Copyright Joyent, Inc. and other Node contributors.
@@ -9375,7 +9460,7 @@ var Kinvey =
 
 
 /***/ },
-/* 147 */
+/* 149 */
 /***/ function(module, exports) {
 
 	// Copyright Joyent, Inc. and other Node contributors.
@@ -9445,7 +9530,7 @@ var Kinvey =
 
 
 /***/ },
-/* 148 */
+/* 150 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -9453,28 +9538,32 @@ var Kinvey =
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
+	exports.CustomEndpoint = undefined;
 
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); // eslint-disable-line no-unused-vars
 
-	var _client = __webpack_require__(137);
 
-	var _client2 = _interopRequireDefault(_client);
+	var _client = __webpack_require__(139);
 
-	var _request = __webpack_require__(149);
+	var _request = __webpack_require__(151);
 
-	var _errors = __webpack_require__(5);
+	var _errors = __webpack_require__(7);
 
-	var _network = __webpack_require__(247);
+	var _network = __webpack_require__(198);
 
-	var _url = __webpack_require__(142);
+	var _regeneratorRuntime = __webpack_require__(2);
+
+	var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
+
+	var _url = __webpack_require__(144);
 
 	var _url2 = _interopRequireDefault(_url);
 
-	var _assign = __webpack_require__(118);
+	var _assign = __webpack_require__(120);
 
 	var _assign2 = _interopRequireDefault(_assign);
 
-	var _isString = __webpack_require__(32);
+	var _isString = __webpack_require__(34);
 
 	var _isString2 = _interopRequireDefault(_isString);
 
@@ -9490,7 +9579,7 @@ var Kinvey =
 	 * Executes a custom command.
 	 */
 
-	var CustomEndpoint = function () {
+	var CustomEndpoint = exports.CustomEndpoint = function () {
 	  function CustomEndpoint() {
 	    _classCallCheck(this, CustomEndpoint);
 	  }
@@ -9518,15 +9607,15 @@ var Kinvey =
 	     * });
 	     */
 	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(endpoint, args) {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee(endpoint, args) {
 	        var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 	        var request, response;
-	        return regeneratorRuntime.wrap(function _callee$(_context) {
+	        return _regeneratorRuntime2.default.wrap(function _callee$(_context) {
 	          while (1) {
 	            switch (_context.prev = _context.next) {
 	              case 0:
 	                options = (0, _assign2.default)({
-	                  client: _client2.default.sharedInstance()
+	                  client: _client.Client.sharedInstance()
 	                }, options);
 
 	                if (endpoint) {
@@ -9583,12 +9672,10 @@ var Kinvey =
 
 	  return CustomEndpoint;
 	}();
-
-	exports.default = CustomEndpoint;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ },
-/* 149 */
+/* 151 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process, global, Buffer) {'use strict';
@@ -9602,57 +9689,60 @@ var Kinvey =
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); // eslint-disable-line no-unused-vars
 
-	var _rack = __webpack_require__(154);
 
-	var _client = __webpack_require__(137);
+	var _rack = __webpack_require__(156);
 
-	var _client2 = _interopRequireDefault(_client);
+	var _client = __webpack_require__(139);
 
-	var _errors = __webpack_require__(5);
+	var _errors = __webpack_require__(7);
 
-	var _urlPattern = __webpack_require__(239);
+	var _urlPattern = __webpack_require__(189);
 
 	var _urlPattern2 = _interopRequireDefault(_urlPattern);
 
-	var _qs = __webpack_require__(241);
+	var _regeneratorRuntime = __webpack_require__(2);
+
+	var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
+
+	var _qs = __webpack_require__(191);
 
 	var _qs2 = _interopRequireDefault(_qs);
 
-	var _url = __webpack_require__(142);
+	var _url = __webpack_require__(144);
 
 	var _url2 = _interopRequireDefault(_url);
 
-	var _appendQuery = __webpack_require__(245);
+	var _appendQuery = __webpack_require__(195);
 
 	var _appendQuery2 = _interopRequireDefault(_appendQuery);
 
-	var _assign = __webpack_require__(118);
+	var _assign = __webpack_require__(120);
 
 	var _assign2 = _interopRequireDefault(_assign);
 
-	var _result = __webpack_require__(136);
+	var _result = __webpack_require__(138);
 
 	var _result2 = _interopRequireDefault(_result);
 
-	var _forEach = __webpack_require__(10);
+	var _forEach = __webpack_require__(12);
 
 	var _forEach2 = _interopRequireDefault(_forEach);
 
-	var _isString = __webpack_require__(32);
+	var _isString = __webpack_require__(34);
 
 	var _isString2 = _interopRequireDefault(_isString);
 
-	var _isPlainObject = __webpack_require__(194);
+	var _isPlainObject = __webpack_require__(197);
 
 	var _isPlainObject2 = _interopRequireDefault(_isPlainObject);
 
-	var _isEmpty = __webpack_require__(130);
+	var _isEmpty = __webpack_require__(132);
 
 	var _isEmpty2 = _interopRequireDefault(_isEmpty);
 
-	var _isNumber = __webpack_require__(128);
+	var _isNumber = __webpack_require__(130);
 
 	var _isNumber2 = _interopRequireDefault(_isNumber);
 
@@ -10173,7 +10263,7 @@ var Kinvey =
 	      properties: new Properties(),
 	      skipBL: false,
 	      trace: false,
-	      client: _client2.default.sharedInstance()
+	      client: _client.Client.sharedInstance()
 	    }, options);
 
 	    _this3.authType = options.authType;
@@ -10328,7 +10418,7 @@ var Kinvey =
 	    },
 	    set: function set(client) {
 	      if (client) {
-	        if (!(client instanceof _client2.default)) {
+	        if (!(client instanceof _client.Client)) {
 	          throw new _errors.KinveyError('client must be an instance of the Client class.');
 	        }
 
@@ -10407,8 +10497,8 @@ var Kinvey =
 	  }, {
 	    key: 'execute',
 	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
-	        return regeneratorRuntime.wrap(function _callee$(_context) {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee() {
+	        return _regeneratorRuntime2.default.wrap(function _callee$(_context) {
 	          while (1) {
 	            switch (_context.prev = _context.next) {
 	              case 0:
@@ -10579,10 +10669,10 @@ var Kinvey =
 
 	  return KinveyRequest;
 	}(Request);
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), (function() { return this; }()), __webpack_require__(150).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), (function() { return this; }()), __webpack_require__(152).Buffer))
 
 /***/ },
-/* 150 */
+/* 152 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer, global) {/*!
@@ -10595,9 +10685,9 @@ var Kinvey =
 
 	'use strict'
 
-	var base64 = __webpack_require__(151)
-	var ieee754 = __webpack_require__(152)
-	var isArray = __webpack_require__(153)
+	var base64 = __webpack_require__(153)
+	var ieee754 = __webpack_require__(154)
+	var isArray = __webpack_require__(155)
 
 	exports.Buffer = Buffer
 	exports.SlowBuffer = SlowBuffer
@@ -12134,10 +12224,10 @@ var Kinvey =
 	  return i
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(150).Buffer, (function() { return this; }())))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(152).Buffer, (function() { return this; }())))
 
 /***/ },
-/* 151 */
+/* 153 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
@@ -12267,7 +12357,7 @@ var Kinvey =
 
 
 /***/ },
-/* 152 */
+/* 154 */
 /***/ function(module, exports) {
 
 	exports.read = function (buffer, offset, isLE, mLen, nBytes) {
@@ -12357,7 +12447,7 @@ var Kinvey =
 
 
 /***/ },
-/* 153 */
+/* 155 */
 /***/ function(module, exports) {
 
 	var toString = {}.toString;
@@ -12368,7 +12458,7 @@ var Kinvey =
 
 
 /***/ },
-/* 154 */
+/* 156 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -12376,33 +12466,25 @@ var Kinvey =
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.NetworkRack = exports.CacheRack = exports.KinveyRack = exports.Rack = undefined;
+	exports.KinveyRackManager = exports.KinveyNetworkRack = exports.KinveyCacheRack = exports.KinveyRack = undefined;
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-	var _middleware = __webpack_require__(155);
+	var _rack = __webpack_require__(157);
 
-	var _cache = __webpack_require__(157);
+	var _cache = __webpack_require__(165);
 
-	var _parse = __webpack_require__(218);
+	var _parse = __webpack_require__(186);
 
-	var _serialize = __webpack_require__(219);
+	var _serialize = __webpack_require__(187);
 
-	var _http = __webpack_require__(220);
+	var _http = __webpack_require__(188);
 
-	var _findIndex = __webpack_require__(203);
+	var _regeneratorRuntime = __webpack_require__(2);
 
-	var _findIndex2 = _interopRequireDefault(_findIndex);
-
-	var _reduce = __webpack_require__(216);
-
-	var _reduce2 = _interopRequireDefault(_reduce);
-
-	var _es6Symbol = __webpack_require__(221);
-
-	var _es6Symbol2 = _interopRequireDefault(_es6Symbol);
+	var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -12414,15 +12496,158 @@ var Kinvey =
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var sharedCacheRackInstance = (0, _es6Symbol2.default)();
-	var sharedNetworkRackInstance = (0, _es6Symbol2.default)();
+	// eslint-disable-line no-unused-vars
 
 	/**
 	 * @private
 	 */
 
-	var Rack = exports.Rack = function (_KinveyMiddleware) {
-	  _inherits(Rack, _KinveyMiddleware);
+	var KinveyRack = exports.KinveyRack = function (_Rack) {
+	  _inherits(KinveyRack, _Rack);
+
+	  function KinveyRack() {
+	    _classCallCheck(this, KinveyRack);
+
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(KinveyRack).apply(this, arguments));
+	  }
+
+	  _createClass(KinveyRack, [{
+	    key: 'execute',
+	    value: function () {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee(request) {
+	        return _regeneratorRuntime2.default.wrap(function _callee$(_context) {
+	          while (1) {
+	            switch (_context.prev = _context.next) {
+	              case 0:
+	                _context.next = 2;
+	                return _get(Object.getPrototypeOf(KinveyRack.prototype), 'execute', this).call(this, request);
+
+	              case 2:
+	                request = _context.sent;
+	                return _context.abrupt('return', request.response);
+
+	              case 4:
+	              case 'end':
+	                return _context.stop();
+	            }
+	          }
+	        }, _callee, this);
+	      }));
+
+	      function execute(_x) {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return execute;
+	    }()
+	  }]);
+
+	  return KinveyRack;
+	}(_rack.Rack);
+
+	/**
+	 * @private
+	 */
+
+
+	var KinveyCacheRack = exports.KinveyCacheRack = function (_KinveyRack) {
+	  _inherits(KinveyCacheRack, _KinveyRack);
+
+	  function KinveyCacheRack() {
+	    var name = arguments.length <= 0 || arguments[0] === undefined ? 'Kinvey Cache Rack' : arguments[0];
+
+	    _classCallCheck(this, KinveyCacheRack);
+
+	    var _this2 = _possibleConstructorReturn(this, Object.getPrototypeOf(KinveyCacheRack).call(this, name));
+
+	    _this2.use(new _cache.CacheMiddleware());
+	    return _this2;
+	  }
+
+	  return KinveyCacheRack;
+	}(KinveyRack);
+
+	/**
+	 * @private
+	 */
+
+
+	var KinveyNetworkRack = exports.KinveyNetworkRack = function (_KinveyRack2) {
+	  _inherits(KinveyNetworkRack, _KinveyRack2);
+
+	  function KinveyNetworkRack() {
+	    var name = arguments.length <= 0 || arguments[0] === undefined ? 'Kinvey Network Rack' : arguments[0];
+
+	    _classCallCheck(this, KinveyNetworkRack);
+
+	    var _this3 = _possibleConstructorReturn(this, Object.getPrototypeOf(KinveyNetworkRack).call(this, name));
+
+	    _this3.use(new _serialize.SerializeMiddleware());
+	    _this3.use(new _http.HttpMiddleware());
+	    _this3.use(new _parse.ParseMiddleware());
+	    return _this3;
+	  }
+
+	  return KinveyNetworkRack;
+	}(KinveyRack);
+
+	/**
+	 * @private
+	 */
+
+
+	var KinveyRackManager = function KinveyRackManager() {
+	  _classCallCheck(this, KinveyRackManager);
+
+	  this.cacheRack = new KinveyCacheRack();
+	  this.networkRack = new KinveyNetworkRack();
+	};
+
+	var kinveyRackManager = new KinveyRackManager();
+	exports.KinveyRackManager = kinveyRackManager;
+
+/***/ },
+/* 157 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.Rack = undefined;
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	var _middleware = __webpack_require__(158);
+
+	var _regeneratorRuntime = __webpack_require__(2);
+
+	var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
+
+	var _findIndex = __webpack_require__(160);
+
+	var _findIndex2 = _interopRequireDefault(_findIndex);
+
+	var _reduce = __webpack_require__(162);
+
+	var _reduce2 = _interopRequireDefault(_reduce);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } // eslint-disable-line no-unused-vars
+
+
+	var Rack = exports.Rack = function (_Middleware) {
+	  _inherits(Rack, _Middleware);
 
 	  function Rack() {
 	    var name = arguments.length <= 0 || arguments[0] === undefined ? 'Rack' : arguments[0];
@@ -12453,7 +12678,7 @@ var Kinvey =
 	    key: 'use',
 	    value: function use(middleware) {
 	      if (middleware) {
-	        if (middleware instanceof _middleware.KinveyMiddleware) {
+	        if (middleware instanceof _middleware.Middleware) {
 	          this.middlewares.push(middleware);
 	          return;
 	        }
@@ -12546,8 +12771,8 @@ var Kinvey =
 	  }, {
 	    key: 'execute',
 	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(request) {
-	        return regeneratorRuntime.wrap(function _callee$(_context) {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee(request) {
+	        return _regeneratorRuntime2.default.wrap(function _callee$(_context) {
 	          while (1) {
 	            switch (_context.prev = _context.next) {
 	              case 0:
@@ -12606,132 +12831,10 @@ var Kinvey =
 	  }]);
 
 	  return Rack;
-	}(_middleware.KinveyMiddleware);
-
-	/**
-	 * @private
-	 */
-
-
-	var KinveyRack = exports.KinveyRack = function (_Rack) {
-	  _inherits(KinveyRack, _Rack);
-
-	  function KinveyRack() {
-	    _classCallCheck(this, KinveyRack);
-
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(KinveyRack).apply(this, arguments));
-	  }
-
-	  _createClass(KinveyRack, [{
-	    key: 'execute',
-	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(request) {
-	        return regeneratorRuntime.wrap(function _callee2$(_context2) {
-	          while (1) {
-	            switch (_context2.prev = _context2.next) {
-	              case 0:
-	                _context2.next = 2;
-	                return _get(Object.getPrototypeOf(KinveyRack.prototype), 'execute', this).call(this, request);
-
-	              case 2:
-	                request = _context2.sent;
-	                return _context2.abrupt('return', request.response);
-
-	              case 4:
-	              case 'end':
-	                return _context2.stop();
-	            }
-	          }
-	        }, _callee2, this);
-	      }));
-
-	      function execute(_x5) {
-	        return ref.apply(this, arguments);
-	      }
-
-	      return execute;
-	    }()
-	  }]);
-
-	  return KinveyRack;
-	}(Rack);
-
-	/**
-	 * @private
-	 */
-
-
-	var CacheRack = exports.CacheRack = function (_KinveyRack) {
-	  _inherits(CacheRack, _KinveyRack);
-
-	  function CacheRack() {
-	    var name = arguments.length <= 0 || arguments[0] === undefined ? 'Kinvey Cache Rack' : arguments[0];
-
-	    _classCallCheck(this, CacheRack);
-
-	    var _this3 = _possibleConstructorReturn(this, Object.getPrototypeOf(CacheRack).call(this, name));
-
-	    _this3.use(new _cache.CacheMiddleware());
-	    return _this3;
-	  }
-
-	  _createClass(CacheRack, null, [{
-	    key: 'sharedInstance',
-	    value: function sharedInstance() {
-	      var instance = this[sharedCacheRackInstance];
-
-	      if (!instance) {
-	        instance = new CacheRack();
-	        this[sharedCacheRackInstance] = instance;
-	      }
-
-	      return instance;
-	    }
-	  }]);
-
-	  return CacheRack;
-	}(KinveyRack);
-
-	/**
-	 * @private
-	 */
-
-
-	var NetworkRack = exports.NetworkRack = function (_KinveyRack2) {
-	  _inherits(NetworkRack, _KinveyRack2);
-
-	  function NetworkRack() {
-	    var name = arguments.length <= 0 || arguments[0] === undefined ? 'Kinvey Network Rack' : arguments[0];
-
-	    _classCallCheck(this, NetworkRack);
-
-	    var _this4 = _possibleConstructorReturn(this, Object.getPrototypeOf(NetworkRack).call(this, name));
-
-	    _this4.use(new _serialize.SerializeMiddleware());
-	    _this4.use(new _http.HttpMiddleware());
-	    _this4.use(new _parse.ParseMiddleware());
-	    return _this4;
-	  }
-
-	  _createClass(NetworkRack, null, [{
-	    key: 'sharedInstance',
-	    value: function sharedInstance() {
-	      var instance = this[sharedNetworkRackInstance];
-
-	      if (!instance) {
-	        instance = new NetworkRack();
-	        this[sharedNetworkRackInstance] = instance;
-	      }
-
-	      return instance;
-	    }
-	  }]);
-
-	  return NetworkRack;
-	}(KinveyRack);
+	}(_middleware.Middleware);
 
 /***/ },
-/* 155 */
+/* 158 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -12739,25 +12842,23 @@ var Kinvey =
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.KinveyMiddleware = exports.Middleware = undefined;
-
-	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+	exports.Middleware = undefined;
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _asciiTree = __webpack_require__(156);
+	var _asciiTree = __webpack_require__(159);
 
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	var _regeneratorRuntime = __webpack_require__(2);
 
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	/**
-	 * @private
-	 */
+	// eslint-disable-line no-unused-vars
 
 	var Middleware = exports.Middleware = function () {
 	  function Middleware() {
@@ -12771,8 +12872,8 @@ var Kinvey =
 	  _createClass(Middleware, [{
 	    key: 'handle',
 	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(request) {
-	        return regeneratorRuntime.wrap(function _callee$(_context) {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee(request) {
+	        return _regeneratorRuntime2.default.wrap(function _callee$(_context) {
 	          while (1) {
 	            switch (_context.prev = _context.next) {
 	              case 0:
@@ -12823,53 +12924,8 @@ var Kinvey =
 	  return Middleware;
 	}();
 
-	/**
-	 * @private
-	 */
-
-
-	var KinveyMiddleware = exports.KinveyMiddleware = function (_Middleware) {
-	  _inherits(KinveyMiddleware, _Middleware);
-
-	  function KinveyMiddleware() {
-	    var name = arguments.length <= 0 || arguments[0] === undefined ? 'Kinvey Middleware' : arguments[0];
-
-	    _classCallCheck(this, KinveyMiddleware);
-
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(KinveyMiddleware).call(this, name));
-	  }
-
-	  _createClass(KinveyMiddleware, [{
-	    key: 'handle',
-	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(request) {
-	        return regeneratorRuntime.wrap(function _callee2$(_context2) {
-	          while (1) {
-	            switch (_context2.prev = _context2.next) {
-	              case 0:
-	                return _context2.abrupt('return', _get(Object.getPrototypeOf(KinveyMiddleware.prototype), 'handle', this).call(this, request));
-
-	              case 1:
-	              case 'end':
-	                return _context2.stop();
-	            }
-	          }
-	        }, _callee2, this);
-	      }));
-
-	      function handle(_x5) {
-	        return ref.apply(this, arguments);
-	      }
-
-	      return handle;
-	    }()
-	  }]);
-
-	  return KinveyMiddleware;
-	}(Middleware);
-
 /***/ },
-/* 156 */
+/* 159 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -12899,9 +12955,6 @@ var Kinvey =
 	  return '' + ret + c + c1 + ' ' + node.value;
 	}
 
-	/**
-	 * @private
-	 */
 	var AsciiTree = exports.AsciiTree = {
 	  generate: function generate() {
 	    var _this = this;
@@ -12926,3244 +12979,12 @@ var Kinvey =
 	};
 
 /***/ },
-/* 157 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.CacheMiddleware = exports.DB = exports.DBAdapter = undefined;
-
-	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /* eslint-disable no-underscore-dangle */
-
-
-	var _query = __webpack_require__(8);
-
-	var _aggregation = __webpack_require__(7);
-
-	var _indexeddb = __webpack_require__(158);
-
-	var _indexeddb2 = _interopRequireDefault(_indexeddb);
-
-	var _localstorage = __webpack_require__(161);
-
-	var _memory = __webpack_require__(205);
-
-	var _websql = __webpack_require__(209);
-
-	var _errors = __webpack_require__(5);
-
-	var _log = __webpack_require__(159);
-
-	var _middleware = __webpack_require__(155);
-
-	var _request2 = __webpack_require__(149);
-
-	var _response = __webpack_require__(212);
-
-	var _promiseQueue = __webpack_require__(213);
-
-	var _promiseQueue2 = _interopRequireDefault(_promiseQueue);
-
-	var _map = __webpack_require__(210);
-
-	var _map2 = _interopRequireDefault(_map);
-
-	var _result = __webpack_require__(136);
-
-	var _result2 = _interopRequireDefault(_result);
-
-	var _reduce = __webpack_require__(216);
-
-	var _reduce2 = _interopRequireDefault(_reduce);
-
-	var _forEach = __webpack_require__(10);
-
-	var _forEach2 = _interopRequireDefault(_forEach);
-
-	var _isString = __webpack_require__(32);
-
-	var _isString2 = _interopRequireDefault(_isString);
-
-	var _isArray = __webpack_require__(31);
-
-	var _isArray2 = _interopRequireDefault(_isArray);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	var idAttribute = process.env.KINVEY_ID_ATTRIBUTE || '_id';
-	var kmdAttribute = process.env.KINVEY_KMD_ATTRIBUTE || '_kmd';
-	_promiseQueue2.default.configure(Promise);
-	var queue = new _promiseQueue2.default(1, Infinity);
-
-	/**
-	 * @private
-	 * Enum for DB Adapters.
-	 */
-	var DBAdapter = {
-	  IndexedDB: 'IndexedDB',
-	  LocalStorage: 'LocalStorage',
-	  Memory: 'Memory',
-	  WebSQL: 'WebSQL'
-	};
-	Object.freeze(DBAdapter);
-	exports.DBAdapter = DBAdapter;
-
-	/**
-	 * @private
-	 */
-
-	var DB = exports.DB = function () {
-	  function DB(name) {
-	    var _this = this;
-
-	    var adapters = arguments.length <= 1 || arguments[1] === undefined ? [DBAdapter.IndexedDB, DBAdapter.WebSQL, DBAdapter.LocalStorage, DBAdapter.Memory] : arguments[1];
-
-	    _classCallCheck(this, DB);
-
-	    if (!(0, _isArray2.default)(adapters)) {
-	      adapters = [adapters];
-	    }
-
-	    (0, _forEach2.default)(adapters, function (adapter) {
-	      switch (adapter) {
-	        case DBAdapter.IndexedDB:
-	          if (_indexeddb2.default.isSupported()) {
-	            _this.adapter = new _indexeddb2.default(name);
-	            return false;
-	          }
-
-	          break;
-	        case DBAdapter.LocalStorage:
-	          if (_localstorage.LocalStorage.isSupported()) {
-	            _this.adapter = new _localstorage.LocalStorage(name);
-	            return false;
-	          }
-
-	          break;
-	        case DBAdapter.Memory:
-	          if (_memory.Memory.isSupported()) {
-	            _this.adapter = new _memory.Memory(name);
-	            return false;
-	          }
-
-	          break;
-	        case DBAdapter.WebSQL:
-	          if (_websql.WebSQL.isSupported()) {
-	            _this.adapter = new _websql.WebSQL(name);
-	            return false;
-	          }
-
-	          break;
-	        default:
-	          _log.Log.warn('The ' + adapter + ' adapter is is not recognized.');
-	      }
-
-	      return true;
-	    });
-
-	    if (!this.adapter) {
-	      if (_memory.Memory.isSupported()) {
-	        _log.Log.error('Provided adapters are unsupported on this platform. ' + 'Defaulting to the Memory adapter.', adapters);
-	        this.adapter = new _memory.Memory(name);
-	      } else {
-	        _log.Log.error('Provided adapters are unsupported on this platform.', adapters);
-	      }
-	    }
-	  }
-
-	  _createClass(DB, [{
-	    key: 'generateObjectId',
-	    value: function generateObjectId() {
-	      var length = arguments.length <= 0 || arguments[0] === undefined ? 24 : arguments[0];
-
-	      var chars = 'abcdef0123456789';
-	      var objectId = '';
-
-	      for (var i = 0, j = chars.length; i < length; i++) {
-	        var pos = Math.floor(Math.random() * j);
-	        objectId += chars.substring(pos, pos + 1);
-	      }
-
-	      objectId = '' + this.objectIdPrefix + objectId;
-	      return objectId;
-	    }
-	  }, {
-	    key: 'find',
-	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(collection, query) {
-	        var entities;
-	        return regeneratorRuntime.wrap(function _callee$(_context) {
-	          while (1) {
-	            switch (_context.prev = _context.next) {
-	              case 0:
-	                _context.prev = 0;
-	                _context.next = 3;
-	                return this.adapter.find(collection);
-
-	              case 3:
-	                entities = _context.sent;
-
-	                if (entities) {
-	                  _context.next = 6;
-	                  break;
-	                }
-
-	                return _context.abrupt('return', []);
-
-	              case 6:
-
-	                if (query && !(query instanceof _query.Query)) {
-	                  query = new _query.Query((0, _result2.default)(query, 'toJSON', query));
-	                }
-
-	                if (entities.length > 0 && query) {
-	                  entities = query.process(entities);
-	                }
-
-	                return _context.abrupt('return', entities);
-
-	              case 11:
-	                _context.prev = 11;
-	                _context.t0 = _context['catch'](0);
-
-	                if (!(_context.t0 instanceof _errors.NotFoundError)) {
-	                  _context.next = 15;
-	                  break;
-	                }
-
-	                return _context.abrupt('return', []);
-
-	              case 15:
-	                throw _context.t0;
-
-	              case 16:
-	              case 'end':
-	                return _context.stop();
-	            }
-	          }
-	        }, _callee, this, [[0, 11]]);
-	      }));
-
-	      function find(_x3, _x4) {
-	        return ref.apply(this, arguments);
-	      }
-
-	      return find;
-	    }()
-	  }, {
-	    key: 'count',
-	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(collection, query) {
-	        var entities;
-	        return regeneratorRuntime.wrap(function _callee2$(_context2) {
-	          while (1) {
-	            switch (_context2.prev = _context2.next) {
-	              case 0:
-	                _context2.next = 2;
-	                return this.find(collection, query);
-
-	              case 2:
-	                entities = _context2.sent;
-	                return _context2.abrupt('return', { count: entities.length });
-
-	              case 4:
-	              case 'end':
-	                return _context2.stop();
-	            }
-	          }
-	        }, _callee2, this);
-	      }));
-
-	      function count(_x5, _x6) {
-	        return ref.apply(this, arguments);
-	      }
-
-	      return count;
-	    }()
-	  }, {
-	    key: 'group',
-	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee3(collection, aggregation) {
-	        var entities;
-	        return regeneratorRuntime.wrap(function _callee3$(_context3) {
-	          while (1) {
-	            switch (_context3.prev = _context3.next) {
-	              case 0:
-	                _context3.next = 2;
-	                return this.find(collection);
-
-	              case 2:
-	                entities = _context3.sent;
-
-
-	                if (!(aggregation instanceof _aggregation.Aggregation)) {
-	                  aggregation = new _aggregation.Aggregation((0, _result2.default)(aggregation, 'toJSON', aggregation));
-	                }
-
-	                if (!(entities.length > 0 && aggregation)) {
-	                  _context3.next = 6;
-	                  break;
-	                }
-
-	                return _context3.abrupt('return', aggregation.process(entities));
-
-	              case 6:
-	                return _context3.abrupt('return', null);
-
-	              case 7:
-	              case 'end':
-	                return _context3.stop();
-	            }
-	          }
-	        }, _callee3, this);
-	      }));
-
-	      function group(_x7, _x8) {
-	        return ref.apply(this, arguments);
-	      }
-
-	      return group;
-	    }()
-	  }, {
-	    key: 'findById',
-	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee4(collection, id) {
-	        return regeneratorRuntime.wrap(function _callee4$(_context4) {
-	          while (1) {
-	            switch (_context4.prev = _context4.next) {
-	              case 0:
-	                _context4.prev = 0;
-
-	                if ((0, _isString2.default)(id)) {
-	                  _context4.next = 3;
-	                  break;
-	                }
-
-	                throw new _errors.KinveyError('id must be a string', id);
-
-	              case 3:
-	                return _context4.abrupt('return', this.adapter.findById(collection, id));
-
-	              case 6:
-	                _context4.prev = 6;
-	                _context4.t0 = _context4['catch'](0);
-
-	                if (!(_context4.t0 instanceof _errors.NotFoundError)) {
-	                  _context4.next = 10;
-	                  break;
-	                }
-
-	                return _context4.abrupt('return', undefined);
-
-	              case 10:
-	                throw _context4.t0;
-
-	              case 11:
-	              case 'end':
-	                return _context4.stop();
-	            }
-	          }
-	        }, _callee4, this, [[0, 6]]);
-	      }));
-
-	      function findById(_x9, _x10) {
-	        return ref.apply(this, arguments);
-	      }
-
-	      return findById;
-	    }()
-	  }, {
-	    key: 'save',
-	    value: function save(collection) {
-	      var _this2 = this;
-
-	      var entities = arguments.length <= 1 || arguments[1] === undefined ? [] : arguments[1];
-
-	      return queue.add(_asyncToGenerator(regeneratorRuntime.mark(function _callee5() {
-	        var singular;
-	        return regeneratorRuntime.wrap(function _callee5$(_context5) {
-	          while (1) {
-	            switch (_context5.prev = _context5.next) {
-	              case 0:
-	                singular = false;
-
-	                if (entities) {
-	                  _context5.next = 3;
-	                  break;
-	                }
-
-	                return _context5.abrupt('return', null);
-
-	              case 3:
-
-	                if (!(0, _isArray2.default)(entities)) {
-	                  singular = true;
-	                  entities = [entities];
-	                }
-
-	                entities = (0, _map2.default)(entities, function (entity) {
-	                  var id = entity[idAttribute];
-	                  var kmd = entity[kmdAttribute] || {};
-
-	                  if (!id) {
-	                    id = _this2.generateObjectId();
-	                    kmd.local = true;
-	                  }
-
-	                  entity[idAttribute] = id;
-	                  entity[kmdAttribute] = kmd;
-	                  return entity;
-	                });
-
-	                _context5.next = 7;
-	                return _this2.adapter.save(collection, entities);
-
-	              case 7:
-	                entities = _context5.sent;
-
-	                if (!(singular && entities.length > 0)) {
-	                  _context5.next = 10;
-	                  break;
-	                }
-
-	                return _context5.abrupt('return', entities[0]);
-
-	              case 10:
-	                return _context5.abrupt('return', entities);
-
-	              case 11:
-	              case 'end':
-	                return _context5.stop();
-	            }
-	          }
-	        }, _callee5, _this2);
-	      })));
-	    }
-	  }, {
-	    key: 'remove',
-	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee6(collection, query) {
-	        var _this3 = this;
-
-	        var entities, responses;
-	        return regeneratorRuntime.wrap(function _callee6$(_context6) {
-	          while (1) {
-	            switch (_context6.prev = _context6.next) {
-	              case 0:
-	                if (query && !(query instanceof _query.Query)) {
-	                  query = new _query.Query(query);
-	                }
-
-	                // Removing should not take the query sort, limit, and skip into account.
-	                if (query) {
-	                  query.sort = null;
-	                  query.limit = null;
-	                  query.skip = 0;
-	                }
-
-	                _context6.next = 4;
-	                return this.find(collection, query);
-
-	              case 4:
-	                entities = _context6.sent;
-	                _context6.next = 7;
-	                return Promise.all(entities.map(function (entity) {
-	                  return _this3.removeById(collection, entity[idAttribute]);
-	                }));
-
-	              case 7:
-	                responses = _context6.sent;
-	                return _context6.abrupt('return', (0, _reduce2.default)(responses, function (entities, entity) {
-	                  entities.push(entity);
-	                  return entities;
-	                }, []));
-
-	              case 9:
-	              case 'end':
-	                return _context6.stop();
-	            }
-	          }
-	        }, _callee6, this);
-	      }));
-
-	      function remove(_x12, _x13) {
-	        return ref.apply(this, arguments);
-	      }
-
-	      return remove;
-	    }()
-	  }, {
-	    key: 'removeById',
-	    value: function removeById(collection, id) {
-	      var _this4 = this;
-
-	      return queue.add(function () {
-	        if (!id) {
-	          return undefined;
-	        }
-
-	        if (!(0, _isString2.default)(id)) {
-	          throw new _errors.KinveyError('id must be a string', id);
-	        }
-
-	        return _this4.adapter.removeById(collection, id);
-	      });
-	    }
-	  }, {
-	    key: 'clear',
-	    value: function clear() {
-	      var _this5 = this;
-
-	      return queue.add(function () {
-	        return _this5.adapter.clear();
-	      });
-	    }
-	  }, {
-	    key: 'objectIdPrefix',
-	    get: function get() {
-	      return '';
-	    }
-	  }]);
-
-	  return DB;
-	}();
-
-	/**
-	 * @private
-	 */
-
-
-	var CacheMiddleware = exports.CacheMiddleware = function (_KinveyMiddleware) {
-	  _inherits(CacheMiddleware, _KinveyMiddleware);
-
-	  function CacheMiddleware() {
-	    var adapters = arguments.length <= 0 || arguments[0] === undefined ? [DBAdapter.IndexedDB, DBAdapter.WebSQL, DBAdapter.LocalStorage, DBAdapter.Memory] : arguments[0];
-
-	    _classCallCheck(this, CacheMiddleware);
-
-	    var _this6 = _possibleConstructorReturn(this, Object.getPrototypeOf(CacheMiddleware).call(this, 'Kinvey Cache Middleware'));
-
-	    _this6.adapters = adapters;
-	    return _this6;
-	  }
-
-	  _createClass(CacheMiddleware, [{
-	    key: 'handle',
-	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee7(request) {
-	        var _request, method, query, body, appKey, collection, entityId, db, data;
-
-	        return regeneratorRuntime.wrap(function _callee7$(_context7) {
-	          while (1) {
-	            switch (_context7.prev = _context7.next) {
-	              case 0:
-	                _context7.next = 2;
-	                return _get(Object.getPrototypeOf(CacheMiddleware.prototype), 'handle', this).call(this, request);
-
-	              case 2:
-	                request = _context7.sent;
-	                _request = request;
-	                method = _request.method;
-	                query = _request.query;
-	                body = _request.body;
-	                appKey = _request.appKey;
-	                collection = _request.collection;
-	                entityId = _request.entityId;
-	                db = new DB(appKey, this.adapters);
-	                data = void 0;
-
-	                if (!(method === _request2.RequestMethod.GET)) {
-	                  _context7.next = 36;
-	                  break;
-	                }
-
-	                if (!entityId) {
-	                  _context7.next = 31;
-	                  break;
-	                }
-
-	                if (!(entityId === '_count')) {
-	                  _context7.next = 20;
-	                  break;
-	                }
-
-	                _context7.next = 17;
-	                return db.count(collection, query);
-
-	              case 17:
-	                data = _context7.sent;
-	                _context7.next = 29;
-	                break;
-
-	              case 20:
-	                if (!(entityId === '_group')) {
-	                  _context7.next = 26;
-	                  break;
-	                }
-
-	                _context7.next = 23;
-	                return db.group(collection, body);
-
-	              case 23:
-	                data = _context7.sent;
-	                _context7.next = 29;
-	                break;
-
-	              case 26:
-	                _context7.next = 28;
-	                return db.findById(collection, request.entityId);
-
-	              case 28:
-	                data = _context7.sent;
-
-	              case 29:
-	                _context7.next = 34;
-	                break;
-
-	              case 31:
-	                _context7.next = 33;
-	                return db.find(collection, query);
-
-	              case 33:
-	                data = _context7.sent;
-
-	              case 34:
-	                _context7.next = 58;
-	                break;
-
-	              case 36:
-	                if (!(method === _request2.RequestMethod.POST || method === _request2.RequestMethod.PUT)) {
-	                  _context7.next = 42;
-	                  break;
-	                }
-
-	                _context7.next = 39;
-	                return db.save(collection, body);
-
-	              case 39:
-	                data = _context7.sent;
-	                _context7.next = 58;
-	                break;
-
-	              case 42:
-	                if (!(method === _request2.RequestMethod.DELETE)) {
-	                  _context7.next = 58;
-	                  break;
-	                }
-
-	                if (!(collection && entityId)) {
-	                  _context7.next = 49;
-	                  break;
-	                }
-
-	                _context7.next = 46;
-	                return db.removeById(collection, entityId);
-
-	              case 46:
-	                data = _context7.sent;
-	                _context7.next = 58;
-	                break;
-
-	              case 49:
-	                if (collection) {
-	                  _context7.next = 55;
-	                  break;
-	                }
-
-	                _context7.next = 52;
-	                return db.clear();
-
-	              case 52:
-	                data = _context7.sent;
-	                _context7.next = 58;
-	                break;
-
-	              case 55:
-	                _context7.next = 57;
-	                return db.remove(collection, query);
-
-	              case 57:
-	                data = _context7.sent;
-
-	              case 58:
-
-	                request.response = {
-	                  statusCode: method === _request2.RequestMethod.POST ? _response.StatusCode.Created : _response.StatusCode.Ok,
-	                  headers: {},
-	                  data: data
-	                };
-
-	                if (!data) {
-	                  request.response.statusCode = _response.StatusCode.Empty;
-	                }
-
-	                return _context7.abrupt('return', request);
-
-	              case 61:
-	              case 'end':
-	                return _context7.stop();
-	            }
-	          }
-	        }, _callee7, this);
-	      }));
-
-	      function handle(_x15) {
-	        return ref.apply(this, arguments);
-	      }
-
-	      return handle;
-	    }()
-	  }]);
-
-	  return CacheMiddleware;
-	}(_middleware.KinveyMiddleware);
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
-
-/***/ },
-/* 158 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(global) {'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _errors = __webpack_require__(5);
-
-	var _log = __webpack_require__(159);
-
-	var _forEach = __webpack_require__(10);
-
-	var _forEach2 = _interopRequireDefault(_forEach);
-
-	var _isString = __webpack_require__(32);
-
-	var _isString2 = _interopRequireDefault(_isString);
-
-	var _isArray = __webpack_require__(31);
-
-	var _isArray2 = _interopRequireDefault(_isArray);
-
-	var _isFunction = __webpack_require__(27);
-
-	var _isFunction2 = _interopRequireDefault(_isFunction);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	var dbCache = {};
-	var indexedDB = global.indexedDB || global.webkitIndexedDB || global.mozIndexedDB || global.msIndexedDB;
-
-	var TransactionMode = {
-	  ReadWrite: 'readwrite',
-	  ReadOnly: 'readonly'
-	};
-	Object.freeze(TransactionMode);
-
-	/**
-	 * @private
-	 */
-
-	var IndexedDB = function () {
-	  function IndexedDB(name) {
-	    _classCallCheck(this, IndexedDB);
-
-	    if (!name) {
-	      throw new _errors.KinveyError('A name for the collection is required to use the indexeddb persistence adapter.', name);
-	    }
-
-	    if (!(0, _isString2.default)(name)) {
-	      throw new _errors.KinveyError('The name of the collection must be a string to use the indexeddb persistence adapter', name);
-	    }
-
-	    this.name = name;
-	    this.inTransaction = false;
-	    this.queue = [];
-	  }
-
-	  _createClass(IndexedDB, [{
-	    key: 'openTransaction',
-	    value: function openTransaction(collection) {
-	      var write = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-	      var success = arguments[2];
-
-	      var _this = this;
-
-	      var error = arguments[3];
-	      var force = arguments.length <= 4 || arguments[4] === undefined ? false : arguments[4];
-
-	      var db = dbCache[this.name];
-
-	      if (db) {
-	        var containsCollection = (0, _isFunction2.default)(db.objectStoreNames.contains) ? db.objectStoreNames.contains(collection) : db.objectStoreNames.indexOf(collection) !== -1;
-
-	        if (containsCollection) {
-	          try {
-	            var mode = write ? TransactionMode.ReadWrite : TransactionMode.ReadOnly;
-	            var txn = db.transaction(collection, mode);
-
-	            if (txn) {
-	              return success(txn);
-	            }
-
-	            throw new _errors.KinveyError('Unable to open a transaction for the ' + collection + (' collection on the ' + this.name + ' indexedDB database.'));
-	          } catch (err) {
-	            return error(err);
-	          }
-	        } else if (!write) {
-	          return error(new _errors.NotFoundError('The ' + collection + ' collection was not found on' + (' the ' + this.name + ' indexedDB database.')));
-	        }
-	      }
-
-	      if (!force && this.inTransaction) {
-	        return this.queue.push(function () {
-	          _this.openTransaction(collection, write, success, error);
-	        });
-	      }
-
-	      // Switch flag
-	      this.inTransaction = true;
-	      var request = void 0;
-
-	      if (db) {
-	        var version = db.version + 1;
-	        db.close();
-	        request = indexedDB.open(this.name, version);
-	      } else {
-	        request = indexedDB.open(this.name);
-	      }
-
-	      // If the database is opened with an higher version than its current, the
-	      // `upgradeneeded` event is fired. Save the handle to the database, and
-	      // create the collection.
-	      request.onupgradeneeded = function (e) {
-	        db = e.target.result;
-	        dbCache[_this.name] = db;
-
-	        if (write) {
-	          db.createObjectStore(collection, { keyPath: '_id' });
-	        }
-	      };
-
-	      // The `success` event is fired after `upgradeneeded` terminates.
-	      // Save the handle to the database.
-	      request.onsuccess = function (e) {
-	        db = e.target.result;
-	        dbCache[_this.name] = db;
-
-	        // If a second instance of the same IndexedDB database performs an
-	        // upgrade operation, the `versionchange` event is fired. Then, close the
-	        // database to allow the external upgrade to proceed.
-	        db.onversionchange = function () {
-	          if (db) {
-	            db.close();
-	            db = null;
-	            dbCache[_this.name] = null;
-	          }
-	        };
-
-	        // Try to obtain the collection handle by recursing. Append the handlers
-	        // to empty the queue upon success and failure. Set the `force` flag so
-	        // all but the current transaction remain queued.
-	        var wrap = function wrap(done) {
-	          var callbackFn = function callbackFn(arg) {
-	            done(arg);
-
-	            // Switch flag
-	            _this.inTransaction = false;
-
-	            // The database handle has been established, we can now safely empty
-	            // the queue. The queue must be emptied before invoking the concurrent
-	            // operations to avoid infinite recursion.
-	            if (_this.queue.length > 0) {
-	              var pending = _this.queue;
-	              _this.queue = [];
-	              (0, _forEach2.default)(pending, function (fn) {
-	                fn.call(_this);
-	              });
-	            }
-	          };
-	          return callbackFn;
-	        };
-
-	        return _this.openTransaction(collection, write, wrap(success), wrap(error), true);
-	      };
-
-	      request.onblocked = function () {
-	        error(new _errors.KinveyError('The ' + _this.name + ' indexedDB database version can\'t be upgraded ' + 'because the database is already open.'));
-	      };
-
-	      request.onerror = function (e) {
-	        error(new _errors.KinveyError('Unable to open the ' + _this.name + ' indexedDB database. ' + (e.target.error.message + '.')));
-	      };
-
-	      return request;
-	    }
-	  }, {
-	    key: 'find',
-	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(collection) {
-	        var _this2 = this;
-
-	        return regeneratorRuntime.wrap(function _callee2$(_context2) {
-	          while (1) {
-	            switch (_context2.prev = _context2.next) {
-	              case 0:
-	                return _context2.abrupt('return', new Promise(function (resolve, reject) {
-	                  _this2.openTransaction(collection, false, function () {
-	                    var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(txn) {
-	                      var store, request, entities;
-	                      return regeneratorRuntime.wrap(function _callee$(_context) {
-	                        while (1) {
-	                          switch (_context.prev = _context.next) {
-	                            case 0:
-	                              store = txn.objectStore(collection);
-	                              request = store.openCursor();
-	                              entities = [];
-
-
-	                              request.onsuccess = function (e) {
-	                                var cursor = e.target.result;
-
-	                                if (cursor) {
-	                                  entities.push(cursor.value);
-	                                  return cursor.continue();
-	                                }
-
-	                                return resolve(entities);
-	                              };
-
-	                              request.onerror = function (e) {
-	                                _log.Log.error('An error occurred while trying to find entities for the ' + collection + ' collection' + (' on the ' + _this2.name + ' IndexedDB database. ' + e.targer.error.message + '.'));
-	                                resolve([]);
-	                              };
-
-	                            case 5:
-	                            case 'end':
-	                              return _context.stop();
-	                          }
-	                        }
-	                      }, _callee, _this2);
-	                    }));
-
-	                    return function (_x4) {
-	                      return ref.apply(this, arguments);
-	                    };
-	                  }(), reject);
-	                }));
-
-	              case 1:
-	              case 'end':
-	                return _context2.stop();
-	            }
-	          }
-	        }, _callee2, this);
-	      }));
-
-	      function find(_x3) {
-	        return ref.apply(this, arguments);
-	      }
-
-	      return find;
-	    }()
-	  }, {
-	    key: 'findById',
-	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee4(collection, id) {
-	        var _this3 = this;
-
-	        return regeneratorRuntime.wrap(function _callee4$(_context4) {
-	          while (1) {
-	            switch (_context4.prev = _context4.next) {
-	              case 0:
-	                return _context4.abrupt('return', new Promise(function (resolve, reject) {
-	                  _this3.openTransaction(collection, false, function () {
-	                    var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee3(txn) {
-	                      var store, request;
-	                      return regeneratorRuntime.wrap(function _callee3$(_context3) {
-	                        while (1) {
-	                          switch (_context3.prev = _context3.next) {
-	                            case 0:
-	                              store = txn.objectStore(collection);
-	                              request = store.get(id);
-
-
-	                              request.onsuccess = function (e) {
-	                                var entity = e.target.result;
-
-	                                if (entity) {
-	                                  resolve(entity);
-	                                } else {
-	                                  reject(new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + (' collection on the ' + _this3.name + ' indexedDB database.')));
-	                                }
-	                              };
-
-	                              request.onerror = function () {
-	                                reject(new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + (' collection on the ' + _this3.name + ' indexedDB database.')));
-	                              };
-
-	                            case 4:
-	                            case 'end':
-	                              return _context3.stop();
-	                          }
-	                        }
-	                      }, _callee3, _this3);
-	                    }));
-
-	                    return function (_x7) {
-	                      return ref.apply(this, arguments);
-	                    };
-	                  }(), reject);
-	                }));
-
-	              case 1:
-	              case 'end':
-	                return _context4.stop();
-	            }
-	          }
-	        }, _callee4, this);
-	      }));
-
-	      function findById(_x5, _x6) {
-	        return ref.apply(this, arguments);
-	      }
-
-	      return findById;
-	    }()
-	  }, {
-	    key: 'save',
-	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee6(collection, entities) {
-	        var _this4 = this;
-
-	        var singular;
-	        return regeneratorRuntime.wrap(function _callee6$(_context6) {
-	          while (1) {
-	            switch (_context6.prev = _context6.next) {
-	              case 0:
-	                singular = false;
-
-
-	                if (!(0, _isArray2.default)(entities)) {
-	                  singular = true;
-	                  entities = [entities];
-	                }
-
-	                if (!(entities.length === 0)) {
-	                  _context6.next = 4;
-	                  break;
-	                }
-
-	                return _context6.abrupt('return', null);
-
-	              case 4:
-	                return _context6.abrupt('return', new Promise(function (resolve, reject) {
-	                  _this4.openTransaction(collection, true, function () {
-	                    var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee5(txn) {
-	                      var store;
-	                      return regeneratorRuntime.wrap(function _callee5$(_context5) {
-	                        while (1) {
-	                          switch (_context5.prev = _context5.next) {
-	                            case 0:
-	                              store = txn.objectStore(collection);
-
-
-	                              (0, _forEach2.default)(entities, function (entity) {
-	                                store.put(entity);
-	                              });
-
-	                              txn.oncomplete = function () {
-	                                resolve(singular ? entities[0] : entities);
-	                              };
-
-	                              txn.onerror = function (e) {
-	                                reject(new _errors.KinveyError('An error occurred while saving the entities to the ' + collection + (' collection on the ' + _this4.name + ' indexedDB database. ' + e.target.error.message + '.')));
-	                              };
-
-	                            case 4:
-	                            case 'end':
-	                              return _context5.stop();
-	                          }
-	                        }
-	                      }, _callee5, _this4);
-	                    }));
-
-	                    return function (_x10) {
-	                      return ref.apply(this, arguments);
-	                    };
-	                  }(), reject);
-	                }));
-
-	              case 5:
-	              case 'end':
-	                return _context6.stop();
-	            }
-	          }
-	        }, _callee6, this);
-	      }));
-
-	      function save(_x8, _x9) {
-	        return ref.apply(this, arguments);
-	      }
-
-	      return save;
-	    }()
-	  }, {
-	    key: 'removeById',
-	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee8(collection, id) {
-	        var _this5 = this;
-
-	        return regeneratorRuntime.wrap(function _callee8$(_context8) {
-	          while (1) {
-	            switch (_context8.prev = _context8.next) {
-	              case 0:
-	                return _context8.abrupt('return', new Promise(function (resolve, reject) {
-	                  _this5.openTransaction(collection, true, function () {
-	                    var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee7(txn) {
-	                      var store, request;
-	                      return regeneratorRuntime.wrap(function _callee7$(_context7) {
-	                        while (1) {
-	                          switch (_context7.prev = _context7.next) {
-	                            case 0:
-	                              store = txn.objectStore(collection);
-	                              request = store.get(id);
-
-	                              store.delete(id);
-
-	                              txn.oncomplete = function () {
-	                                var entity = request.result;
-
-	                                if (entity) {
-	                                  resolve(entity);
-	                                } else {
-	                                  reject(new _errors.NotFoundError('An entity with id = ' + id + ' was not found in the ' + collection + (' collection on the ' + _this5.name + ' indexedDB database.')));
-	                                }
-	                              };
-
-	                              txn.onerror = function () {
-	                                reject(new _errors.NotFoundError('An entity with id = ' + id + ' was not found in the ' + collection + (' collection on the ' + _this5.name + ' indexedDB database.')));
-	                              };
-
-	                            case 5:
-	                            case 'end':
-	                              return _context7.stop();
-	                          }
-	                        }
-	                      }, _callee7, _this5);
-	                    }));
-
-	                    return function (_x13) {
-	                      return ref.apply(this, arguments);
-	                    };
-	                  }(), reject);
-	                }));
-
-	              case 1:
-	              case 'end':
-	                return _context8.stop();
-	            }
-	          }
-	        }, _callee8, this);
-	      }));
-
-	      function removeById(_x11, _x12) {
-	        return ref.apply(this, arguments);
-	      }
-
-	      return removeById;
-	    }()
-	  }, {
-	    key: 'clear',
-	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee9() {
-	        var _this6 = this;
-
-	        return regeneratorRuntime.wrap(function _callee9$(_context9) {
-	          while (1) {
-	            switch (_context9.prev = _context9.next) {
-	              case 0:
-	                return _context9.abrupt('return', new Promise(function (resolve, reject) {
-	                  var request = indexedDB.deleteDatabase(_this6.name);
-
-	                  request.onsuccess = function () {
-	                    dbCache = {};
-	                    resolve();
-	                  };
-
-	                  request.onerror = function (e) {
-	                    reject(new _errors.KinveyError('An error occurred while clearing the ' + _this6.name + ' indexedDB database.' + (' ' + e.target.error.message + '.')));
-	                  };
-	                }));
-
-	              case 1:
-	              case 'end':
-	                return _context9.stop();
-	            }
-	          }
-	        }, _callee9, this);
-	      }));
-
-	      function clear() {
-	        return ref.apply(this, arguments);
-	      }
-
-	      return clear;
-	    }()
-	  }], [{
-	    key: 'isSupported',
-	    value: function isSupported() {
-	      return !!indexedDB;
-	    }
-	  }]);
-
-	  return IndexedDB;
-	}();
-
-	exports.default = IndexedDB;
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
-
-/***/ },
-/* 159 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.Log = undefined;
-
-	var _loglevel = __webpack_require__(160);
-
-	var _loglevel2 = _interopRequireDefault(_loglevel);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var originalFactory = _loglevel2.default.methodFactory;
-
-	_loglevel2.default.methodFactory = function methodFactory(methodName, logLevel, loggerName) {
-	  var rawMethod = originalFactory(methodName, logLevel, loggerName);
-
-	  return function log(message) {
-	    rawMethod('Kinvey: ' + message);
-	  };
-	};
-
-	_loglevel2.default.setDefaultLevel(_loglevel2.default.levels.SILENT);
-	exports.Log = _loglevel2.default;
-
-/***/ },
 /* 160 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*
-	* loglevel - https://github.com/pimterry/loglevel
-	*
-	* Copyright (c) 2013 Tim Perry
-	* Licensed under the MIT license.
-	*/
-	(function (root, definition) {
-	    "use strict";
-	    if (true) {
-	        !(__WEBPACK_AMD_DEFINE_FACTORY__ = (definition), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	    } else if (typeof module === 'object' && module.exports) {
-	        module.exports = definition();
-	    } else {
-	        root.log = definition();
-	    }
-	}(this, function () {
-	    "use strict";
-	    var noop = function() {};
-	    var undefinedType = "undefined";
-
-	    function realMethod(methodName) {
-	        if (typeof console === undefinedType) {
-	            return false; // We can't build a real method without a console to log to
-	        } else if (console[methodName] !== undefined) {
-	            return bindMethod(console, methodName);
-	        } else if (console.log !== undefined) {
-	            return bindMethod(console, 'log');
-	        } else {
-	            return noop;
-	        }
-	    }
-
-	    function bindMethod(obj, methodName) {
-	        var method = obj[methodName];
-	        if (typeof method.bind === 'function') {
-	            return method.bind(obj);
-	        } else {
-	            try {
-	                return Function.prototype.bind.call(method, obj);
-	            } catch (e) {
-	                // Missing bind shim or IE8 + Modernizr, fallback to wrapping
-	                return function() {
-	                    return Function.prototype.apply.apply(method, [obj, arguments]);
-	                };
-	            }
-	        }
-	    }
-
-	    // these private functions always need `this` to be set properly
-
-	    function enableLoggingWhenConsoleArrives(methodName, level, loggerName) {
-	        return function () {
-	            if (typeof console !== undefinedType) {
-	                replaceLoggingMethods.call(this, level, loggerName);
-	                this[methodName].apply(this, arguments);
-	            }
-	        };
-	    }
-
-	    function replaceLoggingMethods(level, loggerName) {
-	        /*jshint validthis:true */
-	        for (var i = 0; i < logMethods.length; i++) {
-	            var methodName = logMethods[i];
-	            this[methodName] = (i < level) ?
-	                noop :
-	                this.methodFactory(methodName, level, loggerName);
-	        }
-	    }
-
-	    function defaultMethodFactory(methodName, level, loggerName) {
-	        /*jshint validthis:true */
-	        return realMethod(methodName) ||
-	               enableLoggingWhenConsoleArrives.apply(this, arguments);
-	    }
-
-	    var logMethods = [
-	        "trace",
-	        "debug",
-	        "info",
-	        "warn",
-	        "error"
-	    ];
-
-	    function Logger(name, defaultLevel, factory) {
-	      var self = this;
-	      var currentLevel;
-	      var storageKey = "loglevel";
-	      if (name) {
-	        storageKey += ":" + name;
-	      }
-
-	      function persistLevelIfPossible(levelNum) {
-	          var levelName = (logMethods[levelNum] || 'silent').toUpperCase();
-
-	          // Use localStorage if available
-	          try {
-	              window.localStorage[storageKey] = levelName;
-	              return;
-	          } catch (ignore) {}
-
-	          // Use session cookie as fallback
-	          try {
-	              window.document.cookie =
-	                encodeURIComponent(storageKey) + "=" + levelName + ";";
-	          } catch (ignore) {}
-	      }
-
-	      function getPersistedLevel() {
-	          var storedLevel;
-
-	          try {
-	              storedLevel = window.localStorage[storageKey];
-	          } catch (ignore) {}
-
-	          if (typeof storedLevel === undefinedType) {
-	              try {
-	                  var cookie = window.document.cookie;
-	                  var location = cookie.indexOf(
-	                      encodeURIComponent(storageKey) + "=");
-	                  if (location) {
-	                      storedLevel = /^([^;]+)/.exec(cookie.slice(location))[1];
-	                  }
-	              } catch (ignore) {}
-	          }
-
-	          // If the stored level is not valid, treat it as if nothing was stored.
-	          if (self.levels[storedLevel] === undefined) {
-	              storedLevel = undefined;
-	          }
-
-	          return storedLevel;
-	      }
-
-	      /*
-	       *
-	       * Public API
-	       *
-	       */
-
-	      self.levels = { "TRACE": 0, "DEBUG": 1, "INFO": 2, "WARN": 3,
-	          "ERROR": 4, "SILENT": 5};
-
-	      self.methodFactory = factory || defaultMethodFactory;
-
-	      self.getLevel = function () {
-	          return currentLevel;
-	      };
-
-	      self.setLevel = function (level, persist) {
-	          if (typeof level === "string" && self.levels[level.toUpperCase()] !== undefined) {
-	              level = self.levels[level.toUpperCase()];
-	          }
-	          if (typeof level === "number" && level >= 0 && level <= self.levels.SILENT) {
-	              currentLevel = level;
-	              if (persist !== false) {  // defaults to true
-	                  persistLevelIfPossible(level);
-	              }
-	              replaceLoggingMethods.call(self, level, name);
-	              if (typeof console === undefinedType && level < self.levels.SILENT) {
-	                  return "No console available for logging";
-	              }
-	          } else {
-	              throw "log.setLevel() called with invalid level: " + level;
-	          }
-	      };
-
-	      self.setDefaultLevel = function (level) {
-	          if (!getPersistedLevel()) {
-	              self.setLevel(level, false);
-	          }
-	      };
-
-	      self.enableAll = function(persist) {
-	          self.setLevel(self.levels.TRACE, persist);
-	      };
-
-	      self.disableAll = function(persist) {
-	          self.setLevel(self.levels.SILENT, persist);
-	      };
-
-	      // Initialize with the right level
-	      var initialLevel = getPersistedLevel();
-	      if (initialLevel == null) {
-	          initialLevel = defaultLevel == null ? "WARN" : defaultLevel;
-	      }
-	      self.setLevel(initialLevel, false);
-	    }
-
-	    /*
-	     *
-	     * Package-level API
-	     *
-	     */
-
-	    var defaultLogger = new Logger();
-
-	    var _loggersByName = {};
-	    defaultLogger.getLogger = function getLogger(name) {
-	        if (typeof name !== "string" || name === "") {
-	          throw new TypeError("You must supply a name when creating a logger.");
-	        }
-
-	        var logger = _loggersByName[name];
-	        if (!logger) {
-	          logger = _loggersByName[name] = new Logger(
-	            name, defaultLogger.getLevel(), defaultLogger.methodFactory);
-	        }
-	        return logger;
-	    };
-
-	    // Grab the current global log variable in case of overwrite
-	    var _log = (typeof window !== undefinedType) ? window.log : undefined;
-	    defaultLogger.noConflict = function() {
-	        if (typeof window !== undefinedType &&
-	               window.log === defaultLogger) {
-	            window.log = _log;
-	        }
-
-	        return defaultLogger;
-	    };
-
-	    return defaultLogger;
-	}));
-
-
-/***/ },
-/* 161 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(process, global) {'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.LocalStorage = undefined;
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _errors = __webpack_require__(5);
-
-	var _keyBy = __webpack_require__(162);
-
-	var _keyBy2 = _interopRequireDefault(_keyBy);
-
-	var _merge = __webpack_require__(166);
-
-	var _merge2 = _interopRequireDefault(_merge);
-
-	var _values = __webpack_require__(200);
-
-	var _values2 = _interopRequireDefault(_values);
-
-	var _forEach = __webpack_require__(10);
-
-	var _forEach2 = _interopRequireDefault(_forEach);
-
-	var _findIndex = __webpack_require__(203);
-
-	var _findIndex2 = _interopRequireDefault(_findIndex);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	var idAttribute = process.env.KINVEY_ID_ATTRIBUTE || '_id';
-	var masterCollectionName = 'master';
-	var localStorage = global.localStorage;
-
-	/**
-	 * @private
-	 */
-
-	var LocalStorage = exports.LocalStorage = function () {
-	  function LocalStorage() {
-	    var name = arguments.length <= 0 || arguments[0] === undefined ? 'kinvey' : arguments[0];
-
-	    _classCallCheck(this, LocalStorage);
-
-	    this.name = name;
-	  }
-
-	  _createClass(LocalStorage, [{
-	    key: 'find',
-	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(collection) {
-	        var entities;
-	        return regeneratorRuntime.wrap(function _callee$(_context) {
-	          while (1) {
-	            switch (_context.prev = _context.next) {
-	              case 0:
-	                entities = localStorage.getItem('' + this.name + collection);
-
-	                if (!entities) {
-	                  _context.next = 3;
-	                  break;
-	                }
-
-	                return _context.abrupt('return', JSON.parse(entities));
-
-	              case 3:
-	                return _context.abrupt('return', entities);
-
-	              case 4:
-	              case 'end':
-	                return _context.stop();
-	            }
-	          }
-	        }, _callee, this);
-	      }));
-
-	      function find(_x2) {
-	        return ref.apply(this, arguments);
-	      }
-
-	      return find;
-	    }()
-	  }, {
-	    key: 'findById',
-	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(collection, id) {
-	        var entities, entity;
-	        return regeneratorRuntime.wrap(function _callee2$(_context2) {
-	          while (1) {
-	            switch (_context2.prev = _context2.next) {
-	              case 0:
-	                _context2.next = 2;
-	                return this.find(collection);
-
-	              case 2:
-	                entities = _context2.sent;
-	                entity = find(entities, function (entity) {
-	                  return entity[idAttribute] === id;
-	                });
-
-	                if (entity) {
-	                  _context2.next = 6;
-	                  break;
-	                }
-
-	                throw new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + (' collection on the ' + this.name + ' localstorage database.'));
-
-	              case 6:
-	                return _context2.abrupt('return', entity);
-
-	              case 7:
-	              case 'end':
-	                return _context2.stop();
-	            }
-	          }
-	        }, _callee2, this);
-	      }));
-
-	      function findById(_x3, _x4) {
-	        return ref.apply(this, arguments);
-	      }
-
-	      return findById;
-	    }()
-	  }, {
-	    key: 'save',
-	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee3(collection, entities) {
-	        var collections, existingEntities, existingEntitiesById, entitiesById, existingEntityIds;
-	        return regeneratorRuntime.wrap(function _callee3$(_context3) {
-	          while (1) {
-	            switch (_context3.prev = _context3.next) {
-	              case 0:
-	                _context3.next = 2;
-	                return this.find(masterCollectionName);
-
-	              case 2:
-	                collections = _context3.sent;
-
-
-	                if ((0, _findIndex2.default)(collections, collection) === -1) {
-	                  collections.push(collection);
-	                  localStorage.setItem('' + this.name + masterCollectionName, JSON.stringify(collections));
-	                }
-
-	                _context3.next = 6;
-	                return this.find(collection);
-
-	              case 6:
-	                existingEntities = _context3.sent;
-	                existingEntitiesById = (0, _keyBy2.default)(existingEntities, idAttribute);
-	                entitiesById = (0, _keyBy2.default)(entities, idAttribute);
-	                existingEntityIds = Object.keys(existingEntitiesById);
-
-
-	                (0, _forEach2.default)(existingEntityIds, function (id) {
-	                  var existingEntity = existingEntitiesById[id];
-	                  var entity = entitiesById[id];
-
-	                  if (entity) {
-	                    entitiesById[id] = (0, _merge2.default)(existingEntity, entity);
-	                  }
-	                });
-
-	                localStorage.setItem('' + this.name + collection, JSON.stringify((0, _values2.default)(entitiesById)));
-	                return _context3.abrupt('return', entities);
-
-	              case 13:
-	              case 'end':
-	                return _context3.stop();
-	            }
-	          }
-	        }, _callee3, this);
-	      }));
-
-	      function save(_x5, _x6) {
-	        return ref.apply(this, arguments);
-	      }
-
-	      return save;
-	    }()
-	  }, {
-	    key: 'removeById',
-	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee4(collection, id) {
-	        var entities, entitiesById, entity;
-	        return regeneratorRuntime.wrap(function _callee4$(_context4) {
-	          while (1) {
-	            switch (_context4.prev = _context4.next) {
-	              case 0:
-	                _context4.next = 2;
-	                return this.find(collection);
-
-	              case 2:
-	                entities = _context4.sent;
-	                entitiesById = (0, _keyBy2.default)(entities, idAttribute);
-	                entity = entitiesById[id];
-
-	                if (entity) {
-	                  _context4.next = 7;
-	                  break;
-	                }
-
-	                throw new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + ' ' + ('collection on the ' + this.name + ' memory database.'));
-
-	              case 7:
-
-	                delete entitiesById[id];
-	                localStorage.setItem('' + this.name + collection, JSON.stringify((0, _values2.default)(entitiesById)));
-
-	                return _context4.abrupt('return', entity);
-
-	              case 10:
-	              case 'end':
-	                return _context4.stop();
-	            }
-	          }
-	        }, _callee4, this);
-	      }));
-
-	      function removeById(_x7, _x8) {
-	        return ref.apply(this, arguments);
-	      }
-
-	      return removeById;
-	    }()
-	  }, {
-	    key: 'clear',
-	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee5() {
-	        var _this = this;
-
-	        var collections;
-	        return regeneratorRuntime.wrap(function _callee5$(_context5) {
-	          while (1) {
-	            switch (_context5.prev = _context5.next) {
-	              case 0:
-	                _context5.next = 2;
-	                return this.find(masterCollectionName);
-
-	              case 2:
-	                collections = _context5.sent;
-
-
-	                (0, _forEach2.default)(collections, function (collection) {
-	                  localStorage.removeItem('' + _this.name + collection);
-	                });
-
-	              case 4:
-	              case 'end':
-	                return _context5.stop();
-	            }
-	          }
-	        }, _callee5, this);
-	      }));
-
-	      function clear() {
-	        return ref.apply(this, arguments);
-	      }
-
-	      return clear;
-	    }()
-	  }], [{
-	    key: 'isSupported',
-	    value: function isSupported() {
-	      if (localStorage) {
-	        var item = 'testLocalStorageSupport';
-	        try {
-	          localStorage.setItem(item, item);
-	          localStorage.removeItem(item);
-	          return true;
-	        } catch (e) {
-	          return false;
-	        }
-	      }
-
-	      return false;
-	    }
-	  }]);
-
-	  return LocalStorage;
-	}();
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), (function() { return this; }())))
-
-/***/ },
-/* 162 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var createAggregator = __webpack_require__(163);
-
-	/**
-	 * Creates an object composed of keys generated from the results of running
-	 * each element of `collection` thru `iteratee`. The corresponding value of
-	 * each key is the last element responsible for generating the key. The
-	 * iteratee is invoked with one argument: (value).
-	 *
-	 * @static
-	 * @memberOf _
-	 * @since 4.0.0
-	 * @category Collection
-	 * @param {Array|Object} collection The collection to iterate over.
-	 * @param {Array|Function|Object|string} [iteratee=_.identity]
-	 *  The iteratee to transform keys.
-	 * @returns {Object} Returns the composed aggregate object.
-	 * @example
-	 *
-	 * var array = [
-	 *   { 'dir': 'left', 'code': 97 },
-	 *   { 'dir': 'right', 'code': 100 }
-	 * ];
-	 *
-	 * _.keyBy(array, function(o) {
-	 *   return String.fromCharCode(o.code);
-	 * });
-	 * // => { 'a': { 'dir': 'left', 'code': 97 }, 'd': { 'dir': 'right', 'code': 100 } }
-	 *
-	 * _.keyBy(array, 'dir');
-	 * // => { 'left': { 'dir': 'left', 'code': 97 }, 'right': { 'dir': 'right', 'code': 100 } }
-	 */
-	var keyBy = createAggregator(function(result, value, key) {
-	  result[key] = value;
-	});
-
-	module.exports = keyBy;
-
-
-/***/ },
-/* 163 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var arrayAggregator = __webpack_require__(164),
-	    baseAggregator = __webpack_require__(165),
-	    baseIteratee = __webpack_require__(36),
-	    isArray = __webpack_require__(31);
-
-	/**
-	 * Creates a function like `_.groupBy`.
-	 *
-	 * @private
-	 * @param {Function} setter The function to set accumulator values.
-	 * @param {Function} [initializer] The accumulator object initializer.
-	 * @returns {Function} Returns the new aggregator function.
-	 */
-	function createAggregator(setter, initializer) {
-	  return function(collection, iteratee) {
-	    var func = isArray(collection) ? arrayAggregator : baseAggregator,
-	        accumulator = initializer ? initializer() : {};
-
-	    return func(collection, setter, baseIteratee(iteratee), accumulator);
-	  };
-	}
-
-	module.exports = createAggregator;
-
-
-/***/ },
-/* 164 */
-/***/ function(module, exports) {
-
-	/**
-	 * A specialized version of `baseAggregator` for arrays.
-	 *
-	 * @private
-	 * @param {Array} [array] The array to iterate over.
-	 * @param {Function} setter The function to set `accumulator` values.
-	 * @param {Function} iteratee The iteratee to transform keys.
-	 * @param {Object} accumulator The initial aggregated object.
-	 * @returns {Function} Returns `accumulator`.
-	 */
-	function arrayAggregator(array, setter, iteratee, accumulator) {
-	  var index = -1,
-	      length = array ? array.length : 0;
-
-	  while (++index < length) {
-	    var value = array[index];
-	    setter(accumulator, value, iteratee(value), array);
-	  }
-	  return accumulator;
-	}
-
-	module.exports = arrayAggregator;
-
-
-/***/ },
-/* 165 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var baseEach = __webpack_require__(12);
-
-	/**
-	 * Aggregates elements of `collection` on `accumulator` with keys transformed
-	 * by `iteratee` and values set by `setter`.
-	 *
-	 * @private
-	 * @param {Array|Object} collection The collection to iterate over.
-	 * @param {Function} setter The function to set `accumulator` values.
-	 * @param {Function} iteratee The iteratee to transform keys.
-	 * @param {Object} accumulator The initial aggregated object.
-	 * @returns {Function} Returns `accumulator`.
-	 */
-	function baseAggregator(collection, setter, iteratee, accumulator) {
-	  baseEach(collection, function(value, key, collection) {
-	    setter(accumulator, value, iteratee(value), collection);
-	  });
-	  return accumulator;
-	}
-
-	module.exports = baseAggregator;
-
-
-/***/ },
-/* 166 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var baseMerge = __webpack_require__(167),
-	    createAssigner = __webpack_require__(121);
-
-	/**
-	 * This method is like `_.assign` except that it recursively merges own and
-	 * inherited enumerable string keyed properties of source objects into the
-	 * destination object. Source properties that resolve to `undefined` are
-	 * skipped if a destination value exists. Array and plain object properties
-	 * are merged recursively. Other objects and value types are overridden by
-	 * assignment. Source objects are applied from left to right. Subsequent
-	 * sources overwrite property assignments of previous sources.
-	 *
-	 * **Note:** This method mutates `object`.
-	 *
-	 * @static
-	 * @memberOf _
-	 * @since 0.5.0
-	 * @category Object
-	 * @param {Object} object The destination object.
-	 * @param {...Object} [sources] The source objects.
-	 * @returns {Object} Returns `object`.
-	 * @example
-	 *
-	 * var users = {
-	 *   'data': [{ 'user': 'barney' }, { 'user': 'fred' }]
-	 * };
-	 *
-	 * var ages = {
-	 *   'data': [{ 'age': 36 }, { 'age': 40 }]
-	 * };
-	 *
-	 * _.merge(users, ages);
-	 * // => { 'data': [{ 'user': 'barney', 'age': 36 }, { 'user': 'fred', 'age': 40 }] }
-	 */
-	var merge = createAssigner(function(object, source, srcIndex) {
-	  baseMerge(object, source, srcIndex);
-	});
-
-	module.exports = merge;
-
-
-/***/ },
-/* 167 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Stack = __webpack_require__(39),
-	    arrayEach = __webpack_require__(11),
-	    assignMergeValue = __webpack_require__(168),
-	    baseMergeDeep = __webpack_require__(169),
-	    isArray = __webpack_require__(31),
-	    isObject = __webpack_require__(28),
-	    isTypedArray = __webpack_require__(96),
-	    keysIn = __webpack_require__(196);
-
-	/**
-	 * The base implementation of `_.merge` without support for multiple sources.
-	 *
-	 * @private
-	 * @param {Object} object The destination object.
-	 * @param {Object} source The source object.
-	 * @param {number} srcIndex The index of `source`.
-	 * @param {Function} [customizer] The function to customize merged values.
-	 * @param {Object} [stack] Tracks traversed source values and their merged
-	 *  counterparts.
-	 */
-	function baseMerge(object, source, srcIndex, customizer, stack) {
-	  if (object === source) {
-	    return;
-	  }
-	  if (!(isArray(source) || isTypedArray(source))) {
-	    var props = keysIn(source);
-	  }
-	  arrayEach(props || source, function(srcValue, key) {
-	    if (props) {
-	      key = srcValue;
-	      srcValue = source[key];
-	    }
-	    if (isObject(srcValue)) {
-	      stack || (stack = new Stack);
-	      baseMergeDeep(object, source, key, srcIndex, baseMerge, customizer, stack);
-	    }
-	    else {
-	      var newValue = customizer
-	        ? customizer(object[key], srcValue, (key + ''), object, source, stack)
-	        : undefined;
-
-	      if (newValue === undefined) {
-	        newValue = srcValue;
-	      }
-	      assignMergeValue(object, key, newValue);
-	    }
-	  });
-	}
-
-	module.exports = baseMerge;
-
-
-/***/ },
-/* 168 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var eq = __webpack_require__(44);
-
-	/**
-	 * This function is like `assignValue` except that it doesn't assign
-	 * `undefined` values.
-	 *
-	 * @private
-	 * @param {Object} object The object to modify.
-	 * @param {string} key The key of the property to assign.
-	 * @param {*} value The value to assign.
-	 */
-	function assignMergeValue(object, key, value) {
-	  if ((value !== undefined && !eq(object[key], value)) ||
-	      (typeof key == 'number' && value === undefined && !(key in object))) {
-	    object[key] = value;
-	  }
-	}
-
-	module.exports = assignMergeValue;
-
-
-/***/ },
-/* 169 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var assignMergeValue = __webpack_require__(168),
-	    baseClone = __webpack_require__(170),
-	    copyArray = __webpack_require__(173),
-	    isArguments = __webpack_require__(22),
-	    isArray = __webpack_require__(31),
-	    isArrayLikeObject = __webpack_require__(23),
-	    isFunction = __webpack_require__(27),
-	    isObject = __webpack_require__(28),
-	    isPlainObject = __webpack_require__(194),
-	    isTypedArray = __webpack_require__(96),
-	    toPlainObject = __webpack_require__(195);
-
-	/**
-	 * A specialized version of `baseMerge` for arrays and objects which performs
-	 * deep merges and tracks traversed objects enabling objects with circular
-	 * references to be merged.
-	 *
-	 * @private
-	 * @param {Object} object The destination object.
-	 * @param {Object} source The source object.
-	 * @param {string} key The key of the value to merge.
-	 * @param {number} srcIndex The index of `source`.
-	 * @param {Function} mergeFunc The function to merge values.
-	 * @param {Function} [customizer] The function to customize assigned values.
-	 * @param {Object} [stack] Tracks traversed source values and their merged
-	 *  counterparts.
-	 */
-	function baseMergeDeep(object, source, key, srcIndex, mergeFunc, customizer, stack) {
-	  var objValue = object[key],
-	      srcValue = source[key],
-	      stacked = stack.get(srcValue);
-
-	  if (stacked) {
-	    assignMergeValue(object, key, stacked);
-	    return;
-	  }
-	  var newValue = customizer
-	    ? customizer(objValue, srcValue, (key + ''), object, source, stack)
-	    : undefined;
-
-	  var isCommon = newValue === undefined;
-
-	  if (isCommon) {
-	    newValue = srcValue;
-	    if (isArray(srcValue) || isTypedArray(srcValue)) {
-	      if (isArray(objValue)) {
-	        newValue = objValue;
-	      }
-	      else if (isArrayLikeObject(objValue)) {
-	        newValue = copyArray(objValue);
-	      }
-	      else {
-	        isCommon = false;
-	        newValue = baseClone(srcValue, true);
-	      }
-	    }
-	    else if (isPlainObject(srcValue) || isArguments(srcValue)) {
-	      if (isArguments(objValue)) {
-	        newValue = toPlainObject(objValue);
-	      }
-	      else if (!isObject(objValue) || (srcIndex && isFunction(objValue))) {
-	        isCommon = false;
-	        newValue = baseClone(srcValue, true);
-	      }
-	      else {
-	        newValue = objValue;
-	      }
-	    }
-	    else {
-	      isCommon = false;
-	    }
-	  }
-	  stack.set(srcValue, newValue);
-
-	  if (isCommon) {
-	    // Recursively merge objects and arrays (susceptible to call stack limits).
-	    mergeFunc(newValue, srcValue, srcIndex, customizer, stack);
-	  }
-	  stack['delete'](srcValue);
-	  assignMergeValue(object, key, newValue);
-	}
-
-	module.exports = baseMergeDeep;
-
-
-/***/ },
-/* 170 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Stack = __webpack_require__(39),
-	    arrayEach = __webpack_require__(11),
-	    assignValue = __webpack_require__(119),
-	    baseAssign = __webpack_require__(171),
-	    cloneBuffer = __webpack_require__(172),
-	    copyArray = __webpack_require__(173),
-	    copySymbols = __webpack_require__(174),
-	    getAllKeys = __webpack_require__(177),
-	    getTag = __webpack_require__(91),
-	    initCloneArray = __webpack_require__(180),
-	    initCloneByTag = __webpack_require__(181),
-	    initCloneObject = __webpack_require__(192),
-	    isArray = __webpack_require__(31),
-	    isBuffer = __webpack_require__(131),
-	    isHostObject = __webpack_require__(60),
-	    isObject = __webpack_require__(28),
-	    keys = __webpack_require__(16);
-
-	/** `Object#toString` result references. */
-	var argsTag = '[object Arguments]',
-	    arrayTag = '[object Array]',
-	    boolTag = '[object Boolean]',
-	    dateTag = '[object Date]',
-	    errorTag = '[object Error]',
-	    funcTag = '[object Function]',
-	    genTag = '[object GeneratorFunction]',
-	    mapTag = '[object Map]',
-	    numberTag = '[object Number]',
-	    objectTag = '[object Object]',
-	    regexpTag = '[object RegExp]',
-	    setTag = '[object Set]',
-	    stringTag = '[object String]',
-	    symbolTag = '[object Symbol]',
-	    weakMapTag = '[object WeakMap]';
-
-	var arrayBufferTag = '[object ArrayBuffer]',
-	    dataViewTag = '[object DataView]',
-	    float32Tag = '[object Float32Array]',
-	    float64Tag = '[object Float64Array]',
-	    int8Tag = '[object Int8Array]',
-	    int16Tag = '[object Int16Array]',
-	    int32Tag = '[object Int32Array]',
-	    uint8Tag = '[object Uint8Array]',
-	    uint8ClampedTag = '[object Uint8ClampedArray]',
-	    uint16Tag = '[object Uint16Array]',
-	    uint32Tag = '[object Uint32Array]';
-
-	/** Used to identify `toStringTag` values supported by `_.clone`. */
-	var cloneableTags = {};
-	cloneableTags[argsTag] = cloneableTags[arrayTag] =
-	cloneableTags[arrayBufferTag] = cloneableTags[dataViewTag] =
-	cloneableTags[boolTag] = cloneableTags[dateTag] =
-	cloneableTags[float32Tag] = cloneableTags[float64Tag] =
-	cloneableTags[int8Tag] = cloneableTags[int16Tag] =
-	cloneableTags[int32Tag] = cloneableTags[mapTag] =
-	cloneableTags[numberTag] = cloneableTags[objectTag] =
-	cloneableTags[regexpTag] = cloneableTags[setTag] =
-	cloneableTags[stringTag] = cloneableTags[symbolTag] =
-	cloneableTags[uint8Tag] = cloneableTags[uint8ClampedTag] =
-	cloneableTags[uint16Tag] = cloneableTags[uint32Tag] = true;
-	cloneableTags[errorTag] = cloneableTags[funcTag] =
-	cloneableTags[weakMapTag] = false;
-
-	/**
-	 * The base implementation of `_.clone` and `_.cloneDeep` which tracks
-	 * traversed objects.
-	 *
-	 * @private
-	 * @param {*} value The value to clone.
-	 * @param {boolean} [isDeep] Specify a deep clone.
-	 * @param {boolean} [isFull] Specify a clone including symbols.
-	 * @param {Function} [customizer] The function to customize cloning.
-	 * @param {string} [key] The key of `value`.
-	 * @param {Object} [object] The parent object of `value`.
-	 * @param {Object} [stack] Tracks traversed objects and their clone counterparts.
-	 * @returns {*} Returns the cloned value.
-	 */
-	function baseClone(value, isDeep, isFull, customizer, key, object, stack) {
-	  var result;
-	  if (customizer) {
-	    result = object ? customizer(value, key, object, stack) : customizer(value);
-	  }
-	  if (result !== undefined) {
-	    return result;
-	  }
-	  if (!isObject(value)) {
-	    return value;
-	  }
-	  var isArr = isArray(value);
-	  if (isArr) {
-	    result = initCloneArray(value);
-	    if (!isDeep) {
-	      return copyArray(value, result);
-	    }
-	  } else {
-	    var tag = getTag(value),
-	        isFunc = tag == funcTag || tag == genTag;
-
-	    if (isBuffer(value)) {
-	      return cloneBuffer(value, isDeep);
-	    }
-	    if (tag == objectTag || tag == argsTag || (isFunc && !object)) {
-	      if (isHostObject(value)) {
-	        return object ? value : {};
-	      }
-	      result = initCloneObject(isFunc ? {} : value);
-	      if (!isDeep) {
-	        return copySymbols(value, baseAssign(result, value));
-	      }
-	    } else {
-	      if (!cloneableTags[tag]) {
-	        return object ? value : {};
-	      }
-	      result = initCloneByTag(value, tag, baseClone, isDeep);
-	    }
-	  }
-	  // Check for circular references and return its corresponding clone.
-	  stack || (stack = new Stack);
-	  var stacked = stack.get(value);
-	  if (stacked) {
-	    return stacked;
-	  }
-	  stack.set(value, result);
-
-	  if (!isArr) {
-	    var props = isFull ? getAllKeys(value) : keys(value);
-	  }
-	  // Recursively populate clone (susceptible to call stack limits).
-	  arrayEach(props || value, function(subValue, key) {
-	    if (props) {
-	      key = subValue;
-	      subValue = value[key];
-	    }
-	    assignValue(result, key, baseClone(subValue, isDeep, isFull, customizer, key, value, stack));
-	  });
-	  return result;
-	}
-
-	module.exports = baseClone;
-
-
-/***/ },
-/* 171 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var copyObject = __webpack_require__(120),
-	    keys = __webpack_require__(16);
-
-	/**
-	 * The base implementation of `_.assign` without support for multiple sources
-	 * or `customizer` functions.
-	 *
-	 * @private
-	 * @param {Object} object The destination object.
-	 * @param {Object} source The source object.
-	 * @returns {Object} Returns `object`.
-	 */
-	function baseAssign(object, source) {
-	  return object && copyObject(source, keys(source), object);
-	}
-
-	module.exports = baseAssign;
-
-
-/***/ },
-/* 172 */
-/***/ function(module, exports) {
-
-	/**
-	 * Creates a clone of  `buffer`.
-	 *
-	 * @private
-	 * @param {Buffer} buffer The buffer to clone.
-	 * @param {boolean} [isDeep] Specify a deep clone.
-	 * @returns {Buffer} Returns the cloned buffer.
-	 */
-	function cloneBuffer(buffer, isDeep) {
-	  if (isDeep) {
-	    return buffer.slice();
-	  }
-	  var result = new buffer.constructor(buffer.length);
-	  buffer.copy(result);
-	  return result;
-	}
-
-	module.exports = cloneBuffer;
-
-
-/***/ },
-/* 173 */
-/***/ function(module, exports) {
-
-	/**
-	 * Copies the values of `source` to `array`.
-	 *
-	 * @private
-	 * @param {Array} source The array to copy values from.
-	 * @param {Array} [array=[]] The array to copy values to.
-	 * @returns {Array} Returns `array`.
-	 */
-	function copyArray(source, array) {
-	  var index = -1,
-	      length = source.length;
-
-	  array || (array = Array(length));
-	  while (++index < length) {
-	    array[index] = source[index];
-	  }
-	  return array;
-	}
-
-	module.exports = copyArray;
-
-
-/***/ },
-/* 174 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var copyObject = __webpack_require__(120),
-	    getSymbols = __webpack_require__(175);
-
-	/**
-	 * Copies own symbol properties of `source` to `object`.
-	 *
-	 * @private
-	 * @param {Object} source The object to copy symbols from.
-	 * @param {Object} [object={}] The object to copy symbols to.
-	 * @returns {Object} Returns `object`.
-	 */
-	function copySymbols(source, object) {
-	  return copyObject(source, getSymbols(source), object);
-	}
-
-	module.exports = copySymbols;
-
-
-/***/ },
-/* 175 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var stubArray = __webpack_require__(176);
-
-	/** Built-in value references. */
-	var getOwnPropertySymbols = Object.getOwnPropertySymbols;
-
-	/**
-	 * Creates an array of the own enumerable symbol properties of `object`.
-	 *
-	 * @private
-	 * @param {Object} object The object to query.
-	 * @returns {Array} Returns the array of symbols.
-	 */
-	function getSymbols(object) {
-	  // Coerce `object` to an object to avoid non-object errors in V8.
-	  // See https://bugs.chromium.org/p/v8/issues/detail?id=3443 for more details.
-	  return getOwnPropertySymbols(Object(object));
-	}
-
-	// Fallback for IE < 11.
-	if (!getOwnPropertySymbols) {
-	  getSymbols = stubArray;
-	}
-
-	module.exports = getSymbols;
-
-
-/***/ },
-/* 176 */
-/***/ function(module, exports) {
-
-	/**
-	 * A method that returns a new empty array.
-	 *
-	 * @static
-	 * @memberOf _
-	 * @since 4.13.0
-	 * @category Util
-	 * @returns {Array} Returns the new empty array.
-	 * @example
-	 *
-	 * var arrays = _.times(2, _.stubArray);
-	 *
-	 * console.log(arrays);
-	 * // => [[], []]
-	 *
-	 * console.log(arrays[0] === arrays[1]);
-	 * // => false
-	 */
-	function stubArray() {
-	  return [];
-	}
-
-	module.exports = stubArray;
-
-
-/***/ },
-/* 177 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var baseGetAllKeys = __webpack_require__(178),
-	    getSymbols = __webpack_require__(175),
-	    keys = __webpack_require__(16);
-
-	/**
-	 * Creates an array of own enumerable property names and symbols of `object`.
-	 *
-	 * @private
-	 * @param {Object} object The object to query.
-	 * @returns {Array} Returns the array of property names and symbols.
-	 */
-	function getAllKeys(object) {
-	  return baseGetAllKeys(object, keys, getSymbols);
-	}
-
-	module.exports = getAllKeys;
-
-
-/***/ },
-/* 178 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var arrayPush = __webpack_require__(179),
-	    isArray = __webpack_require__(31);
-
-	/**
-	 * The base implementation of `getAllKeys` and `getAllKeysIn` which uses
-	 * `keysFunc` and `symbolsFunc` to get the enumerable property names and
-	 * symbols of `object`.
-	 *
-	 * @private
-	 * @param {Object} object The object to query.
-	 * @param {Function} keysFunc The function to get the keys of `object`.
-	 * @param {Function} symbolsFunc The function to get the symbols of `object`.
-	 * @returns {Array} Returns the array of property names and symbols.
-	 */
-	function baseGetAllKeys(object, keysFunc, symbolsFunc) {
-	  var result = keysFunc(object);
-	  return isArray(object) ? result : arrayPush(result, symbolsFunc(object));
-	}
-
-	module.exports = baseGetAllKeys;
-
-
-/***/ },
-/* 179 */
-/***/ function(module, exports) {
-
-	/**
-	 * Appends the elements of `values` to `array`.
-	 *
-	 * @private
-	 * @param {Array} array The array to modify.
-	 * @param {Array} values The values to append.
-	 * @returns {Array} Returns `array`.
-	 */
-	function arrayPush(array, values) {
-	  var index = -1,
-	      length = values.length,
-	      offset = array.length;
-
-	  while (++index < length) {
-	    array[offset + index] = values[index];
-	  }
-	  return array;
-	}
-
-	module.exports = arrayPush;
-
-
-/***/ },
-/* 180 */
-/***/ function(module, exports) {
-
-	/** Used for built-in method references. */
-	var objectProto = Object.prototype;
-
-	/** Used to check objects for own properties. */
-	var hasOwnProperty = objectProto.hasOwnProperty;
-
-	/**
-	 * Initializes an array clone.
-	 *
-	 * @private
-	 * @param {Array} array The array to clone.
-	 * @returns {Array} Returns the initialized clone.
-	 */
-	function initCloneArray(array) {
-	  var length = array.length,
-	      result = array.constructor(length);
-
-	  // Add properties assigned by `RegExp#exec`.
-	  if (length && typeof array[0] == 'string' && hasOwnProperty.call(array, 'index')) {
-	    result.index = array.index;
-	    result.input = array.input;
-	  }
-	  return result;
-	}
-
-	module.exports = initCloneArray;
-
-
-/***/ },
-/* 181 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var cloneArrayBuffer = __webpack_require__(182),
-	    cloneDataView = __webpack_require__(183),
-	    cloneMap = __webpack_require__(184),
-	    cloneRegExp = __webpack_require__(187),
-	    cloneSet = __webpack_require__(188),
-	    cloneSymbol = __webpack_require__(190),
-	    cloneTypedArray = __webpack_require__(191);
-
-	/** `Object#toString` result references. */
-	var boolTag = '[object Boolean]',
-	    dateTag = '[object Date]',
-	    mapTag = '[object Map]',
-	    numberTag = '[object Number]',
-	    regexpTag = '[object RegExp]',
-	    setTag = '[object Set]',
-	    stringTag = '[object String]',
-	    symbolTag = '[object Symbol]';
-
-	var arrayBufferTag = '[object ArrayBuffer]',
-	    dataViewTag = '[object DataView]',
-	    float32Tag = '[object Float32Array]',
-	    float64Tag = '[object Float64Array]',
-	    int8Tag = '[object Int8Array]',
-	    int16Tag = '[object Int16Array]',
-	    int32Tag = '[object Int32Array]',
-	    uint8Tag = '[object Uint8Array]',
-	    uint8ClampedTag = '[object Uint8ClampedArray]',
-	    uint16Tag = '[object Uint16Array]',
-	    uint32Tag = '[object Uint32Array]';
-
-	/**
-	 * Initializes an object clone based on its `toStringTag`.
-	 *
-	 * **Note:** This function only supports cloning values with tags of
-	 * `Boolean`, `Date`, `Error`, `Number`, `RegExp`, or `String`.
-	 *
-	 * @private
-	 * @param {Object} object The object to clone.
-	 * @param {string} tag The `toStringTag` of the object to clone.
-	 * @param {Function} cloneFunc The function to clone values.
-	 * @param {boolean} [isDeep] Specify a deep clone.
-	 * @returns {Object} Returns the initialized clone.
-	 */
-	function initCloneByTag(object, tag, cloneFunc, isDeep) {
-	  var Ctor = object.constructor;
-	  switch (tag) {
-	    case arrayBufferTag:
-	      return cloneArrayBuffer(object);
-
-	    case boolTag:
-	    case dateTag:
-	      return new Ctor(+object);
-
-	    case dataViewTag:
-	      return cloneDataView(object, isDeep);
-
-	    case float32Tag: case float64Tag:
-	    case int8Tag: case int16Tag: case int32Tag:
-	    case uint8Tag: case uint8ClampedTag: case uint16Tag: case uint32Tag:
-	      return cloneTypedArray(object, isDeep);
-
-	    case mapTag:
-	      return cloneMap(object, isDeep, cloneFunc);
-
-	    case numberTag:
-	    case stringTag:
-	      return new Ctor(object);
-
-	    case regexpTag:
-	      return cloneRegExp(object);
-
-	    case setTag:
-	      return cloneSet(object, isDeep, cloneFunc);
-
-	    case symbolTag:
-	      return cloneSymbol(object);
-	  }
-	}
-
-	module.exports = initCloneByTag;
-
-
-/***/ },
-/* 182 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Uint8Array = __webpack_require__(87);
-
-	/**
-	 * Creates a clone of `arrayBuffer`.
-	 *
-	 * @private
-	 * @param {ArrayBuffer} arrayBuffer The array buffer to clone.
-	 * @returns {ArrayBuffer} Returns the cloned array buffer.
-	 */
-	function cloneArrayBuffer(arrayBuffer) {
-	  var result = new arrayBuffer.constructor(arrayBuffer.byteLength);
-	  new Uint8Array(result).set(new Uint8Array(arrayBuffer));
-	  return result;
-	}
-
-	module.exports = cloneArrayBuffer;
-
-
-/***/ },
-/* 183 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var cloneArrayBuffer = __webpack_require__(182);
-
-	/**
-	 * Creates a clone of `dataView`.
-	 *
-	 * @private
-	 * @param {Object} dataView The data view to clone.
-	 * @param {boolean} [isDeep] Specify a deep clone.
-	 * @returns {Object} Returns the cloned data view.
-	 */
-	function cloneDataView(dataView, isDeep) {
-	  var buffer = isDeep ? cloneArrayBuffer(dataView.buffer) : dataView.buffer;
-	  return new dataView.constructor(buffer, dataView.byteOffset, dataView.byteLength);
-	}
-
-	module.exports = cloneDataView;
-
-
-/***/ },
-/* 184 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var addMapEntry = __webpack_require__(185),
-	    arrayReduce = __webpack_require__(186),
-	    mapToArray = __webpack_require__(88);
-
-	/**
-	 * Creates a clone of `map`.
-	 *
-	 * @private
-	 * @param {Object} map The map to clone.
-	 * @param {Function} cloneFunc The function to clone values.
-	 * @param {boolean} [isDeep] Specify a deep clone.
-	 * @returns {Object} Returns the cloned map.
-	 */
-	function cloneMap(map, isDeep, cloneFunc) {
-	  var array = isDeep ? cloneFunc(mapToArray(map), true) : mapToArray(map);
-	  return arrayReduce(array, addMapEntry, new map.constructor);
-	}
-
-	module.exports = cloneMap;
-
-
-/***/ },
-/* 185 */
-/***/ function(module, exports) {
-
-	/**
-	 * Adds the key-value `pair` to `map`.
-	 *
-	 * @private
-	 * @param {Object} map The map to modify.
-	 * @param {Array} pair The key-value pair to add.
-	 * @returns {Object} Returns `map`.
-	 */
-	function addMapEntry(map, pair) {
-	  // Don't return `Map#set` because it doesn't return the map instance in IE 11.
-	  map.set(pair[0], pair[1]);
-	  return map;
-	}
-
-	module.exports = addMapEntry;
-
-
-/***/ },
-/* 186 */
-/***/ function(module, exports) {
-
-	/**
-	 * A specialized version of `_.reduce` for arrays without support for
-	 * iteratee shorthands.
-	 *
-	 * @private
-	 * @param {Array} [array] The array to iterate over.
-	 * @param {Function} iteratee The function invoked per iteration.
-	 * @param {*} [accumulator] The initial value.
-	 * @param {boolean} [initAccum] Specify using the first element of `array` as
-	 *  the initial value.
-	 * @returns {*} Returns the accumulated value.
-	 */
-	function arrayReduce(array, iteratee, accumulator, initAccum) {
-	  var index = -1,
-	      length = array ? array.length : 0;
-
-	  if (initAccum && length) {
-	    accumulator = array[++index];
-	  }
-	  while (++index < length) {
-	    accumulator = iteratee(accumulator, array[index], index, array);
-	  }
-	  return accumulator;
-	}
-
-	module.exports = arrayReduce;
-
-
-/***/ },
-/* 187 */
-/***/ function(module, exports) {
-
-	/** Used to match `RegExp` flags from their coerced string values. */
-	var reFlags = /\w*$/;
-
-	/**
-	 * Creates a clone of `regexp`.
-	 *
-	 * @private
-	 * @param {Object} regexp The regexp to clone.
-	 * @returns {Object} Returns the cloned regexp.
-	 */
-	function cloneRegExp(regexp) {
-	  var result = new regexp.constructor(regexp.source, reFlags.exec(regexp));
-	  result.lastIndex = regexp.lastIndex;
-	  return result;
-	}
-
-	module.exports = cloneRegExp;
-
-
-/***/ },
-/* 188 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var addSetEntry = __webpack_require__(189),
-	    arrayReduce = __webpack_require__(186),
-	    setToArray = __webpack_require__(89);
-
-	/**
-	 * Creates a clone of `set`.
-	 *
-	 * @private
-	 * @param {Object} set The set to clone.
-	 * @param {Function} cloneFunc The function to clone values.
-	 * @param {boolean} [isDeep] Specify a deep clone.
-	 * @returns {Object} Returns the cloned set.
-	 */
-	function cloneSet(set, isDeep, cloneFunc) {
-	  var array = isDeep ? cloneFunc(setToArray(set), true) : setToArray(set);
-	  return arrayReduce(array, addSetEntry, new set.constructor);
-	}
-
-	module.exports = cloneSet;
-
-
-/***/ },
-/* 189 */
-/***/ function(module, exports) {
-
-	/**
-	 * Adds `value` to `set`.
-	 *
-	 * @private
-	 * @param {Object} set The set to modify.
-	 * @param {*} value The value to add.
-	 * @returns {Object} Returns `set`.
-	 */
-	function addSetEntry(set, value) {
-	  set.add(value);
-	  return set;
-	}
-
-	module.exports = addSetEntry;
-
-
-/***/ },
-/* 190 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Symbol = __webpack_require__(86);
-
-	/** Used to convert symbols to primitives and strings. */
-	var symbolProto = Symbol ? Symbol.prototype : undefined,
-	    symbolValueOf = symbolProto ? symbolProto.valueOf : undefined;
-
-	/**
-	 * Creates a clone of the `symbol` object.
-	 *
-	 * @private
-	 * @param {Object} symbol The symbol object to clone.
-	 * @returns {Object} Returns the cloned symbol object.
-	 */
-	function cloneSymbol(symbol) {
-	  return symbolValueOf ? Object(symbolValueOf.call(symbol)) : {};
-	}
-
-	module.exports = cloneSymbol;
-
-
-/***/ },
-/* 191 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var cloneArrayBuffer = __webpack_require__(182);
-
-	/**
-	 * Creates a clone of `typedArray`.
-	 *
-	 * @private
-	 * @param {Object} typedArray The typed array to clone.
-	 * @param {boolean} [isDeep] Specify a deep clone.
-	 * @returns {Object} Returns the cloned typed array.
-	 */
-	function cloneTypedArray(typedArray, isDeep) {
-	  var buffer = isDeep ? cloneArrayBuffer(typedArray.buffer) : typedArray.buffer;
-	  return new typedArray.constructor(buffer, typedArray.byteOffset, typedArray.length);
-	}
-
-	module.exports = cloneTypedArray;
-
-
-/***/ },
-/* 192 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var baseCreate = __webpack_require__(193),
-	    getPrototype = __webpack_require__(18),
-	    isPrototype = __webpack_require__(34);
-
-	/**
-	 * Initializes an object clone.
-	 *
-	 * @private
-	 * @param {Object} object The object to clone.
-	 * @returns {Object} Returns the initialized clone.
-	 */
-	function initCloneObject(object) {
-	  return (typeof object.constructor == 'function' && !isPrototype(object))
-	    ? baseCreate(getPrototype(object))
-	    : {};
-	}
-
-	module.exports = initCloneObject;
-
-
-/***/ },
-/* 193 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var isObject = __webpack_require__(28);
-
-	/** Built-in value references. */
-	var objectCreate = Object.create;
-
-	/**
-	 * The base implementation of `_.create` without support for assigning
-	 * properties to the created object.
-	 *
-	 * @private
-	 * @param {Object} prototype The object to inherit from.
-	 * @returns {Object} Returns the new object.
-	 */
-	function baseCreate(proto) {
-	  return isObject(proto) ? objectCreate(proto) : {};
-	}
-
-	module.exports = baseCreate;
-
-
-/***/ },
-/* 194 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var getPrototype = __webpack_require__(18),
-	    isHostObject = __webpack_require__(60),
-	    isObjectLike = __webpack_require__(30);
-
-	/** `Object#toString` result references. */
-	var objectTag = '[object Object]';
-
-	/** Used for built-in method references. */
-	var objectProto = Object.prototype;
-
-	/** Used to resolve the decompiled source of functions. */
-	var funcToString = Function.prototype.toString;
-
-	/** Used to check objects for own properties. */
-	var hasOwnProperty = objectProto.hasOwnProperty;
-
-	/** Used to infer the `Object` constructor. */
-	var objectCtorString = funcToString.call(Object);
-
-	/**
-	 * Used to resolve the
-	 * [`toStringTag`](http://ecma-international.org/ecma-262/6.0/#sec-object.prototype.tostring)
-	 * of values.
-	 */
-	var objectToString = objectProto.toString;
-
-	/**
-	 * Checks if `value` is a plain object, that is, an object created by the
-	 * `Object` constructor or one with a `[[Prototype]]` of `null`.
-	 *
-	 * @static
-	 * @memberOf _
-	 * @since 0.8.0
-	 * @category Lang
-	 * @param {*} value The value to check.
-	 * @returns {boolean} Returns `true` if `value` is a plain object,
-	 *  else `false`.
-	 * @example
-	 *
-	 * function Foo() {
-	 *   this.a = 1;
-	 * }
-	 *
-	 * _.isPlainObject(new Foo);
-	 * // => false
-	 *
-	 * _.isPlainObject([1, 2, 3]);
-	 * // => false
-	 *
-	 * _.isPlainObject({ 'x': 0, 'y': 0 });
-	 * // => true
-	 *
-	 * _.isPlainObject(Object.create(null));
-	 * // => true
-	 */
-	function isPlainObject(value) {
-	  if (!isObjectLike(value) ||
-	      objectToString.call(value) != objectTag || isHostObject(value)) {
-	    return false;
-	  }
-	  var proto = getPrototype(value);
-	  if (proto === null) {
-	    return true;
-	  }
-	  var Ctor = hasOwnProperty.call(proto, 'constructor') && proto.constructor;
-	  return (typeof Ctor == 'function' &&
-	    Ctor instanceof Ctor && funcToString.call(Ctor) == objectCtorString);
-	}
-
-	module.exports = isPlainObject;
-
-
-/***/ },
-/* 195 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var copyObject = __webpack_require__(120),
-	    keysIn = __webpack_require__(196);
-
-	/**
-	 * Converts `value` to a plain object flattening inherited enumerable string
-	 * keyed properties of `value` to own properties of the plain object.
-	 *
-	 * @static
-	 * @memberOf _
-	 * @since 3.0.0
-	 * @category Lang
-	 * @param {*} value The value to convert.
-	 * @returns {Object} Returns the converted plain object.
-	 * @example
-	 *
-	 * function Foo() {
-	 *   this.b = 2;
-	 * }
-	 *
-	 * Foo.prototype.c = 3;
-	 *
-	 * _.assign({ 'a': 1 }, new Foo);
-	 * // => { 'a': 1, 'b': 2 }
-	 *
-	 * _.assign({ 'a': 1 }, _.toPlainObject(new Foo));
-	 * // => { 'a': 1, 'b': 2, 'c': 3 }
-	 */
-	function toPlainObject(value) {
-	  return copyObject(value, keysIn(value));
-	}
-
-	module.exports = toPlainObject;
-
-
-/***/ },
-/* 196 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var baseKeysIn = __webpack_require__(197),
-	    indexKeys = __webpack_require__(20),
-	    isIndex = __webpack_require__(33),
-	    isPrototype = __webpack_require__(34);
-
-	/** Used for built-in method references. */
-	var objectProto = Object.prototype;
-
-	/** Used to check objects for own properties. */
-	var hasOwnProperty = objectProto.hasOwnProperty;
-
-	/**
-	 * Creates an array of the own and inherited enumerable property names of `object`.
-	 *
-	 * **Note:** Non-object values are coerced to objects.
-	 *
-	 * @static
-	 * @memberOf _
-	 * @since 3.0.0
-	 * @category Object
-	 * @param {Object} object The object to query.
-	 * @returns {Array} Returns the array of property names.
-	 * @example
-	 *
-	 * function Foo() {
-	 *   this.a = 1;
-	 *   this.b = 2;
-	 * }
-	 *
-	 * Foo.prototype.c = 3;
-	 *
-	 * _.keysIn(new Foo);
-	 * // => ['a', 'b', 'c'] (iteration order is not guaranteed)
-	 */
-	function keysIn(object) {
-	  var index = -1,
-	      isProto = isPrototype(object),
-	      props = baseKeysIn(object),
-	      propsLength = props.length,
-	      indexes = indexKeys(object),
-	      skipIndexes = !!indexes,
-	      result = indexes || [],
-	      length = result.length;
-
-	  while (++index < propsLength) {
-	    var key = props[index];
-	    if (!(skipIndexes && (key == 'length' || isIndex(key, length))) &&
-	        !(key == 'constructor' && (isProto || !hasOwnProperty.call(object, key)))) {
-	      result.push(key);
-	    }
-	  }
-	  return result;
-	}
-
-	module.exports = keysIn;
-
-
-/***/ },
-/* 197 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Reflect = __webpack_require__(198),
-	    iteratorToArray = __webpack_require__(199);
-
-	/** Used for built-in method references. */
-	var objectProto = Object.prototype;
-
-	/** Built-in value references. */
-	var enumerate = Reflect ? Reflect.enumerate : undefined,
-	    propertyIsEnumerable = objectProto.propertyIsEnumerable;
-
-	/**
-	 * The base implementation of `_.keysIn` which doesn't skip the constructor
-	 * property of prototypes or treat sparse arrays as dense.
-	 *
-	 * @private
-	 * @param {Object} object The object to query.
-	 * @returns {Array} Returns the array of property names.
-	 */
-	function baseKeysIn(object) {
-	  object = object == null ? object : Object(object);
-
-	  var result = [];
-	  for (var key in object) {
-	    result.push(key);
-	  }
-	  return result;
-	}
-
-	// Fallback for IE < 9 with es6-shim.
-	if (enumerate && !propertyIsEnumerable.call({ 'valueOf': 1 }, 'valueOf')) {
-	  baseKeysIn = function(object) {
-	    return iteratorToArray(enumerate(object));
-	  };
-	}
-
-	module.exports = baseKeysIn;
-
-
-/***/ },
-/* 198 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var root = __webpack_require__(63);
-
-	/** Built-in value references. */
-	var Reflect = root.Reflect;
-
-	module.exports = Reflect;
-
-
-/***/ },
-/* 199 */
-/***/ function(module, exports) {
-
-	/**
-	 * Converts `iterator` to an array.
-	 *
-	 * @private
-	 * @param {Object} iterator The iterator to convert.
-	 * @returns {Array} Returns the converted array.
-	 */
-	function iteratorToArray(iterator) {
-	  var data,
-	      result = [];
-
-	  while (!(data = iterator.next()).done) {
-	    result.push(data.value);
-	  }
-	  return result;
-	}
-
-	module.exports = iteratorToArray;
-
-
-/***/ },
-/* 200 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var baseValues = __webpack_require__(201),
-	    keys = __webpack_require__(16);
-
-	/**
-	 * Creates an array of the own enumerable string keyed property values of `object`.
-	 *
-	 * **Note:** Non-object values are coerced to objects.
-	 *
-	 * @static
-	 * @since 0.1.0
-	 * @memberOf _
-	 * @category Object
-	 * @param {Object} object The object to query.
-	 * @returns {Array} Returns the array of property values.
-	 * @example
-	 *
-	 * function Foo() {
-	 *   this.a = 1;
-	 *   this.b = 2;
-	 * }
-	 *
-	 * Foo.prototype.c = 3;
-	 *
-	 * _.values(new Foo);
-	 * // => [1, 2] (iteration order is not guaranteed)
-	 *
-	 * _.values('hi');
-	 * // => ['h', 'i']
-	 */
-	function values(object) {
-	  return object ? baseValues(object, keys(object)) : [];
-	}
-
-	module.exports = values;
-
-
-/***/ },
-/* 201 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var arrayMap = __webpack_require__(202);
-
-	/**
-	 * The base implementation of `_.values` and `_.valuesIn` which creates an
-	 * array of `object` property values corresponding to the property names
-	 * of `props`.
-	 *
-	 * @private
-	 * @param {Object} object The object to query.
-	 * @param {Array} props The property names to get values for.
-	 * @returns {Object} Returns the array of property values.
-	 */
-	function baseValues(object, props) {
-	  return arrayMap(props, function(key) {
-	    return object[key];
-	  });
-	}
-
-	module.exports = baseValues;
-
-
-/***/ },
-/* 202 */
-/***/ function(module, exports) {
-
-	/**
-	 * A specialized version of `_.map` for arrays without support for iteratee
-	 * shorthands.
-	 *
-	 * @private
-	 * @param {Array} [array] The array to iterate over.
-	 * @param {Function} iteratee The function invoked per iteration.
-	 * @returns {Array} Returns the new mapped array.
-	 */
-	function arrayMap(array, iteratee) {
-	  var index = -1,
-	      length = array ? array.length : 0,
-	      result = Array(length);
-
-	  while (++index < length) {
-	    result[index] = iteratee(array[index], index, array);
-	  }
-	  return result;
-	}
-
-	module.exports = arrayMap;
-
-
-/***/ },
-/* 203 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var baseFindIndex = __webpack_require__(204),
-	    baseIteratee = __webpack_require__(36),
-	    toInteger = __webpack_require__(125);
+	var baseFindIndex = __webpack_require__(161),
+	    baseIteratee = __webpack_require__(38),
+	    toInteger = __webpack_require__(127);
 
 	/* Built-in method references for those with the same name as other `lodash` methods. */
 	var nativeMax = Math.max;
@@ -16220,7 +13041,7 @@ var Kinvey =
 
 
 /***/ },
-/* 204 */
+/* 161 */
 /***/ function(module, exports) {
 
 	/**
@@ -16250,7 +13071,125 @@ var Kinvey =
 
 
 /***/ },
-/* 205 */
+/* 162 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var arrayReduce = __webpack_require__(163),
+	    baseEach = __webpack_require__(14),
+	    baseIteratee = __webpack_require__(38),
+	    baseReduce = __webpack_require__(164),
+	    isArray = __webpack_require__(33);
+
+	/**
+	 * Reduces `collection` to a value which is the accumulated result of running
+	 * each element in `collection` thru `iteratee`, where each successive
+	 * invocation is supplied the return value of the previous. If `accumulator`
+	 * is not given, the first element of `collection` is used as the initial
+	 * value. The iteratee is invoked with four arguments:
+	 * (accumulator, value, index|key, collection).
+	 *
+	 * Many lodash methods are guarded to work as iteratees for methods like
+	 * `_.reduce`, `_.reduceRight`, and `_.transform`.
+	 *
+	 * The guarded methods are:
+	 * `assign`, `defaults`, `defaultsDeep`, `includes`, `merge`, `orderBy`,
+	 * and `sortBy`
+	 *
+	 * @static
+	 * @memberOf _
+	 * @since 0.1.0
+	 * @category Collection
+	 * @param {Array|Object} collection The collection to iterate over.
+	 * @param {Function} [iteratee=_.identity] The function invoked per iteration.
+	 * @param {*} [accumulator] The initial value.
+	 * @returns {*} Returns the accumulated value.
+	 * @see _.reduceRight
+	 * @example
+	 *
+	 * _.reduce([1, 2], function(sum, n) {
+	 *   return sum + n;
+	 * }, 0);
+	 * // => 3
+	 *
+	 * _.reduce({ 'a': 1, 'b': 2, 'c': 1 }, function(result, value, key) {
+	 *   (result[value] || (result[value] = [])).push(key);
+	 *   return result;
+	 * }, {});
+	 * // => { '1': ['a', 'c'], '2': ['b'] } (iteration order is not guaranteed)
+	 */
+	function reduce(collection, iteratee, accumulator) {
+	  var func = isArray(collection) ? arrayReduce : baseReduce,
+	      initAccum = arguments.length < 3;
+
+	  return func(collection, baseIteratee(iteratee, 4), accumulator, initAccum, baseEach);
+	}
+
+	module.exports = reduce;
+
+
+/***/ },
+/* 163 */
+/***/ function(module, exports) {
+
+	/**
+	 * A specialized version of `_.reduce` for arrays without support for
+	 * iteratee shorthands.
+	 *
+	 * @private
+	 * @param {Array} [array] The array to iterate over.
+	 * @param {Function} iteratee The function invoked per iteration.
+	 * @param {*} [accumulator] The initial value.
+	 * @param {boolean} [initAccum] Specify using the first element of `array` as
+	 *  the initial value.
+	 * @returns {*} Returns the accumulated value.
+	 */
+	function arrayReduce(array, iteratee, accumulator, initAccum) {
+	  var index = -1,
+	      length = array ? array.length : 0;
+
+	  if (initAccum && length) {
+	    accumulator = array[++index];
+	  }
+	  while (++index < length) {
+	    accumulator = iteratee(accumulator, array[index], index, array);
+	  }
+	  return accumulator;
+	}
+
+	module.exports = arrayReduce;
+
+
+/***/ },
+/* 164 */
+/***/ function(module, exports) {
+
+	/**
+	 * The base implementation of `_.reduce` and `_.reduceRight`, without support
+	 * for iteratee shorthands, which iterates over `collection` using `eachFunc`.
+	 *
+	 * @private
+	 * @param {Array|Object} collection The collection to iterate over.
+	 * @param {Function} iteratee The function invoked per iteration.
+	 * @param {*} accumulator The initial value.
+	 * @param {boolean} initAccum Specify using the first or last element of
+	 *  `collection` as the initial value.
+	 * @param {Function} eachFunc The function to iterate over `collection`.
+	 * @returns {*} Returns the accumulated value.
+	 */
+	function baseReduce(collection, iteratee, accumulator, initAccum, eachFunc) {
+	  eachFunc(collection, function(value, index, collection) {
+	    accumulator = initAccum
+	      ? (initAccum = false, value)
+	      : iteratee(accumulator, value, index, collection);
+	  });
+	  return accumulator;
+	}
+
+	module.exports = baseReduce;
+
+
+/***/ },
+/* 165 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -16258,47 +13197,91 @@ var Kinvey =
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.Memory = undefined;
+	exports.CacheMiddleware = exports.DB = exports.Memory = undefined;
 
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-	var _errors = __webpack_require__(5);
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /* eslint-disable no-underscore-dangle */
+	// eslint-disable-line no-unused-vars
 
-	var _fastMemoryCache = __webpack_require__(206);
+
+	var _query = __webpack_require__(10);
+
+	var _aggregation = __webpack_require__(9);
+
+	var _errors = __webpack_require__(7);
+
+	var _middleware = __webpack_require__(166);
+
+	var _request2 = __webpack_require__(151);
+
+	var _response = __webpack_require__(167);
+
+	var _es6Promise = __webpack_require__(168);
+
+	var _fastMemoryCache = __webpack_require__(171);
 
 	var _fastMemoryCache2 = _interopRequireDefault(_fastMemoryCache);
 
-	var _keyBy = __webpack_require__(162);
+	var _promiseQueue = __webpack_require__(172);
+
+	var _promiseQueue2 = _interopRequireDefault(_promiseQueue);
+
+	var _regeneratorRuntime = __webpack_require__(2);
+
+	var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
+
+	var _map = __webpack_require__(175);
+
+	var _map2 = _interopRequireDefault(_map);
+
+	var _result = __webpack_require__(138);
+
+	var _result2 = _interopRequireDefault(_result);
+
+	var _reduce = __webpack_require__(162);
+
+	var _reduce2 = _interopRequireDefault(_reduce);
+
+	var _keyBy = __webpack_require__(178);
 
 	var _keyBy2 = _interopRequireDefault(_keyBy);
 
-	var _forEach = __webpack_require__(10);
+	var _forEach = __webpack_require__(12);
 
 	var _forEach2 = _interopRequireDefault(_forEach);
 
-	var _values = __webpack_require__(200);
+	var _values = __webpack_require__(182);
 
 	var _values2 = _interopRequireDefault(_values);
 
-	var _find = __webpack_require__(207);
+	var _find = __webpack_require__(184);
 
 	var _find2 = _interopRequireDefault(_find);
 
-	var _isString = __webpack_require__(32);
+	var _isString = __webpack_require__(34);
 
 	var _isString2 = _interopRequireDefault(_isString);
 
-	var _isArray = __webpack_require__(31);
+	var _isArray = __webpack_require__(33);
 
 	var _isArray2 = _interopRequireDefault(_isArray);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new _es6Promise.Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return _es6Promise.Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	var idAttribute = process.env.KINVEY_ID_ATTRIBUTE || '_id';
+	var kmdAttribute = process.env.KINVEY_KMD_ATTRIBUTE || '_kmd';
+	_promiseQueue2.default.configure(_es6Promise.Promise);
+	var queue = new _promiseQueue2.default(1, Infinity);
+	var dbCache = {};
 	var caches = [];
 
 	/**
@@ -16329,9 +13312,9 @@ var Kinvey =
 	  _createClass(Memory, [{
 	    key: 'find',
 	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(collection) {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee(collection) {
 	        var entities;
-	        return regeneratorRuntime.wrap(function _callee$(_context) {
+	        return _regeneratorRuntime2.default.wrap(function _callee$(_context) {
 	          while (1) {
 	            switch (_context.prev = _context.next) {
 	              case 0:
@@ -16364,9 +13347,9 @@ var Kinvey =
 	  }, {
 	    key: 'findById',
 	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(collection, id) {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee2(collection, id) {
 	        var entities, entity;
-	        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+	        return _regeneratorRuntime2.default.wrap(function _callee2$(_context2) {
 	          while (1) {
 	            switch (_context2.prev = _context2.next) {
 	              case 0:
@@ -16406,9 +13389,9 @@ var Kinvey =
 	  }, {
 	    key: 'save',
 	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee3(collection, entities) {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee3(collection, entities) {
 	        var singular, existingEntities, entityIds;
-	        return regeneratorRuntime.wrap(function _callee3$(_context3) {
+	        return _regeneratorRuntime2.default.wrap(function _callee3$(_context3) {
 	          while (1) {
 	            switch (_context3.prev = _context3.next) {
 	              case 0:
@@ -16465,9 +13448,9 @@ var Kinvey =
 	  }, {
 	    key: 'removeById',
 	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee4(collection, id) {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee4(collection, id) {
 	        var entities, entity;
-	        return regeneratorRuntime.wrap(function _callee4$(_context4) {
+	        return _regeneratorRuntime2.default.wrap(function _callee4$(_context4) {
 	          while (1) {
 	            switch (_context4.prev = _context4.next) {
 	              case 0:
@@ -16511,8 +13494,8 @@ var Kinvey =
 	  }, {
 	    key: 'clear',
 	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee5() {
-	        return regeneratorRuntime.wrap(function _callee5$(_context5) {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee5() {
+	        return _regeneratorRuntime2.default.wrap(function _callee5$(_context5) {
 	          while (1) {
 	            switch (_context5.prev = _context5.next) {
 	              case 0:
@@ -16542,388 +13525,222 @@ var Kinvey =
 
 	  return Memory;
 	}();
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
-
-/***/ },
-/* 206 */
-/***/ function(module, exports) {
-
-	'use strict';
-
-	/**
-	 * Provides in-memory cache.
-	 *
-	 * @name MemoryCache
-	 * @constructor
-	 */
-	function MemoryCache() {
-	    this._cache = createMap();
-	    this._timeouts = createMap();
-	}
-
-	/**
-	 * Returns cache value for the specified key.
-	 *
-	 * @param {String} key
-	 * @returns {*} Value or `undefined` if value does not exist.
-	 */
-	MemoryCache.prototype.get = function (key) {
-	    return this._cache[key];
-	};
-
-	/**
-	 * Assigns value for the specified key.
-	 *
-	 * @param {String} key
-	 * @param {*} value
-	 * @param {Number} [expireTime=0] The length of time in seconds. After this time has expired, the
-	 *      value will be automatically deleted. 0 means that time never expire.
-	 */
-	MemoryCache.prototype.set = function (key, value, expireTime) {
-	    this.delete(key);
-	    this._cache[key] = value;
-	    if (expireTime) {
-	        this._timeouts[key] = setTimeout(this.delete.bind(this, key), expireTime * 1000);
-	    }
-	};
-
-	/**
-	 * Deletes value for the specified key.
-	 *
-	 * @param {String} key
-	 */
-	MemoryCache.prototype.delete = function (key) {
-	    delete this._cache[key];
-	    if (key in this._timeouts) {
-	        clearTimeout(this._timeouts[key]);
-	        delete this._timeouts[key];
-	    }
-	};
-
-	/**
-	 * Clears the whole cache storage.
-	 */
-	MemoryCache.prototype.clear = function () {
-	    this._cache = createMap();
-	    for (var key in this._timeouts) {
-	        clearTimeout(this._timeouts[key]);
-	    }
-	    this._timeouts = createMap();
-	};
-
-	/**
-	 * Creates a new object without a prototype. This object is useful for lookup without having to
-	 * guard against prototypically inherited properties via hasOwnProperty.
-	 *
-	 * @returns {Object}
-	 */
-	function createMap() {
-	    return Object.create(null);
-	}
-
-	module.exports = MemoryCache;
-
-
-/***/ },
-/* 207 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var createFind = __webpack_require__(208),
-	    findIndex = __webpack_require__(203);
-
-	/**
-	 * Iterates over elements of `collection`, returning the first element
-	 * `predicate` returns truthy for. The predicate is invoked with three
-	 * arguments: (value, index|key, collection).
-	 *
-	 * @static
-	 * @memberOf _
-	 * @since 0.1.0
-	 * @category Collection
-	 * @param {Array|Object} collection The collection to search.
-	 * @param {Array|Function|Object|string} [predicate=_.identity]
-	 *  The function invoked per iteration.
-	 * @param {number} [fromIndex=0] The index to search from.
-	 * @returns {*} Returns the matched element, else `undefined`.
-	 * @example
-	 *
-	 * var users = [
-	 *   { 'user': 'barney',  'age': 36, 'active': true },
-	 *   { 'user': 'fred',    'age': 40, 'active': false },
-	 *   { 'user': 'pebbles', 'age': 1,  'active': true }
-	 * ];
-	 *
-	 * _.find(users, function(o) { return o.age < 40; });
-	 * // => object for 'barney'
-	 *
-	 * // The `_.matches` iteratee shorthand.
-	 * _.find(users, { 'age': 1, 'active': true });
-	 * // => object for 'pebbles'
-	 *
-	 * // The `_.matchesProperty` iteratee shorthand.
-	 * _.find(users, ['active', false]);
-	 * // => object for 'fred'
-	 *
-	 * // The `_.property` iteratee shorthand.
-	 * _.find(users, 'active');
-	 * // => object for 'barney'
-	 */
-	var find = createFind(findIndex);
-
-	module.exports = find;
-
-
-/***/ },
-/* 208 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var baseIteratee = __webpack_require__(36),
-	    isArrayLike = __webpack_require__(24),
-	    keys = __webpack_require__(16);
-
-	/**
-	 * Creates a `_.find` or `_.findLast` function.
-	 *
-	 * @private
-	 * @param {Function} findIndexFunc The function to find the collection index.
-	 * @returns {Function} Returns the new find function.
-	 */
-	function createFind(findIndexFunc) {
-	  return function(collection, predicate, fromIndex) {
-	    var iterable = Object(collection);
-	    predicate = baseIteratee(predicate, 3);
-	    if (!isArrayLike(collection)) {
-	      var props = keys(collection);
-	    }
-	    var index = findIndexFunc(props || collection, function(value, key) {
-	      if (props) {
-	        key = value;
-	        value = iterable[key];
-	      }
-	      return predicate(value, key, iterable);
-	    }, fromIndex);
-	    return index > -1 ? collection[props ? props[index] : index] : undefined;
-	  };
-	}
-
-	module.exports = createFind;
-
-
-/***/ },
-/* 209 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(process, global) {'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.WebSQL = undefined;
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _errors = __webpack_require__(5);
-
-	var _map = __webpack_require__(210);
-
-	var _map2 = _interopRequireDefault(_map);
-
-	var _forEach = __webpack_require__(10);
-
-	var _forEach2 = _interopRequireDefault(_forEach);
-
-	var _isArray = __webpack_require__(31);
-
-	var _isArray2 = _interopRequireDefault(_isArray);
-
-	var _isFunction = __webpack_require__(27);
-
-	var _isFunction2 = _interopRequireDefault(_isFunction);
-
-	var _isString = __webpack_require__(32);
-
-	var _isString2 = _interopRequireDefault(_isString);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	var idAttribute = process.env.KINVEY_ID_ATTRIBUTE || '_id';
-	var masterCollectionName = 'sqlite_master';
-	var size = 5 * 1000 * 1000; // Database size in bytes
-	var webSQL = null;
-	var dbCache = {};
-
-	if (typeof window !== 'undefined') {
-	  webSQL = {
-	    openDatabase: typeof openDatabase !== 'undefined' ? openDatabase : global.openDatabase
-	  };
-	}
 
 	/**
 	 * @private
 	 */
 
-	var WebSQL = exports.WebSQL = function () {
-	  function WebSQL() {
-	    var name = arguments.length <= 0 || arguments[0] === undefined ? 'kinvey' : arguments[0];
 
-	    _classCallCheck(this, WebSQL);
+	var DB = exports.DB = function () {
+	  function DB(name) {
+	    _classCallCheck(this, DB);
 
-	    this.name = name;
+	    if (!name) {
+	      throw new _errors.KinveyError('Unable to create a DB instance without a name.');
+	    }
+
+	    if (!(0, _isString2.default)(name)) {
+	      throw new _errors.KinveyError('The name is not a string. A name must be a string to create a DB instance.');
+	    }
+
+	    this.adapter = new Memory(name);
 	  }
 
-	  _createClass(WebSQL, [{
-	    key: 'openTransaction',
-	    value: function openTransaction(collection, query, parameters) {
-	      var _this = this;
+	  _createClass(DB, [{
+	    key: 'generateObjectId',
+	    value: function generateObjectId() {
+	      var length = arguments.length <= 0 || arguments[0] === undefined ? 24 : arguments[0];
 
-	      var write = arguments.length <= 3 || arguments[3] === undefined ? false : arguments[3];
+	      var chars = 'abcdef0123456789';
+	      var objectId = '';
 
-	      var db = dbCache[this.name];
-	      var escapedCollection = '"' + collection + '"';
-	      var isMaster = collection === masterCollectionName;
-	      var isMulti = (0, _isArray2.default)(query);
-
-	      query = isMulti ? query : [[query, parameters]];
-
-	      if (!db) {
-	        db = webSQL.openDatabase(this.name, 1, '', size);
-	        dbCache[this.name] = db;
+	      for (var i = 0, j = chars.length; i < length; i++) {
+	        var pos = Math.floor(Math.random() * j);
+	        objectId += chars.substring(pos, pos + 1);
 	      }
 
-	      var promise = new Promise(function (resolve, reject) {
-	        var writeTxn = write || !(0, _isFunction2.default)(db.readTransaction);
-	        db[writeTxn ? 'transaction' : 'readTransaction'](function (tx) {
-	          if (write && !isMaster) {
-	            tx.executeSql('CREATE TABLE IF NOT EXISTS ' + escapedCollection + ' ' + '(key BLOB PRIMARY KEY NOT NULL, value BLOB NOT NULL)');
-	          }
-
-	          var pending = query.length;
-	          var responses = [];
-
-	          (0, _forEach2.default)(query, function (parts) {
-	            var sql = parts[0].replace('#{collection}', escapedCollection);
-
-	            tx.executeSql(sql, parts[1], function (_, resultSet) {
-	              var response = {
-	                rowCount: resultSet.rowsAffected,
-	                result: []
-	              };
-
-	              if (resultSet.rows.length) {
-	                for (var i = 0, len = resultSet.rows.length; i < len; i++) {
-	                  try {
-	                    var value = resultSet.rows.item(i).value;
-	                    var entity = isMaster ? value : JSON.parse(value);
-	                    response.result.push(entity);
-	                  } catch (err) {
-	                    // Catch the error
-	                  }
-	                }
-	              }
-
-	              responses.push(response);
-	              pending = pending - 1;
-
-	              if (pending === 0) {
-	                resolve(isMulti ? responses : responses.shift());
-	              }
-	            });
-	          });
-	        }, function (err) {
-	          err = (0, _isString2.default)(err) ? err : err.message;
-
-	          if (err && err.indexOf('no such table') === -1) {
-	            return reject(new _errors.NotFoundError('The ' + collection + ' collection was not found on ' + ('the ' + _this.name + ' webSQL database.')));
-	          }
-
-	          var query = 'SELECT name AS value from #{collection} WHERE type = ? AND name = ?';
-	          var parameters = ['table', collection];
-
-	          return _this.openTransaction(masterCollectionName, query, parameters).then(function (response) {
-	            if (response.result.length === 0) {
-	              return reject(new _errors.NotFoundError('The ' + collection + ' collection was not found on ' + ('the ' + _this.name + ' webSQL database.')));
-	            }
-
-	            return reject(new _errors.KinveyError('Unable to open a transaction for the ' + collection + ' ' + ('collection on the ' + _this.name + ' webSQL database.')));
-	          }).catch(function (err) {
-	            reject(new _errors.KinveyError('Unable to open a transaction for the ' + collection + ' ' + ('collection on the ' + _this.name + ' webSQL database.'), err));
-	          });
-	        });
-	      });
-
-	      return promise;
+	      return objectId;
 	    }
 	  }, {
 	    key: 'find',
 	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(collection) {
-	        var sql, response;
-	        return regeneratorRuntime.wrap(function _callee$(_context) {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee6(collection, query) {
+	        var entities;
+	        return _regeneratorRuntime2.default.wrap(function _callee6$(_context6) {
 	          while (1) {
-	            switch (_context.prev = _context.next) {
+	            switch (_context6.prev = _context6.next) {
 	              case 0:
-	                sql = 'SELECT value FROM #{collection}';
-	                _context.next = 3;
-	                return this.openTransaction(collection, sql, []);
+	                _context6.prev = 0;
+	                _context6.next = 3;
+	                return this.adapter.find(collection);
 
 	              case 3:
-	                response = _context.sent;
-	                return _context.abrupt('return', response.result);
+	                entities = _context6.sent;
 
-	              case 5:
+	                if (entities) {
+	                  _context6.next = 6;
+	                  break;
+	                }
+
+	                return _context6.abrupt('return', []);
+
+	              case 6:
+
+	                if (query && !(query instanceof _query.Query)) {
+	                  query = new _query.Query((0, _result2.default)(query, 'toJSON', query));
+	                }
+
+	                if (entities.length > 0 && query) {
+	                  entities = query.process(entities);
+	                }
+
+	                return _context6.abrupt('return', entities);
+
+	              case 11:
+	                _context6.prev = 11;
+	                _context6.t0 = _context6['catch'](0);
+
+	                if (!(_context6.t0 instanceof _errors.NotFoundError)) {
+	                  _context6.next = 15;
+	                  break;
+	                }
+
+	                return _context6.abrupt('return', []);
+
+	              case 15:
+	                throw _context6.t0;
+
+	              case 16:
 	              case 'end':
-	                return _context.stop();
+	                return _context6.stop();
 	            }
 	          }
-	        }, _callee, this);
+	        }, _callee6, this, [[0, 11]]);
 	      }));
 
-	      function find(_x3) {
+	      function find(_x9, _x10) {
 	        return ref.apply(this, arguments);
 	      }
 
 	      return find;
 	    }()
 	  }, {
-	    key: 'findById',
+	    key: 'count',
 	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(collection, id) {
-	        var sql, response, entities;
-	        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee7(collection, query) {
+	        var entities;
+	        return _regeneratorRuntime2.default.wrap(function _callee7$(_context7) {
 	          while (1) {
-	            switch (_context2.prev = _context2.next) {
+	            switch (_context7.prev = _context7.next) {
 	              case 0:
-	                sql = 'SELECT value FROM #{collection} WHERE key = ?';
-	                _context2.next = 3;
-	                return this.openTransaction(collection, sql, [id]);
+	                _context7.next = 2;
+	                return this.find(collection, query);
 
-	              case 3:
-	                response = _context2.sent;
-	                entities = response.result;
+	              case 2:
+	                entities = _context7.sent;
+	                return _context7.abrupt('return', { count: entities.length });
 
-	                if (!(entities.length === 0)) {
-	                  _context2.next = 7;
+	              case 4:
+	              case 'end':
+	                return _context7.stop();
+	            }
+	          }
+	        }, _callee7, this);
+	      }));
+
+	      function count(_x11, _x12) {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return count;
+	    }()
+	  }, {
+	    key: 'group',
+	    value: function () {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee8(collection, aggregation) {
+	        var entities;
+	        return _regeneratorRuntime2.default.wrap(function _callee8$(_context8) {
+	          while (1) {
+	            switch (_context8.prev = _context8.next) {
+	              case 0:
+	                _context8.next = 2;
+	                return this.find(collection);
+
+	              case 2:
+	                entities = _context8.sent;
+
+
+	                if (!(aggregation instanceof _aggregation.Aggregation)) {
+	                  aggregation = new _aggregation.Aggregation((0, _result2.default)(aggregation, 'toJSON', aggregation));
+	                }
+
+	                if (!(entities.length > 0 && aggregation)) {
+	                  _context8.next = 6;
 	                  break;
 	                }
 
-	                throw new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + (' collection on the ' + this.name + ' webSQL database.'));
+	                return _context8.abrupt('return', aggregation.process(entities));
+
+	              case 6:
+	                return _context8.abrupt('return', null);
 
 	              case 7:
-	                return _context2.abrupt('return', entities[0]);
-
-	              case 8:
 	              case 'end':
-	                return _context2.stop();
+	                return _context8.stop();
 	            }
 	          }
-	        }, _callee2, this);
+	        }, _callee8, this);
 	      }));
 
-	      function findById(_x4, _x5) {
+	      function group(_x13, _x14) {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return group;
+	    }()
+	  }, {
+	    key: 'findById',
+	    value: function () {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee9(collection, id) {
+	        return _regeneratorRuntime2.default.wrap(function _callee9$(_context9) {
+	          while (1) {
+	            switch (_context9.prev = _context9.next) {
+	              case 0:
+	                _context9.prev = 0;
+
+	                if ((0, _isString2.default)(id)) {
+	                  _context9.next = 3;
+	                  break;
+	                }
+
+	                throw new _errors.KinveyError('id must be a string', id);
+
+	              case 3:
+	                return _context9.abrupt('return', this.adapter.findById(collection, id));
+
+	              case 6:
+	                _context9.prev = 6;
+	                _context9.t0 = _context9['catch'](0);
+
+	                if (!(_context9.t0 instanceof _errors.NotFoundError)) {
+	                  _context9.next = 10;
+	                  break;
+	                }
+
+	                return _context9.abrupt('return', undefined);
+
+	              case 10:
+	                throw _context9.t0;
+
+	              case 11:
+	              case 'end':
+	                return _context9.stop();
+	            }
+	          }
+	        }, _callee9, this, [[0, 6]]);
+	      }));
+
+	      function findById(_x15, _x16) {
 	        return ref.apply(this, arguments);
 	      }
 
@@ -16931,242 +13748,437 @@ var Kinvey =
 	    }()
 	  }, {
 	    key: 'save',
-	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee3(collection, entities) {
-	        var queries;
-	        return regeneratorRuntime.wrap(function _callee3$(_context3) {
+	    value: function save(collection) {
+	      var _this = this;
+
+	      var entities = arguments.length <= 1 || arguments[1] === undefined ? [] : arguments[1];
+
+	      return queue.add(_asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee10() {
+	        var singular;
+	        return _regeneratorRuntime2.default.wrap(function _callee10$(_context10) {
 	          while (1) {
-	            switch (_context3.prev = _context3.next) {
+	            switch (_context10.prev = _context10.next) {
 	              case 0:
-	                queries = [];
+	                singular = false;
+
+	                if (entities) {
+	                  _context10.next = 3;
+	                  break;
+	                }
+
+	                return _context10.abrupt('return', null);
+
+	              case 3:
+
+	                if (!(0, _isArray2.default)(entities)) {
+	                  singular = true;
+	                  entities = [entities];
+	                }
 
 	                entities = (0, _map2.default)(entities, function (entity) {
-	                  queries.push(['REPLACE INTO #{collection} (key, value) VALUES (?, ?)', [entity[idAttribute], JSON.stringify(entity)]]);
+	                  var id = entity[idAttribute];
+	                  var kmd = entity[kmdAttribute] || {};
 
+	                  if (!id) {
+	                    id = _this.generateObjectId();
+	                    kmd.local = true;
+	                  }
+
+	                  entity[idAttribute] = id;
+	                  entity[kmdAttribute] = kmd;
 	                  return entity;
 	                });
 
-	                _context3.next = 4;
-	                return this.openTransaction(collection, queries, null, true);
+	                _context10.next = 7;
+	                return _this.adapter.save(collection, entities);
 
-	              case 4:
-	                return _context3.abrupt('return', entities);
+	              case 7:
+	                entities = _context10.sent;
 
-	              case 5:
-	              case 'end':
-	                return _context3.stop();
-	            }
-	          }
-	        }, _callee3, this);
-	      }));
-
-	      function save(_x6, _x7) {
-	        return ref.apply(this, arguments);
-	      }
-
-	      return save;
-	    }()
-	  }, {
-	    key: 'removeById',
-	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee4(collection, id) {
-	        var queries, response, entities, count;
-	        return regeneratorRuntime.wrap(function _callee4$(_context4) {
-	          while (1) {
-	            switch (_context4.prev = _context4.next) {
-	              case 0:
-	                queries = [['SELECT value FROM #{collection} WHERE key = ?', [id]], ['DELETE FROM #{collection} WHERE key = ?', [id]]];
-	                _context4.next = 3;
-	                return this.openTransaction(collection, queries, null, true);
-
-	              case 3:
-	                response = _context4.sent;
-	                entities = response[0].result;
-	                count = response[1].rowCount;
-
-	                count = !!count ? count : entities.length;
-
-	                if (!(count === 0)) {
-	                  _context4.next = 9;
+	                if (!(singular && entities.length > 0)) {
+	                  _context10.next = 10;
 	                  break;
 	                }
 
-	                throw new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + (' collection on the ' + this.name + ' webSQL database.'));
-
-	              case 9:
-	                return _context4.abrupt('return', entities[0]);
+	                return _context10.abrupt('return', entities[0]);
 
 	              case 10:
-	              case 'end':
-	                return _context4.stop();
-	            }
-	          }
-	        }, _callee4, this);
-	      }));
-
-	      function removeById(_x8, _x9) {
-	        return ref.apply(this, arguments);
-	      }
-
-	      return removeById;
-	    }()
-	  }, {
-	    key: 'clear',
-	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee5() {
-	        var response, tables, queries;
-	        return regeneratorRuntime.wrap(function _callee5$(_context5) {
-	          while (1) {
-	            switch (_context5.prev = _context5.next) {
-	              case 0:
-	                _context5.next = 2;
-	                return this.openTransaction(masterCollectionName, 'SELECT name AS value FROM #{collection} WHERE type = ?', ['table'], false);
-
-	              case 2:
-	                response = _context5.sent;
-	                tables = response.result;
-
-	                // If there are no tables, return.
-
-	                if (!(tables.length === 0)) {
-	                  _context5.next = 6;
-	                  break;
-	                }
-
-	                return _context5.abrupt('return', null);
-
-	              case 6:
-
-	                // Drop all tables. Filter tables first to avoid attempting to delete
-	                // system tables (which will fail).
-	                queries = tables.filter(function (table) {
-	                  return (/^[a-zA-Z0-9\-]{1,128}/.test(table)
-	                  );
-	                }).map(function (table) {
-	                  return ['DROP TABLE IF EXISTS \'' + table + '\''];
-	                });
-	                _context5.next = 9;
-	                return this.openTransaction(masterCollectionName, queries, null, true);
-
-	              case 9:
-	                dbCache = {};
-	                return _context5.abrupt('return', null);
+	                return _context10.abrupt('return', entities);
 
 	              case 11:
 	              case 'end':
-	                return _context5.stop();
+	                return _context10.stop();
 	            }
 	          }
-	        }, _callee5, this);
+	        }, _callee10, _this);
+	      })));
+	    }
+	  }, {
+	    key: 'remove',
+	    value: function () {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee11(collection, query) {
+	        var _this2 = this;
+
+	        var entities, responses;
+	        return _regeneratorRuntime2.default.wrap(function _callee11$(_context11) {
+	          while (1) {
+	            switch (_context11.prev = _context11.next) {
+	              case 0:
+	                if (query && !(query instanceof _query.Query)) {
+	                  query = new _query.Query(query);
+	                }
+
+	                // Removing should not take the query sort, limit, and skip into account.
+	                if (query) {
+	                  query.sort = null;
+	                  query.limit = null;
+	                  query.skip = 0;
+	                }
+
+	                _context11.next = 4;
+	                return this.find(collection, query);
+
+	              case 4:
+	                entities = _context11.sent;
+	                _context11.next = 7;
+	                return _es6Promise.Promise.all(entities.map(function (entity) {
+	                  return _this2.removeById(collection, entity[idAttribute]);
+	                }));
+
+	              case 7:
+	                responses = _context11.sent;
+	                return _context11.abrupt('return', (0, _reduce2.default)(responses, function (entities, entity) {
+	                  entities.push(entity);
+	                  return entities;
+	                }, []));
+
+	              case 9:
+	              case 'end':
+	                return _context11.stop();
+	            }
+	          }
+	        }, _callee11, this);
 	      }));
 
-	      function clear() {
+	      function remove(_x18, _x19) {
 	        return ref.apply(this, arguments);
 	      }
 
-	      return clear;
+	      return remove;
 	    }()
-	  }], [{
-	    key: 'isSupported',
-	    value: function isSupported() {
-	      return !!webSQL;
+	  }, {
+	    key: 'removeById',
+	    value: function removeById(collection, id) {
+	      var _this3 = this;
+
+	      return queue.add(function () {
+	        if (!id) {
+	          return undefined;
+	        }
+
+	        if (!(0, _isString2.default)(id)) {
+	          throw new _errors.KinveyError('id must be a string', id);
+	        }
+
+	        return _this3.adapter.removeById(collection, id);
+	      });
+	    }
+	  }, {
+	    key: 'clear',
+	    value: function clear() {
+	      var _this4 = this;
+
+	      return queue.add(function () {
+	        return _this4.adapter.clear();
+	      });
 	    }
 	  }]);
 
-	  return WebSQL;
+	  return DB;
 	}();
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), (function() { return this; }())))
-
-/***/ },
-/* 210 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var arrayMap = __webpack_require__(202),
-	    baseIteratee = __webpack_require__(36),
-	    baseMap = __webpack_require__(211),
-	    isArray = __webpack_require__(31);
 
 	/**
-	 * Creates an array of values by running each element in `collection` thru
-	 * `iteratee`. The iteratee is invoked with three arguments:
-	 * (value, index|key, collection).
-	 *
-	 * Many lodash methods are guarded to work as iteratees for methods like
-	 * `_.every`, `_.filter`, `_.map`, `_.mapValues`, `_.reject`, and `_.some`.
-	 *
-	 * The guarded methods are:
-	 * `ary`, `chunk`, `curry`, `curryRight`, `drop`, `dropRight`, `every`,
-	 * `fill`, `invert`, `parseInt`, `random`, `range`, `rangeRight`, `repeat`,
-	 * `sampleSize`, `slice`, `some`, `sortBy`, `split`, `take`, `takeRight`,
-	 * `template`, `trim`, `trimEnd`, `trimStart`, and `words`
-	 *
-	 * @static
-	 * @memberOf _
-	 * @since 0.1.0
-	 * @category Collection
-	 * @param {Array|Object} collection The collection to iterate over.
-	 * @param {Array|Function|Object|string} [iteratee=_.identity]
-	 *  The function invoked per iteration.
-	 * @returns {Array} Returns the new mapped array.
-	 * @example
-	 *
-	 * function square(n) {
-	 *   return n * n;
-	 * }
-	 *
-	 * _.map([4, 8], square);
-	 * // => [16, 64]
-	 *
-	 * _.map({ 'a': 4, 'b': 8 }, square);
-	 * // => [16, 64] (iteration order is not guaranteed)
-	 *
-	 * var users = [
-	 *   { 'user': 'barney' },
-	 *   { 'user': 'fred' }
-	 * ];
-	 *
-	 * // The `_.property` iteratee shorthand.
-	 * _.map(users, 'user');
-	 * // => ['barney', 'fred']
-	 */
-	function map(collection, iteratee) {
-	  var func = isArray(collection) ? arrayMap : baseMap;
-	  return func(collection, baseIteratee(iteratee, 3));
-	}
-
-	module.exports = map;
-
-
-/***/ },
-/* 211 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var baseEach = __webpack_require__(12),
-	    isArrayLike = __webpack_require__(24);
-
-	/**
-	 * The base implementation of `_.map` without support for iteratee shorthands.
-	 *
 	 * @private
-	 * @param {Array|Object} collection The collection to iterate over.
-	 * @param {Function} iteratee The function invoked per iteration.
-	 * @returns {Array} Returns the new mapped array.
 	 */
-	function baseMap(collection, iteratee) {
-	  var index = -1,
-	      result = isArrayLike(collection) ? Array(collection.length) : [];
 
-	  baseEach(collection, function(value, key, collection) {
-	    result[++index] = iteratee(value, key, collection);
-	  });
-	  return result;
-	}
 
-	module.exports = baseMap;
+	var CacheMiddleware = exports.CacheMiddleware = function (_KinveyMiddleware) {
+	  _inherits(CacheMiddleware, _KinveyMiddleware);
 
+	  function CacheMiddleware() {
+	    var name = arguments.length <= 0 || arguments[0] === undefined ? 'Kinvey Cache Middleware' : arguments[0];
+
+	    _classCallCheck(this, CacheMiddleware);
+
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(CacheMiddleware).call(this, name));
+	  }
+
+	  _createClass(CacheMiddleware, [{
+	    key: 'openDatabase',
+	    value: function openDatabase(name) {
+	      if (!name) {
+	        throw new _errors.KinveyError('A name is required to open a database.');
+	      }
+
+	      var db = dbCache[name];
+
+	      if (!db) {
+	        db = new DB(name);
+	      }
+
+	      return db;
+	    }
+	  }, {
+	    key: 'handle',
+	    value: function () {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee12(request) {
+	        var _request, method, query, body, appKey, collection, entityId, db, data;
+
+	        return _regeneratorRuntime2.default.wrap(function _callee12$(_context12) {
+	          while (1) {
+	            switch (_context12.prev = _context12.next) {
+	              case 0:
+	                _context12.next = 2;
+	                return _get(Object.getPrototypeOf(CacheMiddleware.prototype), 'handle', this).call(this, request);
+
+	              case 2:
+	                request = _context12.sent;
+	                _request = request;
+	                method = _request.method;
+	                query = _request.query;
+	                body = _request.body;
+	                appKey = _request.appKey;
+	                collection = _request.collection;
+	                entityId = _request.entityId;
+	                db = this.openDatabase(appKey);
+	                data = void 0;
+
+	                if (!(method === _request2.RequestMethod.GET)) {
+	                  _context12.next = 36;
+	                  break;
+	                }
+
+	                if (!entityId) {
+	                  _context12.next = 31;
+	                  break;
+	                }
+
+	                if (!(entityId === '_count')) {
+	                  _context12.next = 20;
+	                  break;
+	                }
+
+	                _context12.next = 17;
+	                return db.count(collection, query);
+
+	              case 17:
+	                data = _context12.sent;
+	                _context12.next = 29;
+	                break;
+
+	              case 20:
+	                if (!(entityId === '_group')) {
+	                  _context12.next = 26;
+	                  break;
+	                }
+
+	                _context12.next = 23;
+	                return db.group(collection, body);
+
+	              case 23:
+	                data = _context12.sent;
+	                _context12.next = 29;
+	                break;
+
+	              case 26:
+	                _context12.next = 28;
+	                return db.findById(collection, request.entityId);
+
+	              case 28:
+	                data = _context12.sent;
+
+	              case 29:
+	                _context12.next = 34;
+	                break;
+
+	              case 31:
+	                _context12.next = 33;
+	                return db.find(collection, query);
+
+	              case 33:
+	                data = _context12.sent;
+
+	              case 34:
+	                _context12.next = 58;
+	                break;
+
+	              case 36:
+	                if (!(method === _request2.RequestMethod.POST || method === _request2.RequestMethod.PUT)) {
+	                  _context12.next = 42;
+	                  break;
+	                }
+
+	                _context12.next = 39;
+	                return db.save(collection, body);
+
+	              case 39:
+	                data = _context12.sent;
+	                _context12.next = 58;
+	                break;
+
+	              case 42:
+	                if (!(method === _request2.RequestMethod.DELETE)) {
+	                  _context12.next = 58;
+	                  break;
+	                }
+
+	                if (!(collection && entityId)) {
+	                  _context12.next = 49;
+	                  break;
+	                }
+
+	                _context12.next = 46;
+	                return db.removeById(collection, entityId);
+
+	              case 46:
+	                data = _context12.sent;
+	                _context12.next = 58;
+	                break;
+
+	              case 49:
+	                if (collection) {
+	                  _context12.next = 55;
+	                  break;
+	                }
+
+	                _context12.next = 52;
+	                return db.clear();
+
+	              case 52:
+	                data = _context12.sent;
+	                _context12.next = 58;
+	                break;
+
+	              case 55:
+	                _context12.next = 57;
+	                return db.remove(collection, query);
+
+	              case 57:
+	                data = _context12.sent;
+
+	              case 58:
+
+	                request.response = {
+	                  statusCode: method === _request2.RequestMethod.POST ? _response.StatusCode.Created : _response.StatusCode.Ok,
+	                  headers: {},
+	                  data: data
+	                };
+
+	                if (!data) {
+	                  request.response.statusCode = _response.StatusCode.Empty;
+	                }
+
+	                return _context12.abrupt('return', request);
+
+	              case 61:
+	              case 'end':
+	                return _context12.stop();
+	            }
+	          }
+	        }, _callee12, this);
+	      }));
+
+	      function handle(_x21) {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return handle;
+	    }()
+	  }]);
+
+	  return CacheMiddleware;
+	}(_middleware.KinveyMiddleware);
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ },
-/* 212 */
+/* 166 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.KinveyMiddleware = undefined;
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	var _middleware = __webpack_require__(158);
+
+	var _regeneratorRuntime = __webpack_require__(2);
+
+	var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	// eslint-disable-line no-unused-vars
+
+	/**
+	 * @private
+	 */
+
+	var KinveyMiddleware = exports.KinveyMiddleware = function (_Middleware) {
+	  _inherits(KinveyMiddleware, _Middleware);
+
+	  function KinveyMiddleware() {
+	    var name = arguments.length <= 0 || arguments[0] === undefined ? 'Kinvey Middleware' : arguments[0];
+
+	    _classCallCheck(this, KinveyMiddleware);
+
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(KinveyMiddleware).call(this, name));
+	  }
+
+	  _createClass(KinveyMiddleware, [{
+	    key: 'handle',
+	    value: function () {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee(request) {
+	        return _regeneratorRuntime2.default.wrap(function _callee$(_context) {
+	          while (1) {
+	            switch (_context.prev = _context.next) {
+	              case 0:
+	                return _context.abrupt('return', _get(Object.getPrototypeOf(KinveyMiddleware.prototype), 'handle', this).call(this, request));
+
+	              case 1:
+	              case 'end':
+	                return _context.stop();
+	            }
+	          }
+	        }, _callee, this);
+	      }));
+
+	      function handle(_x2) {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return handle;
+	    }()
+	  }]);
+
+	  return KinveyMiddleware;
+	}(_middleware.Middleware);
+
+/***/ },
+/* 167 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -17182,15 +14194,15 @@ var Kinvey =
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _errors = __webpack_require__(5);
+	var _errors = __webpack_require__(7);
 
-	var _request = __webpack_require__(149);
+	var _request = __webpack_require__(151);
 
-	var _assign = __webpack_require__(118);
+	var _assign = __webpack_require__(120);
 
 	var _assign2 = _interopRequireDefault(_assign);
 
-	var _result = __webpack_require__(136);
+	var _result = __webpack_require__(138);
 
 	var _result2 = _interopRequireDefault(_result);
 
@@ -17211,7 +14223,8 @@ var Kinvey =
 	  Created: 201,
 	  Empty: 204,
 	  RedirectTemporarily: 301,
-	  RedirectPermanetly: 302,
+	  RedirectPermanently: 302,
+	  NotModified: 304,
 	  NotFound: 404,
 	  ServerError: 500
 	};
@@ -17289,7 +14302,7 @@ var Kinvey =
 	  _createClass(Response, [{
 	    key: 'isSuccess',
 	    value: function isSuccess() {
-	      return this.statusCode >= 200 && this.statusCode < 300 || this.statusCode === 302;
+	      return this.statusCode >= 200 && this.statusCode < 300 || this.statusCode === StatusCode.RedirectPermanently || this.statusCode === StatusCode.NotModified;
 	    }
 	  }, {
 	    key: 'config',
@@ -17395,7 +14408,7 @@ var Kinvey =
 	        return new _errors.MissingRequestHeaderError(message, debug, code);
 	      } else if (name === 'MissingRequestParameterError') {
 	        return new _errors.MissingRequestParameterError(message, debug, code);
-	      } else if (name === 'EntityNotFound' || name === 'CollectionNotFound' || name === 'AppNotFound' || name === 'UserNotFound' || name === 'BlobNotFound' || name === 'DocumentNotFound' || code === 404) {
+	      } else if (name === 'EntityNotFound' || name === 'CollectionNotFound' || name === 'AppNotFound' || name === 'UserNotFound' || name === 'BlobNotFound' || name === 'DocumentNotFound' || code === StatusCode.NotFound) {
 	        return new _errors.NotFoundError(message, debug, code);
 	      } else if (name === 'ParameterValueOutOfRangeError') {
 	        return new _errors.ParameterValueOutOfRangeError(message, debug, code);
@@ -17409,23 +14422,1082 @@ var Kinvey =
 	}(Response);
 
 /***/ },
-/* 213 */
+/* 168 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var require;var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(process, global, module) {/*!
+	 * @overview es6-promise - a tiny implementation of Promises/A+.
+	 * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
+	 * @license   Licensed under MIT license
+	 *            See https://raw.githubusercontent.com/jakearchibald/es6-promise/master/LICENSE
+	 * @version   3.2.1
+	 */
+
+	(function() {
+	    "use strict";
+	    function lib$es6$promise$utils$$objectOrFunction(x) {
+	      return typeof x === 'function' || (typeof x === 'object' && x !== null);
+	    }
+
+	    function lib$es6$promise$utils$$isFunction(x) {
+	      return typeof x === 'function';
+	    }
+
+	    function lib$es6$promise$utils$$isMaybeThenable(x) {
+	      return typeof x === 'object' && x !== null;
+	    }
+
+	    var lib$es6$promise$utils$$_isArray;
+	    if (!Array.isArray) {
+	      lib$es6$promise$utils$$_isArray = function (x) {
+	        return Object.prototype.toString.call(x) === '[object Array]';
+	      };
+	    } else {
+	      lib$es6$promise$utils$$_isArray = Array.isArray;
+	    }
+
+	    var lib$es6$promise$utils$$isArray = lib$es6$promise$utils$$_isArray;
+	    var lib$es6$promise$asap$$len = 0;
+	    var lib$es6$promise$asap$$vertxNext;
+	    var lib$es6$promise$asap$$customSchedulerFn;
+
+	    var lib$es6$promise$asap$$asap = function asap(callback, arg) {
+	      lib$es6$promise$asap$$queue[lib$es6$promise$asap$$len] = callback;
+	      lib$es6$promise$asap$$queue[lib$es6$promise$asap$$len + 1] = arg;
+	      lib$es6$promise$asap$$len += 2;
+	      if (lib$es6$promise$asap$$len === 2) {
+	        // If len is 2, that means that we need to schedule an async flush.
+	        // If additional callbacks are queued before the queue is flushed, they
+	        // will be processed by this flush that we are scheduling.
+	        if (lib$es6$promise$asap$$customSchedulerFn) {
+	          lib$es6$promise$asap$$customSchedulerFn(lib$es6$promise$asap$$flush);
+	        } else {
+	          lib$es6$promise$asap$$scheduleFlush();
+	        }
+	      }
+	    }
+
+	    function lib$es6$promise$asap$$setScheduler(scheduleFn) {
+	      lib$es6$promise$asap$$customSchedulerFn = scheduleFn;
+	    }
+
+	    function lib$es6$promise$asap$$setAsap(asapFn) {
+	      lib$es6$promise$asap$$asap = asapFn;
+	    }
+
+	    var lib$es6$promise$asap$$browserWindow = (typeof window !== 'undefined') ? window : undefined;
+	    var lib$es6$promise$asap$$browserGlobal = lib$es6$promise$asap$$browserWindow || {};
+	    var lib$es6$promise$asap$$BrowserMutationObserver = lib$es6$promise$asap$$browserGlobal.MutationObserver || lib$es6$promise$asap$$browserGlobal.WebKitMutationObserver;
+	    var lib$es6$promise$asap$$isNode = typeof self === 'undefined' && typeof process !== 'undefined' && {}.toString.call(process) === '[object process]';
+
+	    // test for web worker but not in IE10
+	    var lib$es6$promise$asap$$isWorker = typeof Uint8ClampedArray !== 'undefined' &&
+	      typeof importScripts !== 'undefined' &&
+	      typeof MessageChannel !== 'undefined';
+
+	    // node
+	    function lib$es6$promise$asap$$useNextTick() {
+	      // node version 0.10.x displays a deprecation warning when nextTick is used recursively
+	      // see https://github.com/cujojs/when/issues/410 for details
+	      return function() {
+	        process.nextTick(lib$es6$promise$asap$$flush);
+	      };
+	    }
+
+	    // vertx
+	    function lib$es6$promise$asap$$useVertxTimer() {
+	      return function() {
+	        lib$es6$promise$asap$$vertxNext(lib$es6$promise$asap$$flush);
+	      };
+	    }
+
+	    function lib$es6$promise$asap$$useMutationObserver() {
+	      var iterations = 0;
+	      var observer = new lib$es6$promise$asap$$BrowserMutationObserver(lib$es6$promise$asap$$flush);
+	      var node = document.createTextNode('');
+	      observer.observe(node, { characterData: true });
+
+	      return function() {
+	        node.data = (iterations = ++iterations % 2);
+	      };
+	    }
+
+	    // web worker
+	    function lib$es6$promise$asap$$useMessageChannel() {
+	      var channel = new MessageChannel();
+	      channel.port1.onmessage = lib$es6$promise$asap$$flush;
+	      return function () {
+	        channel.port2.postMessage(0);
+	      };
+	    }
+
+	    function lib$es6$promise$asap$$useSetTimeout() {
+	      return function() {
+	        setTimeout(lib$es6$promise$asap$$flush, 1);
+	      };
+	    }
+
+	    var lib$es6$promise$asap$$queue = new Array(1000);
+	    function lib$es6$promise$asap$$flush() {
+	      for (var i = 0; i < lib$es6$promise$asap$$len; i+=2) {
+	        var callback = lib$es6$promise$asap$$queue[i];
+	        var arg = lib$es6$promise$asap$$queue[i+1];
+
+	        callback(arg);
+
+	        lib$es6$promise$asap$$queue[i] = undefined;
+	        lib$es6$promise$asap$$queue[i+1] = undefined;
+	      }
+
+	      lib$es6$promise$asap$$len = 0;
+	    }
+
+	    function lib$es6$promise$asap$$attemptVertx() {
+	      try {
+	        var r = require;
+	        var vertx = __webpack_require__(169);
+	        lib$es6$promise$asap$$vertxNext = vertx.runOnLoop || vertx.runOnContext;
+	        return lib$es6$promise$asap$$useVertxTimer();
+	      } catch(e) {
+	        return lib$es6$promise$asap$$useSetTimeout();
+	      }
+	    }
+
+	    var lib$es6$promise$asap$$scheduleFlush;
+	    // Decide what async method to use to triggering processing of queued callbacks:
+	    if (lib$es6$promise$asap$$isNode) {
+	      lib$es6$promise$asap$$scheduleFlush = lib$es6$promise$asap$$useNextTick();
+	    } else if (lib$es6$promise$asap$$BrowserMutationObserver) {
+	      lib$es6$promise$asap$$scheduleFlush = lib$es6$promise$asap$$useMutationObserver();
+	    } else if (lib$es6$promise$asap$$isWorker) {
+	      lib$es6$promise$asap$$scheduleFlush = lib$es6$promise$asap$$useMessageChannel();
+	    } else if (lib$es6$promise$asap$$browserWindow === undefined && "function" === 'function') {
+	      lib$es6$promise$asap$$scheduleFlush = lib$es6$promise$asap$$attemptVertx();
+	    } else {
+	      lib$es6$promise$asap$$scheduleFlush = lib$es6$promise$asap$$useSetTimeout();
+	    }
+	    function lib$es6$promise$then$$then(onFulfillment, onRejection) {
+	      var parent = this;
+
+	      var child = new this.constructor(lib$es6$promise$$internal$$noop);
+
+	      if (child[lib$es6$promise$$internal$$PROMISE_ID] === undefined) {
+	        lib$es6$promise$$internal$$makePromise(child);
+	      }
+
+	      var state = parent._state;
+
+	      if (state) {
+	        var callback = arguments[state - 1];
+	        lib$es6$promise$asap$$asap(function(){
+	          lib$es6$promise$$internal$$invokeCallback(state, child, callback, parent._result);
+	        });
+	      } else {
+	        lib$es6$promise$$internal$$subscribe(parent, child, onFulfillment, onRejection);
+	      }
+
+	      return child;
+	    }
+	    var lib$es6$promise$then$$default = lib$es6$promise$then$$then;
+	    function lib$es6$promise$promise$resolve$$resolve(object) {
+	      /*jshint validthis:true */
+	      var Constructor = this;
+
+	      if (object && typeof object === 'object' && object.constructor === Constructor) {
+	        return object;
+	      }
+
+	      var promise = new Constructor(lib$es6$promise$$internal$$noop);
+	      lib$es6$promise$$internal$$resolve(promise, object);
+	      return promise;
+	    }
+	    var lib$es6$promise$promise$resolve$$default = lib$es6$promise$promise$resolve$$resolve;
+	    var lib$es6$promise$$internal$$PROMISE_ID = Math.random().toString(36).substring(16);
+
+	    function lib$es6$promise$$internal$$noop() {}
+
+	    var lib$es6$promise$$internal$$PENDING   = void 0;
+	    var lib$es6$promise$$internal$$FULFILLED = 1;
+	    var lib$es6$promise$$internal$$REJECTED  = 2;
+
+	    var lib$es6$promise$$internal$$GET_THEN_ERROR = new lib$es6$promise$$internal$$ErrorObject();
+
+	    function lib$es6$promise$$internal$$selfFulfillment() {
+	      return new TypeError("You cannot resolve a promise with itself");
+	    }
+
+	    function lib$es6$promise$$internal$$cannotReturnOwn() {
+	      return new TypeError('A promises callback cannot return that same promise.');
+	    }
+
+	    function lib$es6$promise$$internal$$getThen(promise) {
+	      try {
+	        return promise.then;
+	      } catch(error) {
+	        lib$es6$promise$$internal$$GET_THEN_ERROR.error = error;
+	        return lib$es6$promise$$internal$$GET_THEN_ERROR;
+	      }
+	    }
+
+	    function lib$es6$promise$$internal$$tryThen(then, value, fulfillmentHandler, rejectionHandler) {
+	      try {
+	        then.call(value, fulfillmentHandler, rejectionHandler);
+	      } catch(e) {
+	        return e;
+	      }
+	    }
+
+	    function lib$es6$promise$$internal$$handleForeignThenable(promise, thenable, then) {
+	       lib$es6$promise$asap$$asap(function(promise) {
+	        var sealed = false;
+	        var error = lib$es6$promise$$internal$$tryThen(then, thenable, function(value) {
+	          if (sealed) { return; }
+	          sealed = true;
+	          if (thenable !== value) {
+	            lib$es6$promise$$internal$$resolve(promise, value);
+	          } else {
+	            lib$es6$promise$$internal$$fulfill(promise, value);
+	          }
+	        }, function(reason) {
+	          if (sealed) { return; }
+	          sealed = true;
+
+	          lib$es6$promise$$internal$$reject(promise, reason);
+	        }, 'Settle: ' + (promise._label || ' unknown promise'));
+
+	        if (!sealed && error) {
+	          sealed = true;
+	          lib$es6$promise$$internal$$reject(promise, error);
+	        }
+	      }, promise);
+	    }
+
+	    function lib$es6$promise$$internal$$handleOwnThenable(promise, thenable) {
+	      if (thenable._state === lib$es6$promise$$internal$$FULFILLED) {
+	        lib$es6$promise$$internal$$fulfill(promise, thenable._result);
+	      } else if (thenable._state === lib$es6$promise$$internal$$REJECTED) {
+	        lib$es6$promise$$internal$$reject(promise, thenable._result);
+	      } else {
+	        lib$es6$promise$$internal$$subscribe(thenable, undefined, function(value) {
+	          lib$es6$promise$$internal$$resolve(promise, value);
+	        }, function(reason) {
+	          lib$es6$promise$$internal$$reject(promise, reason);
+	        });
+	      }
+	    }
+
+	    function lib$es6$promise$$internal$$handleMaybeThenable(promise, maybeThenable, then) {
+	      if (maybeThenable.constructor === promise.constructor &&
+	          then === lib$es6$promise$then$$default &&
+	          constructor.resolve === lib$es6$promise$promise$resolve$$default) {
+	        lib$es6$promise$$internal$$handleOwnThenable(promise, maybeThenable);
+	      } else {
+	        if (then === lib$es6$promise$$internal$$GET_THEN_ERROR) {
+	          lib$es6$promise$$internal$$reject(promise, lib$es6$promise$$internal$$GET_THEN_ERROR.error);
+	        } else if (then === undefined) {
+	          lib$es6$promise$$internal$$fulfill(promise, maybeThenable);
+	        } else if (lib$es6$promise$utils$$isFunction(then)) {
+	          lib$es6$promise$$internal$$handleForeignThenable(promise, maybeThenable, then);
+	        } else {
+	          lib$es6$promise$$internal$$fulfill(promise, maybeThenable);
+	        }
+	      }
+	    }
+
+	    function lib$es6$promise$$internal$$resolve(promise, value) {
+	      if (promise === value) {
+	        lib$es6$promise$$internal$$reject(promise, lib$es6$promise$$internal$$selfFulfillment());
+	      } else if (lib$es6$promise$utils$$objectOrFunction(value)) {
+	        lib$es6$promise$$internal$$handleMaybeThenable(promise, value, lib$es6$promise$$internal$$getThen(value));
+	      } else {
+	        lib$es6$promise$$internal$$fulfill(promise, value);
+	      }
+	    }
+
+	    function lib$es6$promise$$internal$$publishRejection(promise) {
+	      if (promise._onerror) {
+	        promise._onerror(promise._result);
+	      }
+
+	      lib$es6$promise$$internal$$publish(promise);
+	    }
+
+	    function lib$es6$promise$$internal$$fulfill(promise, value) {
+	      if (promise._state !== lib$es6$promise$$internal$$PENDING) { return; }
+
+	      promise._result = value;
+	      promise._state = lib$es6$promise$$internal$$FULFILLED;
+
+	      if (promise._subscribers.length !== 0) {
+	        lib$es6$promise$asap$$asap(lib$es6$promise$$internal$$publish, promise);
+	      }
+	    }
+
+	    function lib$es6$promise$$internal$$reject(promise, reason) {
+	      if (promise._state !== lib$es6$promise$$internal$$PENDING) { return; }
+	      promise._state = lib$es6$promise$$internal$$REJECTED;
+	      promise._result = reason;
+
+	      lib$es6$promise$asap$$asap(lib$es6$promise$$internal$$publishRejection, promise);
+	    }
+
+	    function lib$es6$promise$$internal$$subscribe(parent, child, onFulfillment, onRejection) {
+	      var subscribers = parent._subscribers;
+	      var length = subscribers.length;
+
+	      parent._onerror = null;
+
+	      subscribers[length] = child;
+	      subscribers[length + lib$es6$promise$$internal$$FULFILLED] = onFulfillment;
+	      subscribers[length + lib$es6$promise$$internal$$REJECTED]  = onRejection;
+
+	      if (length === 0 && parent._state) {
+	        lib$es6$promise$asap$$asap(lib$es6$promise$$internal$$publish, parent);
+	      }
+	    }
+
+	    function lib$es6$promise$$internal$$publish(promise) {
+	      var subscribers = promise._subscribers;
+	      var settled = promise._state;
+
+	      if (subscribers.length === 0) { return; }
+
+	      var child, callback, detail = promise._result;
+
+	      for (var i = 0; i < subscribers.length; i += 3) {
+	        child = subscribers[i];
+	        callback = subscribers[i + settled];
+
+	        if (child) {
+	          lib$es6$promise$$internal$$invokeCallback(settled, child, callback, detail);
+	        } else {
+	          callback(detail);
+	        }
+	      }
+
+	      promise._subscribers.length = 0;
+	    }
+
+	    function lib$es6$promise$$internal$$ErrorObject() {
+	      this.error = null;
+	    }
+
+	    var lib$es6$promise$$internal$$TRY_CATCH_ERROR = new lib$es6$promise$$internal$$ErrorObject();
+
+	    function lib$es6$promise$$internal$$tryCatch(callback, detail) {
+	      try {
+	        return callback(detail);
+	      } catch(e) {
+	        lib$es6$promise$$internal$$TRY_CATCH_ERROR.error = e;
+	        return lib$es6$promise$$internal$$TRY_CATCH_ERROR;
+	      }
+	    }
+
+	    function lib$es6$promise$$internal$$invokeCallback(settled, promise, callback, detail) {
+	      var hasCallback = lib$es6$promise$utils$$isFunction(callback),
+	          value, error, succeeded, failed;
+
+	      if (hasCallback) {
+	        value = lib$es6$promise$$internal$$tryCatch(callback, detail);
+
+	        if (value === lib$es6$promise$$internal$$TRY_CATCH_ERROR) {
+	          failed = true;
+	          error = value.error;
+	          value = null;
+	        } else {
+	          succeeded = true;
+	        }
+
+	        if (promise === value) {
+	          lib$es6$promise$$internal$$reject(promise, lib$es6$promise$$internal$$cannotReturnOwn());
+	          return;
+	        }
+
+	      } else {
+	        value = detail;
+	        succeeded = true;
+	      }
+
+	      if (promise._state !== lib$es6$promise$$internal$$PENDING) {
+	        // noop
+	      } else if (hasCallback && succeeded) {
+	        lib$es6$promise$$internal$$resolve(promise, value);
+	      } else if (failed) {
+	        lib$es6$promise$$internal$$reject(promise, error);
+	      } else if (settled === lib$es6$promise$$internal$$FULFILLED) {
+	        lib$es6$promise$$internal$$fulfill(promise, value);
+	      } else if (settled === lib$es6$promise$$internal$$REJECTED) {
+	        lib$es6$promise$$internal$$reject(promise, value);
+	      }
+	    }
+
+	    function lib$es6$promise$$internal$$initializePromise(promise, resolver) {
+	      try {
+	        resolver(function resolvePromise(value){
+	          lib$es6$promise$$internal$$resolve(promise, value);
+	        }, function rejectPromise(reason) {
+	          lib$es6$promise$$internal$$reject(promise, reason);
+	        });
+	      } catch(e) {
+	        lib$es6$promise$$internal$$reject(promise, e);
+	      }
+	    }
+
+	    var lib$es6$promise$$internal$$id = 0;
+	    function lib$es6$promise$$internal$$nextId() {
+	      return lib$es6$promise$$internal$$id++;
+	    }
+
+	    function lib$es6$promise$$internal$$makePromise(promise) {
+	      promise[lib$es6$promise$$internal$$PROMISE_ID] = lib$es6$promise$$internal$$id++;
+	      promise._state = undefined;
+	      promise._result = undefined;
+	      promise._subscribers = [];
+	    }
+
+	    function lib$es6$promise$promise$all$$all(entries) {
+	      return new lib$es6$promise$enumerator$$default(this, entries).promise;
+	    }
+	    var lib$es6$promise$promise$all$$default = lib$es6$promise$promise$all$$all;
+	    function lib$es6$promise$promise$race$$race(entries) {
+	      /*jshint validthis:true */
+	      var Constructor = this;
+
+	      if (!lib$es6$promise$utils$$isArray(entries)) {
+	        return new Constructor(function(resolve, reject) {
+	          reject(new TypeError('You must pass an array to race.'));
+	        });
+	      } else {
+	        return new Constructor(function(resolve, reject) {
+	          var length = entries.length;
+	          for (var i = 0; i < length; i++) {
+	            Constructor.resolve(entries[i]).then(resolve, reject);
+	          }
+	        });
+	      }
+	    }
+	    var lib$es6$promise$promise$race$$default = lib$es6$promise$promise$race$$race;
+	    function lib$es6$promise$promise$reject$$reject(reason) {
+	      /*jshint validthis:true */
+	      var Constructor = this;
+	      var promise = new Constructor(lib$es6$promise$$internal$$noop);
+	      lib$es6$promise$$internal$$reject(promise, reason);
+	      return promise;
+	    }
+	    var lib$es6$promise$promise$reject$$default = lib$es6$promise$promise$reject$$reject;
+
+
+	    function lib$es6$promise$promise$$needsResolver() {
+	      throw new TypeError('You must pass a resolver function as the first argument to the promise constructor');
+	    }
+
+	    function lib$es6$promise$promise$$needsNew() {
+	      throw new TypeError("Failed to construct 'Promise': Please use the 'new' operator, this object constructor cannot be called as a function.");
+	    }
+
+	    var lib$es6$promise$promise$$default = lib$es6$promise$promise$$Promise;
+	    /**
+	      Promise objects represent the eventual result of an asynchronous operation. The
+	      primary way of interacting with a promise is through its `then` method, which
+	      registers callbacks to receive either a promise's eventual value or the reason
+	      why the promise cannot be fulfilled.
+
+	      Terminology
+	      -----------
+
+	      - `promise` is an object or function with a `then` method whose behavior conforms to this specification.
+	      - `thenable` is an object or function that defines a `then` method.
+	      - `value` is any legal JavaScript value (including undefined, a thenable, or a promise).
+	      - `exception` is a value that is thrown using the throw statement.
+	      - `reason` is a value that indicates why a promise was rejected.
+	      - `settled` the final resting state of a promise, fulfilled or rejected.
+
+	      A promise can be in one of three states: pending, fulfilled, or rejected.
+
+	      Promises that are fulfilled have a fulfillment value and are in the fulfilled
+	      state.  Promises that are rejected have a rejection reason and are in the
+	      rejected state.  A fulfillment value is never a thenable.
+
+	      Promises can also be said to *resolve* a value.  If this value is also a
+	      promise, then the original promise's settled state will match the value's
+	      settled state.  So a promise that *resolves* a promise that rejects will
+	      itself reject, and a promise that *resolves* a promise that fulfills will
+	      itself fulfill.
+
+
+	      Basic Usage:
+	      ------------
+
+	      ```js
+	      var promise = new Promise(function(resolve, reject) {
+	        // on success
+	        resolve(value);
+
+	        // on failure
+	        reject(reason);
+	      });
+
+	      promise.then(function(value) {
+	        // on fulfillment
+	      }, function(reason) {
+	        // on rejection
+	      });
+	      ```
+
+	      Advanced Usage:
+	      ---------------
+
+	      Promises shine when abstracting away asynchronous interactions such as
+	      `XMLHttpRequest`s.
+
+	      ```js
+	      function getJSON(url) {
+	        return new Promise(function(resolve, reject){
+	          var xhr = new XMLHttpRequest();
+
+	          xhr.open('GET', url);
+	          xhr.onreadystatechange = handler;
+	          xhr.responseType = 'json';
+	          xhr.setRequestHeader('Accept', 'application/json');
+	          xhr.send();
+
+	          function handler() {
+	            if (this.readyState === this.DONE) {
+	              if (this.status === 200) {
+	                resolve(this.response);
+	              } else {
+	                reject(new Error('getJSON: `' + url + '` failed with status: [' + this.status + ']'));
+	              }
+	            }
+	          };
+	        });
+	      }
+
+	      getJSON('/posts.json').then(function(json) {
+	        // on fulfillment
+	      }, function(reason) {
+	        // on rejection
+	      });
+	      ```
+
+	      Unlike callbacks, promises are great composable primitives.
+
+	      ```js
+	      Promise.all([
+	        getJSON('/posts'),
+	        getJSON('/comments')
+	      ]).then(function(values){
+	        values[0] // => postsJSON
+	        values[1] // => commentsJSON
+
+	        return values;
+	      });
+	      ```
+
+	      @class Promise
+	      @param {function} resolver
+	      Useful for tooling.
+	      @constructor
+	    */
+	    function lib$es6$promise$promise$$Promise(resolver) {
+	      this[lib$es6$promise$$internal$$PROMISE_ID] = lib$es6$promise$$internal$$nextId();
+	      this._result = this._state = undefined;
+	      this._subscribers = [];
+
+	      if (lib$es6$promise$$internal$$noop !== resolver) {
+	        typeof resolver !== 'function' && lib$es6$promise$promise$$needsResolver();
+	        this instanceof lib$es6$promise$promise$$Promise ? lib$es6$promise$$internal$$initializePromise(this, resolver) : lib$es6$promise$promise$$needsNew();
+	      }
+	    }
+
+	    lib$es6$promise$promise$$Promise.all = lib$es6$promise$promise$all$$default;
+	    lib$es6$promise$promise$$Promise.race = lib$es6$promise$promise$race$$default;
+	    lib$es6$promise$promise$$Promise.resolve = lib$es6$promise$promise$resolve$$default;
+	    lib$es6$promise$promise$$Promise.reject = lib$es6$promise$promise$reject$$default;
+	    lib$es6$promise$promise$$Promise._setScheduler = lib$es6$promise$asap$$setScheduler;
+	    lib$es6$promise$promise$$Promise._setAsap = lib$es6$promise$asap$$setAsap;
+	    lib$es6$promise$promise$$Promise._asap = lib$es6$promise$asap$$asap;
+
+	    lib$es6$promise$promise$$Promise.prototype = {
+	      constructor: lib$es6$promise$promise$$Promise,
+
+	    /**
+	      The primary way of interacting with a promise is through its `then` method,
+	      which registers callbacks to receive either a promise's eventual value or the
+	      reason why the promise cannot be fulfilled.
+
+	      ```js
+	      findUser().then(function(user){
+	        // user is available
+	      }, function(reason){
+	        // user is unavailable, and you are given the reason why
+	      });
+	      ```
+
+	      Chaining
+	      --------
+
+	      The return value of `then` is itself a promise.  This second, 'downstream'
+	      promise is resolved with the return value of the first promise's fulfillment
+	      or rejection handler, or rejected if the handler throws an exception.
+
+	      ```js
+	      findUser().then(function (user) {
+	        return user.name;
+	      }, function (reason) {
+	        return 'default name';
+	      }).then(function (userName) {
+	        // If `findUser` fulfilled, `userName` will be the user's name, otherwise it
+	        // will be `'default name'`
+	      });
+
+	      findUser().then(function (user) {
+	        throw new Error('Found user, but still unhappy');
+	      }, function (reason) {
+	        throw new Error('`findUser` rejected and we're unhappy');
+	      }).then(function (value) {
+	        // never reached
+	      }, function (reason) {
+	        // if `findUser` fulfilled, `reason` will be 'Found user, but still unhappy'.
+	        // If `findUser` rejected, `reason` will be '`findUser` rejected and we're unhappy'.
+	      });
+	      ```
+	      If the downstream promise does not specify a rejection handler, rejection reasons will be propagated further downstream.
+
+	      ```js
+	      findUser().then(function (user) {
+	        throw new PedagogicalException('Upstream error');
+	      }).then(function (value) {
+	        // never reached
+	      }).then(function (value) {
+	        // never reached
+	      }, function (reason) {
+	        // The `PedgagocialException` is propagated all the way down to here
+	      });
+	      ```
+
+	      Assimilation
+	      ------------
+
+	      Sometimes the value you want to propagate to a downstream promise can only be
+	      retrieved asynchronously. This can be achieved by returning a promise in the
+	      fulfillment or rejection handler. The downstream promise will then be pending
+	      until the returned promise is settled. This is called *assimilation*.
+
+	      ```js
+	      findUser().then(function (user) {
+	        return findCommentsByAuthor(user);
+	      }).then(function (comments) {
+	        // The user's comments are now available
+	      });
+	      ```
+
+	      If the assimliated promise rejects, then the downstream promise will also reject.
+
+	      ```js
+	      findUser().then(function (user) {
+	        return findCommentsByAuthor(user);
+	      }).then(function (comments) {
+	        // If `findCommentsByAuthor` fulfills, we'll have the value here
+	      }, function (reason) {
+	        // If `findCommentsByAuthor` rejects, we'll have the reason here
+	      });
+	      ```
+
+	      Simple Example
+	      --------------
+
+	      Synchronous Example
+
+	      ```javascript
+	      var result;
+
+	      try {
+	        result = findResult();
+	        // success
+	      } catch(reason) {
+	        // failure
+	      }
+	      ```
+
+	      Errback Example
+
+	      ```js
+	      findResult(function(result, err){
+	        if (err) {
+	          // failure
+	        } else {
+	          // success
+	        }
+	      });
+	      ```
+
+	      Promise Example;
+
+	      ```javascript
+	      findResult().then(function(result){
+	        // success
+	      }, function(reason){
+	        // failure
+	      });
+	      ```
+
+	      Advanced Example
+	      --------------
+
+	      Synchronous Example
+
+	      ```javascript
+	      var author, books;
+
+	      try {
+	        author = findAuthor();
+	        books  = findBooksByAuthor(author);
+	        // success
+	      } catch(reason) {
+	        // failure
+	      }
+	      ```
+
+	      Errback Example
+
+	      ```js
+
+	      function foundBooks(books) {
+
+	      }
+
+	      function failure(reason) {
+
+	      }
+
+	      findAuthor(function(author, err){
+	        if (err) {
+	          failure(err);
+	          // failure
+	        } else {
+	          try {
+	            findBoooksByAuthor(author, function(books, err) {
+	              if (err) {
+	                failure(err);
+	              } else {
+	                try {
+	                  foundBooks(books);
+	                } catch(reason) {
+	                  failure(reason);
+	                }
+	              }
+	            });
+	          } catch(error) {
+	            failure(err);
+	          }
+	          // success
+	        }
+	      });
+	      ```
+
+	      Promise Example;
+
+	      ```javascript
+	      findAuthor().
+	        then(findBooksByAuthor).
+	        then(function(books){
+	          // found books
+	      }).catch(function(reason){
+	        // something went wrong
+	      });
+	      ```
+
+	      @method then
+	      @param {Function} onFulfilled
+	      @param {Function} onRejected
+	      Useful for tooling.
+	      @return {Promise}
+	    */
+	      then: lib$es6$promise$then$$default,
+
+	    /**
+	      `catch` is simply sugar for `then(undefined, onRejection)` which makes it the same
+	      as the catch block of a try/catch statement.
+
+	      ```js
+	      function findAuthor(){
+	        throw new Error('couldn't find that author');
+	      }
+
+	      // synchronous
+	      try {
+	        findAuthor();
+	      } catch(reason) {
+	        // something went wrong
+	      }
+
+	      // async with promises
+	      findAuthor().catch(function(reason){
+	        // something went wrong
+	      });
+	      ```
+
+	      @method catch
+	      @param {Function} onRejection
+	      Useful for tooling.
+	      @return {Promise}
+	    */
+	      'catch': function(onRejection) {
+	        return this.then(null, onRejection);
+	      }
+	    };
+	    var lib$es6$promise$enumerator$$default = lib$es6$promise$enumerator$$Enumerator;
+	    function lib$es6$promise$enumerator$$Enumerator(Constructor, input) {
+	      this._instanceConstructor = Constructor;
+	      this.promise = new Constructor(lib$es6$promise$$internal$$noop);
+
+	      if (!this.promise[lib$es6$promise$$internal$$PROMISE_ID]) {
+	        lib$es6$promise$$internal$$makePromise(this.promise);
+	      }
+
+	      if (lib$es6$promise$utils$$isArray(input)) {
+	        this._input     = input;
+	        this.length     = input.length;
+	        this._remaining = input.length;
+
+	        this._result = new Array(this.length);
+
+	        if (this.length === 0) {
+	          lib$es6$promise$$internal$$fulfill(this.promise, this._result);
+	        } else {
+	          this.length = this.length || 0;
+	          this._enumerate();
+	          if (this._remaining === 0) {
+	            lib$es6$promise$$internal$$fulfill(this.promise, this._result);
+	          }
+	        }
+	      } else {
+	        lib$es6$promise$$internal$$reject(this.promise, lib$es6$promise$enumerator$$validationError());
+	      }
+	    }
+
+	    function lib$es6$promise$enumerator$$validationError() {
+	      return new Error('Array Methods must be provided an Array');
+	    }
+
+	    lib$es6$promise$enumerator$$Enumerator.prototype._enumerate = function() {
+	      var length  = this.length;
+	      var input   = this._input;
+
+	      for (var i = 0; this._state === lib$es6$promise$$internal$$PENDING && i < length; i++) {
+	        this._eachEntry(input[i], i);
+	      }
+	    };
+
+	    lib$es6$promise$enumerator$$Enumerator.prototype._eachEntry = function(entry, i) {
+	      var c = this._instanceConstructor;
+	      var resolve = c.resolve;
+
+	      if (resolve === lib$es6$promise$promise$resolve$$default) {
+	        var then = lib$es6$promise$$internal$$getThen(entry);
+
+	        if (then === lib$es6$promise$then$$default &&
+	            entry._state !== lib$es6$promise$$internal$$PENDING) {
+	          this._settledAt(entry._state, i, entry._result);
+	        } else if (typeof then !== 'function') {
+	          this._remaining--;
+	          this._result[i] = entry;
+	        } else if (c === lib$es6$promise$promise$$default) {
+	          var promise = new c(lib$es6$promise$$internal$$noop);
+	          lib$es6$promise$$internal$$handleMaybeThenable(promise, entry, then);
+	          this._willSettleAt(promise, i);
+	        } else {
+	          this._willSettleAt(new c(function(resolve) { resolve(entry); }), i);
+	        }
+	      } else {
+	        this._willSettleAt(resolve(entry), i);
+	      }
+	    };
+
+	    lib$es6$promise$enumerator$$Enumerator.prototype._settledAt = function(state, i, value) {
+	      var promise = this.promise;
+
+	      if (promise._state === lib$es6$promise$$internal$$PENDING) {
+	        this._remaining--;
+
+	        if (state === lib$es6$promise$$internal$$REJECTED) {
+	          lib$es6$promise$$internal$$reject(promise, value);
+	        } else {
+	          this._result[i] = value;
+	        }
+	      }
+
+	      if (this._remaining === 0) {
+	        lib$es6$promise$$internal$$fulfill(promise, this._result);
+	      }
+	    };
+
+	    lib$es6$promise$enumerator$$Enumerator.prototype._willSettleAt = function(promise, i) {
+	      var enumerator = this;
+
+	      lib$es6$promise$$internal$$subscribe(promise, undefined, function(value) {
+	        enumerator._settledAt(lib$es6$promise$$internal$$FULFILLED, i, value);
+	      }, function(reason) {
+	        enumerator._settledAt(lib$es6$promise$$internal$$REJECTED, i, reason);
+	      });
+	    };
+	    function lib$es6$promise$polyfill$$polyfill() {
+	      var local;
+
+	      if (typeof global !== 'undefined') {
+	          local = global;
+	      } else if (typeof self !== 'undefined') {
+	          local = self;
+	      } else {
+	          try {
+	              local = Function('return this')();
+	          } catch (e) {
+	              throw new Error('polyfill failed because global object is unavailable in this environment');
+	          }
+	      }
+
+	      var P = local.Promise;
+
+	      if (P && Object.prototype.toString.call(P.resolve()) === '[object Promise]' && !P.cast) {
+	        return;
+	      }
+
+	      local.Promise = lib$es6$promise$promise$$default;
+	    }
+	    var lib$es6$promise$polyfill$$default = lib$es6$promise$polyfill$$polyfill;
+
+	    var lib$es6$promise$umd$$ES6Promise = {
+	      'Promise': lib$es6$promise$promise$$default,
+	      'polyfill': lib$es6$promise$polyfill$$default
+	    };
+
+	    /* global define:true module:true window: true */
+	    if ("function" === 'function' && __webpack_require__(170)['amd']) {
+	      !(__WEBPACK_AMD_DEFINE_RESULT__ = function() { return lib$es6$promise$umd$$ES6Promise; }.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	    } else if (typeof module !== 'undefined' && module['exports']) {
+	      module['exports'] = lib$es6$promise$umd$$ES6Promise;
+	    } else if (typeof this !== 'undefined') {
+	      this['ES6Promise'] = lib$es6$promise$umd$$ES6Promise;
+	    }
+
+	    lib$es6$promise$polyfill$$default();
+	}).call(this);
+
+
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), (function() { return this; }()), __webpack_require__(134)(module)))
+
+/***/ },
+/* 169 */
+/***/ function(module, exports) {
+
+	/* (ignored) */
+
+/***/ },
+/* 170 */
+/***/ function(module, exports) {
+
+	module.exports = function() { throw new Error("define cannot be used indirect"); };
+
+
+/***/ },
+/* 171 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	/**
+	 * Provides in-memory cache.
+	 *
+	 * @name MemoryCache
+	 * @constructor
+	 */
+	function MemoryCache() {
+	    this._cache = createMap();
+	    this._timeouts = createMap();
+	}
+
+	/**
+	 * Returns cache value for the specified key.
+	 *
+	 * @param {String} key
+	 * @returns {*} Value or `undefined` if value does not exist.
+	 */
+	MemoryCache.prototype.get = function (key) {
+	    return this._cache[key];
+	};
+
+	/**
+	 * Assigns value for the specified key.
+	 *
+	 * @param {String} key
+	 * @param {*} value
+	 * @param {Number} [expireTime=0] The length of time in seconds. After this time has expired, the
+	 *      value will be automatically deleted. 0 means that time never expire.
+	 */
+	MemoryCache.prototype.set = function (key, value, expireTime) {
+	    this.delete(key);
+	    this._cache[key] = value;
+	    if (expireTime) {
+	        this._timeouts[key] = setTimeout(this.delete.bind(this, key), expireTime * 1000);
+	    }
+	};
+
+	/**
+	 * Deletes value for the specified key.
+	 *
+	 * @param {String} key
+	 */
+	MemoryCache.prototype.delete = function (key) {
+	    delete this._cache[key];
+	    if (key in this._timeouts) {
+	        clearTimeout(this._timeouts[key]);
+	        delete this._timeouts[key];
+	    }
+	};
+
+	/**
+	 * Clears the whole cache storage.
+	 */
+	MemoryCache.prototype.clear = function () {
+	    this._cache = createMap();
+	    for (var key in this._timeouts) {
+	        clearTimeout(this._timeouts[key]);
+	    }
+	    this._timeouts = createMap();
+	};
+
+	/**
+	 * Creates a new object without a prototype. This object is useful for lookup without having to
+	 * guard against prototypically inherited properties via hasOwnProperty.
+	 *
+	 * @returns {Object}
+	 */
+	function createMap() {
+	    return Object.create(null);
+	}
+
+	module.exports = MemoryCache;
+
+
+/***/ },
+/* 172 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {module.exports = process.env.PROMISE_QUEUE_COVERAGE ?
-	    __webpack_require__(214) :
-	    __webpack_require__(215);
+	    __webpack_require__(173) :
+	    __webpack_require__(174);
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ },
-/* 214 */
+/* 173 */
 /***/ function(module, exports) {
 
 	
 
 /***/ },
-/* 215 */
+/* 174 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/* global define, Promise */
@@ -17609,93 +15681,398 @@ var Kinvey =
 
 
 /***/ },
-/* 216 */
+/* 175 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var arrayReduce = __webpack_require__(186),
-	    baseEach = __webpack_require__(12),
-	    baseIteratee = __webpack_require__(36),
-	    baseReduce = __webpack_require__(217),
-	    isArray = __webpack_require__(31);
+	var arrayMap = __webpack_require__(176),
+	    baseIteratee = __webpack_require__(38),
+	    baseMap = __webpack_require__(177),
+	    isArray = __webpack_require__(33);
 
 	/**
-	 * Reduces `collection` to a value which is the accumulated result of running
-	 * each element in `collection` thru `iteratee`, where each successive
-	 * invocation is supplied the return value of the previous. If `accumulator`
-	 * is not given, the first element of `collection` is used as the initial
-	 * value. The iteratee is invoked with four arguments:
-	 * (accumulator, value, index|key, collection).
+	 * Creates an array of values by running each element in `collection` thru
+	 * `iteratee`. The iteratee is invoked with three arguments:
+	 * (value, index|key, collection).
 	 *
 	 * Many lodash methods are guarded to work as iteratees for methods like
-	 * `_.reduce`, `_.reduceRight`, and `_.transform`.
+	 * `_.every`, `_.filter`, `_.map`, `_.mapValues`, `_.reject`, and `_.some`.
 	 *
 	 * The guarded methods are:
-	 * `assign`, `defaults`, `defaultsDeep`, `includes`, `merge`, `orderBy`,
-	 * and `sortBy`
+	 * `ary`, `chunk`, `curry`, `curryRight`, `drop`, `dropRight`, `every`,
+	 * `fill`, `invert`, `parseInt`, `random`, `range`, `rangeRight`, `repeat`,
+	 * `sampleSize`, `slice`, `some`, `sortBy`, `split`, `take`, `takeRight`,
+	 * `template`, `trim`, `trimEnd`, `trimStart`, and `words`
 	 *
 	 * @static
 	 * @memberOf _
 	 * @since 0.1.0
 	 * @category Collection
 	 * @param {Array|Object} collection The collection to iterate over.
-	 * @param {Function} [iteratee=_.identity] The function invoked per iteration.
-	 * @param {*} [accumulator] The initial value.
-	 * @returns {*} Returns the accumulated value.
-	 * @see _.reduceRight
+	 * @param {Array|Function|Object|string} [iteratee=_.identity]
+	 *  The function invoked per iteration.
+	 * @returns {Array} Returns the new mapped array.
 	 * @example
 	 *
-	 * _.reduce([1, 2], function(sum, n) {
-	 *   return sum + n;
-	 * }, 0);
-	 * // => 3
+	 * function square(n) {
+	 *   return n * n;
+	 * }
 	 *
-	 * _.reduce({ 'a': 1, 'b': 2, 'c': 1 }, function(result, value, key) {
-	 *   (result[value] || (result[value] = [])).push(key);
-	 *   return result;
-	 * }, {});
-	 * // => { '1': ['a', 'c'], '2': ['b'] } (iteration order is not guaranteed)
+	 * _.map([4, 8], square);
+	 * // => [16, 64]
+	 *
+	 * _.map({ 'a': 4, 'b': 8 }, square);
+	 * // => [16, 64] (iteration order is not guaranteed)
+	 *
+	 * var users = [
+	 *   { 'user': 'barney' },
+	 *   { 'user': 'fred' }
+	 * ];
+	 *
+	 * // The `_.property` iteratee shorthand.
+	 * _.map(users, 'user');
+	 * // => ['barney', 'fred']
 	 */
-	function reduce(collection, iteratee, accumulator) {
-	  var func = isArray(collection) ? arrayReduce : baseReduce,
-	      initAccum = arguments.length < 3;
-
-	  return func(collection, baseIteratee(iteratee, 4), accumulator, initAccum, baseEach);
+	function map(collection, iteratee) {
+	  var func = isArray(collection) ? arrayMap : baseMap;
+	  return func(collection, baseIteratee(iteratee, 3));
 	}
 
-	module.exports = reduce;
+	module.exports = map;
 
 
 /***/ },
-/* 217 */
+/* 176 */
 /***/ function(module, exports) {
 
 	/**
-	 * The base implementation of `_.reduce` and `_.reduceRight`, without support
-	 * for iteratee shorthands, which iterates over `collection` using `eachFunc`.
+	 * A specialized version of `_.map` for arrays without support for iteratee
+	 * shorthands.
+	 *
+	 * @private
+	 * @param {Array} [array] The array to iterate over.
+	 * @param {Function} iteratee The function invoked per iteration.
+	 * @returns {Array} Returns the new mapped array.
+	 */
+	function arrayMap(array, iteratee) {
+	  var index = -1,
+	      length = array ? array.length : 0,
+	      result = Array(length);
+
+	  while (++index < length) {
+	    result[index] = iteratee(array[index], index, array);
+	  }
+	  return result;
+	}
+
+	module.exports = arrayMap;
+
+
+/***/ },
+/* 177 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var baseEach = __webpack_require__(14),
+	    isArrayLike = __webpack_require__(26);
+
+	/**
+	 * The base implementation of `_.map` without support for iteratee shorthands.
 	 *
 	 * @private
 	 * @param {Array|Object} collection The collection to iterate over.
 	 * @param {Function} iteratee The function invoked per iteration.
-	 * @param {*} accumulator The initial value.
-	 * @param {boolean} initAccum Specify using the first or last element of
-	 *  `collection` as the initial value.
-	 * @param {Function} eachFunc The function to iterate over `collection`.
-	 * @returns {*} Returns the accumulated value.
+	 * @returns {Array} Returns the new mapped array.
 	 */
-	function baseReduce(collection, iteratee, accumulator, initAccum, eachFunc) {
-	  eachFunc(collection, function(value, index, collection) {
-	    accumulator = initAccum
-	      ? (initAccum = false, value)
-	      : iteratee(accumulator, value, index, collection);
+	function baseMap(collection, iteratee) {
+	  var index = -1,
+	      result = isArrayLike(collection) ? Array(collection.length) : [];
+
+	  baseEach(collection, function(value, key, collection) {
+	    result[++index] = iteratee(value, key, collection);
+	  });
+	  return result;
+	}
+
+	module.exports = baseMap;
+
+
+/***/ },
+/* 178 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var createAggregator = __webpack_require__(179);
+
+	/**
+	 * Creates an object composed of keys generated from the results of running
+	 * each element of `collection` thru `iteratee`. The corresponding value of
+	 * each key is the last element responsible for generating the key. The
+	 * iteratee is invoked with one argument: (value).
+	 *
+	 * @static
+	 * @memberOf _
+	 * @since 4.0.0
+	 * @category Collection
+	 * @param {Array|Object} collection The collection to iterate over.
+	 * @param {Array|Function|Object|string} [iteratee=_.identity]
+	 *  The iteratee to transform keys.
+	 * @returns {Object} Returns the composed aggregate object.
+	 * @example
+	 *
+	 * var array = [
+	 *   { 'dir': 'left', 'code': 97 },
+	 *   { 'dir': 'right', 'code': 100 }
+	 * ];
+	 *
+	 * _.keyBy(array, function(o) {
+	 *   return String.fromCharCode(o.code);
+	 * });
+	 * // => { 'a': { 'dir': 'left', 'code': 97 }, 'd': { 'dir': 'right', 'code': 100 } }
+	 *
+	 * _.keyBy(array, 'dir');
+	 * // => { 'left': { 'dir': 'left', 'code': 97 }, 'right': { 'dir': 'right', 'code': 100 } }
+	 */
+	var keyBy = createAggregator(function(result, value, key) {
+	  result[key] = value;
+	});
+
+	module.exports = keyBy;
+
+
+/***/ },
+/* 179 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var arrayAggregator = __webpack_require__(180),
+	    baseAggregator = __webpack_require__(181),
+	    baseIteratee = __webpack_require__(38),
+	    isArray = __webpack_require__(33);
+
+	/**
+	 * Creates a function like `_.groupBy`.
+	 *
+	 * @private
+	 * @param {Function} setter The function to set accumulator values.
+	 * @param {Function} [initializer] The accumulator object initializer.
+	 * @returns {Function} Returns the new aggregator function.
+	 */
+	function createAggregator(setter, initializer) {
+	  return function(collection, iteratee) {
+	    var func = isArray(collection) ? arrayAggregator : baseAggregator,
+	        accumulator = initializer ? initializer() : {};
+
+	    return func(collection, setter, baseIteratee(iteratee), accumulator);
+	  };
+	}
+
+	module.exports = createAggregator;
+
+
+/***/ },
+/* 180 */
+/***/ function(module, exports) {
+
+	/**
+	 * A specialized version of `baseAggregator` for arrays.
+	 *
+	 * @private
+	 * @param {Array} [array] The array to iterate over.
+	 * @param {Function} setter The function to set `accumulator` values.
+	 * @param {Function} iteratee The iteratee to transform keys.
+	 * @param {Object} accumulator The initial aggregated object.
+	 * @returns {Function} Returns `accumulator`.
+	 */
+	function arrayAggregator(array, setter, iteratee, accumulator) {
+	  var index = -1,
+	      length = array ? array.length : 0;
+
+	  while (++index < length) {
+	    var value = array[index];
+	    setter(accumulator, value, iteratee(value), array);
+	  }
+	  return accumulator;
+	}
+
+	module.exports = arrayAggregator;
+
+
+/***/ },
+/* 181 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var baseEach = __webpack_require__(14);
+
+	/**
+	 * Aggregates elements of `collection` on `accumulator` with keys transformed
+	 * by `iteratee` and values set by `setter`.
+	 *
+	 * @private
+	 * @param {Array|Object} collection The collection to iterate over.
+	 * @param {Function} setter The function to set `accumulator` values.
+	 * @param {Function} iteratee The iteratee to transform keys.
+	 * @param {Object} accumulator The initial aggregated object.
+	 * @returns {Function} Returns `accumulator`.
+	 */
+	function baseAggregator(collection, setter, iteratee, accumulator) {
+	  baseEach(collection, function(value, key, collection) {
+	    setter(accumulator, value, iteratee(value), collection);
 	  });
 	  return accumulator;
 	}
 
-	module.exports = baseReduce;
+	module.exports = baseAggregator;
 
 
 /***/ },
-/* 218 */
+/* 182 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var baseValues = __webpack_require__(183),
+	    keys = __webpack_require__(18);
+
+	/**
+	 * Creates an array of the own enumerable string keyed property values of `object`.
+	 *
+	 * **Note:** Non-object values are coerced to objects.
+	 *
+	 * @static
+	 * @since 0.1.0
+	 * @memberOf _
+	 * @category Object
+	 * @param {Object} object The object to query.
+	 * @returns {Array} Returns the array of property values.
+	 * @example
+	 *
+	 * function Foo() {
+	 *   this.a = 1;
+	 *   this.b = 2;
+	 * }
+	 *
+	 * Foo.prototype.c = 3;
+	 *
+	 * _.values(new Foo);
+	 * // => [1, 2] (iteration order is not guaranteed)
+	 *
+	 * _.values('hi');
+	 * // => ['h', 'i']
+	 */
+	function values(object) {
+	  return object ? baseValues(object, keys(object)) : [];
+	}
+
+	module.exports = values;
+
+
+/***/ },
+/* 183 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var arrayMap = __webpack_require__(176);
+
+	/**
+	 * The base implementation of `_.values` and `_.valuesIn` which creates an
+	 * array of `object` property values corresponding to the property names
+	 * of `props`.
+	 *
+	 * @private
+	 * @param {Object} object The object to query.
+	 * @param {Array} props The property names to get values for.
+	 * @returns {Object} Returns the array of property values.
+	 */
+	function baseValues(object, props) {
+	  return arrayMap(props, function(key) {
+	    return object[key];
+	  });
+	}
+
+	module.exports = baseValues;
+
+
+/***/ },
+/* 184 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var createFind = __webpack_require__(185),
+	    findIndex = __webpack_require__(160);
+
+	/**
+	 * Iterates over elements of `collection`, returning the first element
+	 * `predicate` returns truthy for. The predicate is invoked with three
+	 * arguments: (value, index|key, collection).
+	 *
+	 * @static
+	 * @memberOf _
+	 * @since 0.1.0
+	 * @category Collection
+	 * @param {Array|Object} collection The collection to search.
+	 * @param {Array|Function|Object|string} [predicate=_.identity]
+	 *  The function invoked per iteration.
+	 * @param {number} [fromIndex=0] The index to search from.
+	 * @returns {*} Returns the matched element, else `undefined`.
+	 * @example
+	 *
+	 * var users = [
+	 *   { 'user': 'barney',  'age': 36, 'active': true },
+	 *   { 'user': 'fred',    'age': 40, 'active': false },
+	 *   { 'user': 'pebbles', 'age': 1,  'active': true }
+	 * ];
+	 *
+	 * _.find(users, function(o) { return o.age < 40; });
+	 * // => object for 'barney'
+	 *
+	 * // The `_.matches` iteratee shorthand.
+	 * _.find(users, { 'age': 1, 'active': true });
+	 * // => object for 'pebbles'
+	 *
+	 * // The `_.matchesProperty` iteratee shorthand.
+	 * _.find(users, ['active', false]);
+	 * // => object for 'fred'
+	 *
+	 * // The `_.property` iteratee shorthand.
+	 * _.find(users, 'active');
+	 * // => object for 'barney'
+	 */
+	var find = createFind(findIndex);
+
+	module.exports = find;
+
+
+/***/ },
+/* 185 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var baseIteratee = __webpack_require__(38),
+	    isArrayLike = __webpack_require__(26),
+	    keys = __webpack_require__(18);
+
+	/**
+	 * Creates a `_.find` or `_.findLast` function.
+	 *
+	 * @private
+	 * @param {Function} findIndexFunc The function to find the collection index.
+	 * @returns {Function} Returns the new find function.
+	 */
+	function createFind(findIndexFunc) {
+	  return function(collection, predicate, fromIndex) {
+	    var iterable = Object(collection);
+	    predicate = baseIteratee(predicate, 3);
+	    if (!isArrayLike(collection)) {
+	      var props = keys(collection);
+	    }
+	    var index = findIndexFunc(props || collection, function(value, key) {
+	      if (props) {
+	        key = value;
+	        value = iterable[key];
+	      }
+	      return predicate(value, key, iterable);
+	    }, fromIndex);
+	    return index > -1 ? collection[props ? props[index] : index] : undefined;
+	  };
+	}
+
+	module.exports = createFind;
+
+
+/***/ },
+/* 186 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -17709,7 +16086,13 @@ var Kinvey =
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-	var _middleware = __webpack_require__(155);
+	var _middleware = __webpack_require__(166);
+
+	var _regeneratorRuntime = __webpack_require__(2);
+
+	var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
 
@@ -17718,6 +16101,8 @@ var Kinvey =
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	// eslint-disable-line no-unused-vars
 
 	/**
 	 * @private
@@ -17737,9 +16122,9 @@ var Kinvey =
 	  _createClass(ParseMiddleware, [{
 	    key: 'handle',
 	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(request) {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee(request) {
 	        var response, contentType;
-	        return regeneratorRuntime.wrap(function _callee$(_context) {
+	        return _regeneratorRuntime2.default.wrap(function _callee$(_context) {
 	          while (1) {
 	            switch (_context.prev = _context.next) {
 	              case 0:
@@ -17790,7 +16175,7 @@ var Kinvey =
 	}(_middleware.KinveyMiddleware);
 
 /***/ },
-/* 219 */
+/* 187 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {'use strict';
@@ -17804,7 +16189,13 @@ var Kinvey =
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-	var _middleware = __webpack_require__(155);
+	var _middleware = __webpack_require__(166);
+
+	var _regeneratorRuntime = __webpack_require__(2);
+
+	var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
 
@@ -17813,6 +16204,8 @@ var Kinvey =
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	// eslint-disable-line no-unused-vars
 
 	/**
 	 * @private
@@ -17832,10 +16225,10 @@ var Kinvey =
 	  _createClass(SerializeMiddleware, [{
 	    key: 'handle',
 	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(request) {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee(request) {
 	        var contentType, body, keys, str, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, key;
 
-	        return regeneratorRuntime.wrap(function _callee$(_context) {
+	        return _regeneratorRuntime2.default.wrap(function _callee$(_context) {
 	          while (1) {
 	            switch (_context.prev = _context.next) {
 	              case 0:
@@ -17947,7 +16340,7 @@ var Kinvey =
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 220 */
+/* 188 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -17959,15 +16352,23 @@ var Kinvey =
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+	var _middleware = __webpack_require__(166);
 
-	var _middleware = __webpack_require__(155);
+	var _regeneratorRuntime = __webpack_require__(2);
+
+	var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	// eslint-disable-line no-unused-vars
 
 	var HttpMiddleware = exports.HttpMiddleware = function (_KinveyMiddleware) {
 	  _inherits(HttpMiddleware, _KinveyMiddleware);
@@ -17982,458 +16383,42 @@ var Kinvey =
 
 	  _createClass(HttpMiddleware, [{
 	    key: 'handle',
-	    value: function handle(request) {
-	      return _get(Object.getPrototypeOf(HttpMiddleware.prototype), 'handle', this).call(this, request).then(function () {
-	        var promise = new Promise(function (resolve, reject) {
-	          reject(new Error('http middleware not installed'));
-	        });
-	        return promise;
-	      });
-	    }
+	    value: function () {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee() {
+	        return _regeneratorRuntime2.default.wrap(function _callee$(_context) {
+	          while (1) {
+	            switch (_context.prev = _context.next) {
+	              case 0:
+	                throw new Error('http middleware not installed');
+
+	              case 1:
+	              case 'end':
+	                return _context.stop();
+	            }
+	          }
+	        }, _callee, this);
+	      }));
+
+	      function handle() {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return handle;
+	    }()
 	  }]);
 
 	  return HttpMiddleware;
 	}(_middleware.KinveyMiddleware);
 
 /***/ },
-/* 221 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	module.exports = __webpack_require__(222)() ? Symbol : __webpack_require__(223);
-
-
-/***/ },
-/* 222 */
-/***/ function(module, exports) {
-
-	'use strict';
-
-	var validTypes = { object: true, symbol: true };
-
-	module.exports = function () {
-		var symbol;
-		if (typeof Symbol !== 'function') return false;
-		symbol = Symbol('test symbol');
-		try { String(symbol); } catch (e) { return false; }
-
-		// Return 'true' also for polyfills
-		if (!validTypes[typeof Symbol.iterator]) return false;
-		if (!validTypes[typeof Symbol.toPrimitive]) return false;
-		if (!validTypes[typeof Symbol.toStringTag]) return false;
-
-		return true;
-	};
-
-
-/***/ },
-/* 223 */
-/***/ function(module, exports, __webpack_require__) {
-
-	// ES2015 Symbol polyfill for environments that do not support it (or partially support it)
-
-	'use strict';
-
-	var d              = __webpack_require__(224)
-	  , validateSymbol = __webpack_require__(237)
-
-	  , create = Object.create, defineProperties = Object.defineProperties
-	  , defineProperty = Object.defineProperty, objPrototype = Object.prototype
-	  , NativeSymbol, SymbolPolyfill, HiddenSymbol, globalSymbols = create(null)
-	  , isNativeSafe;
-
-	if (typeof Symbol === 'function') {
-		NativeSymbol = Symbol;
-		try {
-			String(NativeSymbol());
-			isNativeSafe = true;
-		} catch (ignore) {}
-	}
-
-	var generateName = (function () {
-		var created = create(null);
-		return function (desc) {
-			var postfix = 0, name, ie11BugWorkaround;
-			while (created[desc + (postfix || '')]) ++postfix;
-			desc += (postfix || '');
-			created[desc] = true;
-			name = '@@' + desc;
-			defineProperty(objPrototype, name, d.gs(null, function (value) {
-				// For IE11 issue see:
-				// https://connect.microsoft.com/IE/feedbackdetail/view/1928508/
-				//    ie11-broken-getters-on-dom-objects
-				// https://github.com/medikoo/es6-symbol/issues/12
-				if (ie11BugWorkaround) return;
-				ie11BugWorkaround = true;
-				defineProperty(this, name, d(value));
-				ie11BugWorkaround = false;
-			}));
-			return name;
-		};
-	}());
-
-	// Internal constructor (not one exposed) for creating Symbol instances.
-	// This one is used to ensure that `someSymbol instanceof Symbol` always return false
-	HiddenSymbol = function Symbol(description) {
-		if (this instanceof HiddenSymbol) throw new TypeError('TypeError: Symbol is not a constructor');
-		return SymbolPolyfill(description);
-	};
-
-	// Exposed `Symbol` constructor
-	// (returns instances of HiddenSymbol)
-	module.exports = SymbolPolyfill = function Symbol(description) {
-		var symbol;
-		if (this instanceof Symbol) throw new TypeError('TypeError: Symbol is not a constructor');
-		if (isNativeSafe) return NativeSymbol(description);
-		symbol = create(HiddenSymbol.prototype);
-		description = (description === undefined ? '' : String(description));
-		return defineProperties(symbol, {
-			__description__: d('', description),
-			__name__: d('', generateName(description))
-		});
-	};
-	defineProperties(SymbolPolyfill, {
-		for: d(function (key) {
-			if (globalSymbols[key]) return globalSymbols[key];
-			return (globalSymbols[key] = SymbolPolyfill(String(key)));
-		}),
-		keyFor: d(function (s) {
-			var key;
-			validateSymbol(s);
-			for (key in globalSymbols) if (globalSymbols[key] === s) return key;
-		}),
-
-		// If there's native implementation of given symbol, let's fallback to it
-		// to ensure proper interoperability with other native functions e.g. Array.from
-		hasInstance: d('', (NativeSymbol && NativeSymbol.hasInstance) || SymbolPolyfill('hasInstance')),
-		isConcatSpreadable: d('', (NativeSymbol && NativeSymbol.isConcatSpreadable) ||
-			SymbolPolyfill('isConcatSpreadable')),
-		iterator: d('', (NativeSymbol && NativeSymbol.iterator) || SymbolPolyfill('iterator')),
-		match: d('', (NativeSymbol && NativeSymbol.match) || SymbolPolyfill('match')),
-		replace: d('', (NativeSymbol && NativeSymbol.replace) || SymbolPolyfill('replace')),
-		search: d('', (NativeSymbol && NativeSymbol.search) || SymbolPolyfill('search')),
-		species: d('', (NativeSymbol && NativeSymbol.species) || SymbolPolyfill('species')),
-		split: d('', (NativeSymbol && NativeSymbol.split) || SymbolPolyfill('split')),
-		toPrimitive: d('', (NativeSymbol && NativeSymbol.toPrimitive) || SymbolPolyfill('toPrimitive')),
-		toStringTag: d('', (NativeSymbol && NativeSymbol.toStringTag) || SymbolPolyfill('toStringTag')),
-		unscopables: d('', (NativeSymbol && NativeSymbol.unscopables) || SymbolPolyfill('unscopables'))
-	});
-
-	// Internal tweaks for real symbol producer
-	defineProperties(HiddenSymbol.prototype, {
-		constructor: d(SymbolPolyfill),
-		toString: d('', function () { return this.__name__; })
-	});
-
-	// Proper implementation of methods exposed on Symbol.prototype
-	// They won't be accessible on produced symbol instances as they derive from HiddenSymbol.prototype
-	defineProperties(SymbolPolyfill.prototype, {
-		toString: d(function () { return 'Symbol (' + validateSymbol(this).__description__ + ')'; }),
-		valueOf: d(function () { return validateSymbol(this); })
-	});
-	defineProperty(SymbolPolyfill.prototype, SymbolPolyfill.toPrimitive, d('', function () {
-		var symbol = validateSymbol(this);
-		if (typeof symbol === 'symbol') return symbol;
-		return symbol.toString();
-	}));
-	defineProperty(SymbolPolyfill.prototype, SymbolPolyfill.toStringTag, d('c', 'Symbol'));
-
-	// Proper implementaton of toPrimitive and toStringTag for returned symbol instances
-	defineProperty(HiddenSymbol.prototype, SymbolPolyfill.toStringTag,
-		d('c', SymbolPolyfill.prototype[SymbolPolyfill.toStringTag]));
-
-	// Note: It's important to define `toPrimitive` as last one, as some implementations
-	// implement `toPrimitive` natively without implementing `toStringTag` (or other specified symbols)
-	// And that may invoke error in definition flow:
-	// See: https://github.com/medikoo/es6-symbol/issues/13#issuecomment-164146149
-	defineProperty(HiddenSymbol.prototype, SymbolPolyfill.toPrimitive,
-		d('c', SymbolPolyfill.prototype[SymbolPolyfill.toPrimitive]));
-
-
-/***/ },
-/* 224 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var assign        = __webpack_require__(225)
-	  , normalizeOpts = __webpack_require__(232)
-	  , isCallable    = __webpack_require__(233)
-	  , contains      = __webpack_require__(234)
-
-	  , d;
-
-	d = module.exports = function (dscr, value/*, options*/) {
-		var c, e, w, options, desc;
-		if ((arguments.length < 2) || (typeof dscr !== 'string')) {
-			options = value;
-			value = dscr;
-			dscr = null;
-		} else {
-			options = arguments[2];
-		}
-		if (dscr == null) {
-			c = w = true;
-			e = false;
-		} else {
-			c = contains.call(dscr, 'c');
-			e = contains.call(dscr, 'e');
-			w = contains.call(dscr, 'w');
-		}
-
-		desc = { value: value, configurable: c, enumerable: e, writable: w };
-		return !options ? desc : assign(normalizeOpts(options), desc);
-	};
-
-	d.gs = function (dscr, get, set/*, options*/) {
-		var c, e, options, desc;
-		if (typeof dscr !== 'string') {
-			options = set;
-			set = get;
-			get = dscr;
-			dscr = null;
-		} else {
-			options = arguments[3];
-		}
-		if (get == null) {
-			get = undefined;
-		} else if (!isCallable(get)) {
-			options = get;
-			get = set = undefined;
-		} else if (set == null) {
-			set = undefined;
-		} else if (!isCallable(set)) {
-			options = set;
-			set = undefined;
-		}
-		if (dscr == null) {
-			c = true;
-			e = false;
-		} else {
-			c = contains.call(dscr, 'c');
-			e = contains.call(dscr, 'e');
-		}
-
-		desc = { get: get, set: set, configurable: c, enumerable: e };
-		return !options ? desc : assign(normalizeOpts(options), desc);
-	};
-
-
-/***/ },
-/* 225 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	module.exports = __webpack_require__(226)()
-		? Object.assign
-		: __webpack_require__(227);
-
-
-/***/ },
-/* 226 */
-/***/ function(module, exports) {
-
-	'use strict';
-
-	module.exports = function () {
-		var assign = Object.assign, obj;
-		if (typeof assign !== 'function') return false;
-		obj = { foo: 'raz' };
-		assign(obj, { bar: 'dwa' }, { trzy: 'trzy' });
-		return (obj.foo + obj.bar + obj.trzy) === 'razdwatrzy';
-	};
-
-
-/***/ },
-/* 227 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var keys  = __webpack_require__(228)
-	  , value = __webpack_require__(231)
-
-	  , max = Math.max;
-
-	module.exports = function (dest, src/*, …srcn*/) {
-		var error, i, l = max(arguments.length, 2), assign;
-		dest = Object(value(dest));
-		assign = function (key) {
-			try { dest[key] = src[key]; } catch (e) {
-				if (!error) error = e;
-			}
-		};
-		for (i = 1; i < l; ++i) {
-			src = arguments[i];
-			keys(src).forEach(assign);
-		}
-		if (error !== undefined) throw error;
-		return dest;
-	};
-
-
-/***/ },
-/* 228 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	module.exports = __webpack_require__(229)()
-		? Object.keys
-		: __webpack_require__(230);
-
-
-/***/ },
-/* 229 */
-/***/ function(module, exports) {
-
-	'use strict';
-
-	module.exports = function () {
-		try {
-			Object.keys('primitive');
-			return true;
-		} catch (e) { return false; }
-	};
-
-
-/***/ },
-/* 230 */
-/***/ function(module, exports) {
-
-	'use strict';
-
-	var keys = Object.keys;
-
-	module.exports = function (object) {
-		return keys(object == null ? object : Object(object));
-	};
-
-
-/***/ },
-/* 231 */
-/***/ function(module, exports) {
-
-	'use strict';
-
-	module.exports = function (value) {
-		if (value == null) throw new TypeError("Cannot use null or undefined");
-		return value;
-	};
-
-
-/***/ },
-/* 232 */
-/***/ function(module, exports) {
-
-	'use strict';
-
-	var forEach = Array.prototype.forEach, create = Object.create;
-
-	var process = function (src, obj) {
-		var key;
-		for (key in src) obj[key] = src[key];
-	};
-
-	module.exports = function (options/*, …options*/) {
-		var result = create(null);
-		forEach.call(arguments, function (options) {
-			if (options == null) return;
-			process(Object(options), result);
-		});
-		return result;
-	};
-
-
-/***/ },
-/* 233 */
-/***/ function(module, exports) {
-
-	// Deprecated
-
-	'use strict';
-
-	module.exports = function (obj) { return typeof obj === 'function'; };
-
-
-/***/ },
-/* 234 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	module.exports = __webpack_require__(235)()
-		? String.prototype.contains
-		: __webpack_require__(236);
-
-
-/***/ },
-/* 235 */
-/***/ function(module, exports) {
-
-	'use strict';
-
-	var str = 'razdwatrzy';
-
-	module.exports = function () {
-		if (typeof str.contains !== 'function') return false;
-		return ((str.contains('dwa') === true) && (str.contains('foo') === false));
-	};
-
-
-/***/ },
-/* 236 */
-/***/ function(module, exports) {
-
-	'use strict';
-
-	var indexOf = String.prototype.indexOf;
-
-	module.exports = function (searchString/*, position*/) {
-		return indexOf.call(this, searchString, arguments[1]) > -1;
-	};
-
-
-/***/ },
-/* 237 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var isSymbol = __webpack_require__(238);
-
-	module.exports = function (value) {
-		if (!isSymbol(value)) throw new TypeError(value + " is not a symbol");
-		return value;
-	};
-
-
-/***/ },
-/* 238 */
-/***/ function(module, exports) {
-
-	'use strict';
-
-	module.exports = function (x) {
-		if (!x) return false;
-		if (typeof x === 'symbol') return true;
-		if (!x.constructor) return false;
-		if (x.constructor.name !== 'Symbol') return false;
-		return (x[x.constructor.toStringTag] === 'Symbol');
-	};
-
-
-/***/ },
-/* 239 */
+/* 189 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Generated by CoffeeScript 1.10.0
 	var slice = [].slice;
 
 	(function(root, factory) {
-	  if (('function' === "function") && (__webpack_require__(240) != null)) {
+	  if (('function' === "function") && (__webpack_require__(190) != null)) {
 	    return !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	  } else if (typeof exports !== "undefined" && exports !== null) {
 	    return module.exports = factory();
@@ -18868,7 +16853,7 @@ var Kinvey =
 
 
 /***/ },
-/* 240 */
+/* 190 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(__webpack_amd_options__) {module.exports = __webpack_amd_options__;
@@ -18876,13 +16861,13 @@ var Kinvey =
 	/* WEBPACK VAR INJECTION */}.call(exports, {}))
 
 /***/ },
-/* 241 */
+/* 191 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Stringify = __webpack_require__(242);
-	var Parse = __webpack_require__(244);
+	var Stringify = __webpack_require__(192);
+	var Parse = __webpack_require__(194);
 
 	module.exports = {
 	    stringify: Stringify,
@@ -18891,12 +16876,12 @@ var Kinvey =
 
 
 /***/ },
-/* 242 */
+/* 192 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Utils = __webpack_require__(243);
+	var Utils = __webpack_require__(193);
 
 	var arrayPrefixGenerators = {
 	    brackets: function brackets(prefix) {
@@ -19034,7 +17019,7 @@ var Kinvey =
 
 
 /***/ },
-/* 243 */
+/* 193 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -19204,12 +17189,12 @@ var Kinvey =
 
 
 /***/ },
-/* 244 */
+/* 194 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Utils = __webpack_require__(243);
+	var Utils = __webpack_require__(193);
 
 	var defaults = {
 	    delimiter: '&',
@@ -19377,12 +17362,12 @@ var Kinvey =
 
 
 /***/ },
-/* 245 */
+/* 195 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var querystring = __webpack_require__(145)
-	  , extend = __webpack_require__(246)
-	  , url = __webpack_require__(142)
+	var querystring = __webpack_require__(147)
+	  , extend = __webpack_require__(196)
+	  , url = __webpack_require__(144)
 
 	module.exports = function appendQuery(uri, q) {
 	  var parts = url.parse(uri, true)
@@ -19422,7 +17407,7 @@ var Kinvey =
 
 
 /***/ },
-/* 246 */
+/* 196 */
 /***/ function(module, exports) {
 
 	var hasOwn = Object.prototype.hasOwnProperty;
@@ -19508,7 +17493,83 @@ var Kinvey =
 
 
 /***/ },
-/* 247 */
+/* 197 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var getPrototype = __webpack_require__(20),
+	    isHostObject = __webpack_require__(62),
+	    isObjectLike = __webpack_require__(32);
+
+	/** `Object#toString` result references. */
+	var objectTag = '[object Object]';
+
+	/** Used for built-in method references. */
+	var objectProto = Object.prototype;
+
+	/** Used to resolve the decompiled source of functions. */
+	var funcToString = Function.prototype.toString;
+
+	/** Used to check objects for own properties. */
+	var hasOwnProperty = objectProto.hasOwnProperty;
+
+	/** Used to infer the `Object` constructor. */
+	var objectCtorString = funcToString.call(Object);
+
+	/**
+	 * Used to resolve the
+	 * [`toStringTag`](http://ecma-international.org/ecma-262/6.0/#sec-object.prototype.tostring)
+	 * of values.
+	 */
+	var objectToString = objectProto.toString;
+
+	/**
+	 * Checks if `value` is a plain object, that is, an object created by the
+	 * `Object` constructor or one with a `[[Prototype]]` of `null`.
+	 *
+	 * @static
+	 * @memberOf _
+	 * @since 0.8.0
+	 * @category Lang
+	 * @param {*} value The value to check.
+	 * @returns {boolean} Returns `true` if `value` is a plain object,
+	 *  else `false`.
+	 * @example
+	 *
+	 * function Foo() {
+	 *   this.a = 1;
+	 * }
+	 *
+	 * _.isPlainObject(new Foo);
+	 * // => false
+	 *
+	 * _.isPlainObject([1, 2, 3]);
+	 * // => false
+	 *
+	 * _.isPlainObject({ 'x': 0, 'y': 0 });
+	 * // => true
+	 *
+	 * _.isPlainObject(Object.create(null));
+	 * // => true
+	 */
+	function isPlainObject(value) {
+	  if (!isObjectLike(value) ||
+	      objectToString.call(value) != objectTag || isHostObject(value)) {
+	    return false;
+	  }
+	  var proto = getPrototype(value);
+	  if (proto === null) {
+	    return true;
+	  }
+	  var Ctor = hasOwnProperty.call(proto, 'constructor') && proto.constructor;
+	  return (typeof Ctor == 'function' &&
+	    Ctor instanceof Ctor && funcToString.call(Ctor) == objectCtorString);
+	}
+
+	module.exports = isPlainObject;
+
+
+/***/ },
+/* 198 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -19522,17 +17583,21 @@ var Kinvey =
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-	var _request = __webpack_require__(149);
+	var _request = __webpack_require__(151);
 
-	var _rack = __webpack_require__(154);
+	var _rack = __webpack_require__(156);
 
-	var _errors = __webpack_require__(5);
+	var _errors = __webpack_require__(7);
 
-	var _response2 = __webpack_require__(212);
+	var _response2 = __webpack_require__(167);
 
-	var _storage = __webpack_require__(138);
+	var _storage = __webpack_require__(140);
 
-	var _url = __webpack_require__(142);
+	var _regeneratorRuntime = __webpack_require__(2);
+
+	var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
+
+	var _url = __webpack_require__(144);
 
 	var _url2 = _interopRequireDefault(_url);
 
@@ -19544,7 +17609,8 @@ var Kinvey =
 
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } // eslint-disable-line no-unused-vars
+
 
 	var socialIdentityAttribute = process.env.KINVEY_SOCIAL_IDENTITY_ATTRIBUTE || '_socialIdentity';
 	var micIdentity = process.env.KINVEY_MIC_IDENTITY || 'kinveyAuth';
@@ -19563,7 +17629,7 @@ var Kinvey =
 
 	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(NetworkRequest).call(this, options));
 
-	    _this.rack = _rack.NetworkRack.sharedInstance();
+	    _this.rack = _rack.KinveyRackManager.networkRack;
 	    _this.automaticallyRefreshAuthToken = true;
 	    return _this;
 	  }
@@ -19571,10 +17637,10 @@ var Kinvey =
 	  _createClass(NetworkRequest, [{
 	    key: 'execute',
 	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee() {
 	        var response, activeSocialIdentity, token, config, refreshTokenRequest, newToken, activeUser, socialIdentity, data, loginRequest, user, _response;
 
-	        return regeneratorRuntime.wrap(function _callee$(_context) {
+	        return _regeneratorRuntime2.default.wrap(function _callee$(_context) {
 	          while (1) {
 	            switch (_context.prev = _context.next) {
 	              case 0:
@@ -19759,10 +17825,269 @@ var Kinvey =
 
 	  return NetworkRequest;
 	}(_request.KinveyRequest);
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ },
-/* 248 */
+/* 199 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.Log = undefined;
+
+	var _loglevel = __webpack_require__(200);
+
+	var _loglevel2 = _interopRequireDefault(_loglevel);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var originalFactory = _loglevel2.default.methodFactory;
+
+	_loglevel2.default.methodFactory = function methodFactory(methodName, logLevel, loggerName) {
+	  var rawMethod = originalFactory(methodName, logLevel, loggerName);
+
+	  return function log(message) {
+	    rawMethod('Kinvey: ' + message);
+	  };
+	};
+
+	_loglevel2.default.setDefaultLevel(_loglevel2.default.levels.SILENT);
+	exports.Log = _loglevel2.default;
+
+/***/ },
+/* 200 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*
+	* loglevel - https://github.com/pimterry/loglevel
+	*
+	* Copyright (c) 2013 Tim Perry
+	* Licensed under the MIT license.
+	*/
+	(function (root, definition) {
+	    "use strict";
+	    if (true) {
+	        !(__WEBPACK_AMD_DEFINE_FACTORY__ = (definition), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	    } else if (typeof module === 'object' && module.exports) {
+	        module.exports = definition();
+	    } else {
+	        root.log = definition();
+	    }
+	}(this, function () {
+	    "use strict";
+	    var noop = function() {};
+	    var undefinedType = "undefined";
+
+	    function realMethod(methodName) {
+	        if (typeof console === undefinedType) {
+	            return false; // We can't build a real method without a console to log to
+	        } else if (console[methodName] !== undefined) {
+	            return bindMethod(console, methodName);
+	        } else if (console.log !== undefined) {
+	            return bindMethod(console, 'log');
+	        } else {
+	            return noop;
+	        }
+	    }
+
+	    function bindMethod(obj, methodName) {
+	        var method = obj[methodName];
+	        if (typeof method.bind === 'function') {
+	            return method.bind(obj);
+	        } else {
+	            try {
+	                return Function.prototype.bind.call(method, obj);
+	            } catch (e) {
+	                // Missing bind shim or IE8 + Modernizr, fallback to wrapping
+	                return function() {
+	                    return Function.prototype.apply.apply(method, [obj, arguments]);
+	                };
+	            }
+	        }
+	    }
+
+	    // these private functions always need `this` to be set properly
+
+	    function enableLoggingWhenConsoleArrives(methodName, level, loggerName) {
+	        return function () {
+	            if (typeof console !== undefinedType) {
+	                replaceLoggingMethods.call(this, level, loggerName);
+	                this[methodName].apply(this, arguments);
+	            }
+	        };
+	    }
+
+	    function replaceLoggingMethods(level, loggerName) {
+	        /*jshint validthis:true */
+	        for (var i = 0; i < logMethods.length; i++) {
+	            var methodName = logMethods[i];
+	            this[methodName] = (i < level) ?
+	                noop :
+	                this.methodFactory(methodName, level, loggerName);
+	        }
+	    }
+
+	    function defaultMethodFactory(methodName, level, loggerName) {
+	        /*jshint validthis:true */
+	        return realMethod(methodName) ||
+	               enableLoggingWhenConsoleArrives.apply(this, arguments);
+	    }
+
+	    var logMethods = [
+	        "trace",
+	        "debug",
+	        "info",
+	        "warn",
+	        "error"
+	    ];
+
+	    function Logger(name, defaultLevel, factory) {
+	      var self = this;
+	      var currentLevel;
+	      var storageKey = "loglevel";
+	      if (name) {
+	        storageKey += ":" + name;
+	      }
+
+	      function persistLevelIfPossible(levelNum) {
+	          var levelName = (logMethods[levelNum] || 'silent').toUpperCase();
+
+	          // Use localStorage if available
+	          try {
+	              window.localStorage[storageKey] = levelName;
+	              return;
+	          } catch (ignore) {}
+
+	          // Use session cookie as fallback
+	          try {
+	              window.document.cookie =
+	                encodeURIComponent(storageKey) + "=" + levelName + ";";
+	          } catch (ignore) {}
+	      }
+
+	      function getPersistedLevel() {
+	          var storedLevel;
+
+	          try {
+	              storedLevel = window.localStorage[storageKey];
+	          } catch (ignore) {}
+
+	          if (typeof storedLevel === undefinedType) {
+	              try {
+	                  var cookie = window.document.cookie;
+	                  var location = cookie.indexOf(
+	                      encodeURIComponent(storageKey) + "=");
+	                  if (location) {
+	                      storedLevel = /^([^;]+)/.exec(cookie.slice(location))[1];
+	                  }
+	              } catch (ignore) {}
+	          }
+
+	          // If the stored level is not valid, treat it as if nothing was stored.
+	          if (self.levels[storedLevel] === undefined) {
+	              storedLevel = undefined;
+	          }
+
+	          return storedLevel;
+	      }
+
+	      /*
+	       *
+	       * Public API
+	       *
+	       */
+
+	      self.levels = { "TRACE": 0, "DEBUG": 1, "INFO": 2, "WARN": 3,
+	          "ERROR": 4, "SILENT": 5};
+
+	      self.methodFactory = factory || defaultMethodFactory;
+
+	      self.getLevel = function () {
+	          return currentLevel;
+	      };
+
+	      self.setLevel = function (level, persist) {
+	          if (typeof level === "string" && self.levels[level.toUpperCase()] !== undefined) {
+	              level = self.levels[level.toUpperCase()];
+	          }
+	          if (typeof level === "number" && level >= 0 && level <= self.levels.SILENT) {
+	              currentLevel = level;
+	              if (persist !== false) {  // defaults to true
+	                  persistLevelIfPossible(level);
+	              }
+	              replaceLoggingMethods.call(self, level, name);
+	              if (typeof console === undefinedType && level < self.levels.SILENT) {
+	                  return "No console available for logging";
+	              }
+	          } else {
+	              throw "log.setLevel() called with invalid level: " + level;
+	          }
+	      };
+
+	      self.setDefaultLevel = function (level) {
+	          if (!getPersistedLevel()) {
+	              self.setLevel(level, false);
+	          }
+	      };
+
+	      self.enableAll = function(persist) {
+	          self.setLevel(self.levels.TRACE, persist);
+	      };
+
+	      self.disableAll = function(persist) {
+	          self.setLevel(self.levels.SILENT, persist);
+	      };
+
+	      // Initialize with the right level
+	      var initialLevel = getPersistedLevel();
+	      if (initialLevel == null) {
+	          initialLevel = defaultLevel == null ? "WARN" : defaultLevel;
+	      }
+	      self.setLevel(initialLevel, false);
+	    }
+
+	    /*
+	     *
+	     * Package-level API
+	     *
+	     */
+
+	    var defaultLogger = new Logger();
+
+	    var _loggersByName = {};
+	    defaultLogger.getLogger = function getLogger(name) {
+	        if (typeof name !== "string" || name === "") {
+	          throw new TypeError("You must supply a name when creating a logger.");
+	        }
+
+	        var logger = _loggersByName[name];
+	        if (!logger) {
+	          logger = _loggersByName[name] = new Logger(
+	            name, defaultLogger.getLevel(), defaultLogger.methodFactory);
+	        }
+	        return logger;
+	    };
+
+	    // Grab the current global log variable in case of overwrite
+	    var _log = (typeof window !== undefinedType) ? window.log : undefined;
+	    defaultLogger.noConflict = function() {
+	        if (typeof window !== undefinedType &&
+	               window.log === defaultLogger) {
+	            window.log = _log;
+	        }
+
+	        return defaultLogger;
+	    };
+
+	    return defaultLogger;
+	}));
+
+
+/***/ },
+/* 201 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -19774,13 +18099,13 @@ var Kinvey =
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _errors = __webpack_require__(5);
+	var _errors = __webpack_require__(7);
 
-	var _clone = __webpack_require__(249);
+	var _clone = __webpack_require__(202);
 
 	var _clone2 = _interopRequireDefault(_clone);
 
-	var _isPlainObject = __webpack_require__(194);
+	var _isPlainObject = __webpack_require__(197);
 
 	var _isPlainObject2 = _interopRequireDefault(_isPlainObject);
 
@@ -19833,6 +18158,11 @@ var Kinvey =
 	      return undefined;
 	    }
 	  }, {
+	    key: 'ect',
+	    get: function get() {
+	      return this.createdAt;
+	    }
+	  }, {
 	    key: 'emailVerification',
 	    get: function get() {
 	      return this.kmd.emailVerification.status;
@@ -19863,13 +18193,13 @@ var Kinvey =
 
 	  return Metadata;
 	}();
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ },
-/* 249 */
+/* 202 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseClone = __webpack_require__(170);
+	var baseClone = __webpack_require__(203);
 
 	/**
 	 * Creates a shallow clone of `value`.
@@ -19905,7 +18235,750 @@ var Kinvey =
 
 
 /***/ },
-/* 250 */
+/* 203 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Stack = __webpack_require__(41),
+	    arrayEach = __webpack_require__(13),
+	    assignValue = __webpack_require__(121),
+	    baseAssign = __webpack_require__(204),
+	    cloneBuffer = __webpack_require__(205),
+	    copyArray = __webpack_require__(206),
+	    copySymbols = __webpack_require__(207),
+	    getAllKeys = __webpack_require__(210),
+	    getTag = __webpack_require__(93),
+	    initCloneArray = __webpack_require__(213),
+	    initCloneByTag = __webpack_require__(214),
+	    initCloneObject = __webpack_require__(224),
+	    isArray = __webpack_require__(33),
+	    isBuffer = __webpack_require__(133),
+	    isHostObject = __webpack_require__(62),
+	    isObject = __webpack_require__(30),
+	    keys = __webpack_require__(18);
+
+	/** `Object#toString` result references. */
+	var argsTag = '[object Arguments]',
+	    arrayTag = '[object Array]',
+	    boolTag = '[object Boolean]',
+	    dateTag = '[object Date]',
+	    errorTag = '[object Error]',
+	    funcTag = '[object Function]',
+	    genTag = '[object GeneratorFunction]',
+	    mapTag = '[object Map]',
+	    numberTag = '[object Number]',
+	    objectTag = '[object Object]',
+	    regexpTag = '[object RegExp]',
+	    setTag = '[object Set]',
+	    stringTag = '[object String]',
+	    symbolTag = '[object Symbol]',
+	    weakMapTag = '[object WeakMap]';
+
+	var arrayBufferTag = '[object ArrayBuffer]',
+	    dataViewTag = '[object DataView]',
+	    float32Tag = '[object Float32Array]',
+	    float64Tag = '[object Float64Array]',
+	    int8Tag = '[object Int8Array]',
+	    int16Tag = '[object Int16Array]',
+	    int32Tag = '[object Int32Array]',
+	    uint8Tag = '[object Uint8Array]',
+	    uint8ClampedTag = '[object Uint8ClampedArray]',
+	    uint16Tag = '[object Uint16Array]',
+	    uint32Tag = '[object Uint32Array]';
+
+	/** Used to identify `toStringTag` values supported by `_.clone`. */
+	var cloneableTags = {};
+	cloneableTags[argsTag] = cloneableTags[arrayTag] =
+	cloneableTags[arrayBufferTag] = cloneableTags[dataViewTag] =
+	cloneableTags[boolTag] = cloneableTags[dateTag] =
+	cloneableTags[float32Tag] = cloneableTags[float64Tag] =
+	cloneableTags[int8Tag] = cloneableTags[int16Tag] =
+	cloneableTags[int32Tag] = cloneableTags[mapTag] =
+	cloneableTags[numberTag] = cloneableTags[objectTag] =
+	cloneableTags[regexpTag] = cloneableTags[setTag] =
+	cloneableTags[stringTag] = cloneableTags[symbolTag] =
+	cloneableTags[uint8Tag] = cloneableTags[uint8ClampedTag] =
+	cloneableTags[uint16Tag] = cloneableTags[uint32Tag] = true;
+	cloneableTags[errorTag] = cloneableTags[funcTag] =
+	cloneableTags[weakMapTag] = false;
+
+	/**
+	 * The base implementation of `_.clone` and `_.cloneDeep` which tracks
+	 * traversed objects.
+	 *
+	 * @private
+	 * @param {*} value The value to clone.
+	 * @param {boolean} [isDeep] Specify a deep clone.
+	 * @param {boolean} [isFull] Specify a clone including symbols.
+	 * @param {Function} [customizer] The function to customize cloning.
+	 * @param {string} [key] The key of `value`.
+	 * @param {Object} [object] The parent object of `value`.
+	 * @param {Object} [stack] Tracks traversed objects and their clone counterparts.
+	 * @returns {*} Returns the cloned value.
+	 */
+	function baseClone(value, isDeep, isFull, customizer, key, object, stack) {
+	  var result;
+	  if (customizer) {
+	    result = object ? customizer(value, key, object, stack) : customizer(value);
+	  }
+	  if (result !== undefined) {
+	    return result;
+	  }
+	  if (!isObject(value)) {
+	    return value;
+	  }
+	  var isArr = isArray(value);
+	  if (isArr) {
+	    result = initCloneArray(value);
+	    if (!isDeep) {
+	      return copyArray(value, result);
+	    }
+	  } else {
+	    var tag = getTag(value),
+	        isFunc = tag == funcTag || tag == genTag;
+
+	    if (isBuffer(value)) {
+	      return cloneBuffer(value, isDeep);
+	    }
+	    if (tag == objectTag || tag == argsTag || (isFunc && !object)) {
+	      if (isHostObject(value)) {
+	        return object ? value : {};
+	      }
+	      result = initCloneObject(isFunc ? {} : value);
+	      if (!isDeep) {
+	        return copySymbols(value, baseAssign(result, value));
+	      }
+	    } else {
+	      if (!cloneableTags[tag]) {
+	        return object ? value : {};
+	      }
+	      result = initCloneByTag(value, tag, baseClone, isDeep);
+	    }
+	  }
+	  // Check for circular references and return its corresponding clone.
+	  stack || (stack = new Stack);
+	  var stacked = stack.get(value);
+	  if (stacked) {
+	    return stacked;
+	  }
+	  stack.set(value, result);
+
+	  if (!isArr) {
+	    var props = isFull ? getAllKeys(value) : keys(value);
+	  }
+	  // Recursively populate clone (susceptible to call stack limits).
+	  arrayEach(props || value, function(subValue, key) {
+	    if (props) {
+	      key = subValue;
+	      subValue = value[key];
+	    }
+	    assignValue(result, key, baseClone(subValue, isDeep, isFull, customizer, key, value, stack));
+	  });
+	  return result;
+	}
+
+	module.exports = baseClone;
+
+
+/***/ },
+/* 204 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var copyObject = __webpack_require__(122),
+	    keys = __webpack_require__(18);
+
+	/**
+	 * The base implementation of `_.assign` without support for multiple sources
+	 * or `customizer` functions.
+	 *
+	 * @private
+	 * @param {Object} object The destination object.
+	 * @param {Object} source The source object.
+	 * @returns {Object} Returns `object`.
+	 */
+	function baseAssign(object, source) {
+	  return object && copyObject(source, keys(source), object);
+	}
+
+	module.exports = baseAssign;
+
+
+/***/ },
+/* 205 */
+/***/ function(module, exports) {
+
+	/**
+	 * Creates a clone of  `buffer`.
+	 *
+	 * @private
+	 * @param {Buffer} buffer The buffer to clone.
+	 * @param {boolean} [isDeep] Specify a deep clone.
+	 * @returns {Buffer} Returns the cloned buffer.
+	 */
+	function cloneBuffer(buffer, isDeep) {
+	  if (isDeep) {
+	    return buffer.slice();
+	  }
+	  var result = new buffer.constructor(buffer.length);
+	  buffer.copy(result);
+	  return result;
+	}
+
+	module.exports = cloneBuffer;
+
+
+/***/ },
+/* 206 */
+/***/ function(module, exports) {
+
+	/**
+	 * Copies the values of `source` to `array`.
+	 *
+	 * @private
+	 * @param {Array} source The array to copy values from.
+	 * @param {Array} [array=[]] The array to copy values to.
+	 * @returns {Array} Returns `array`.
+	 */
+	function copyArray(source, array) {
+	  var index = -1,
+	      length = source.length;
+
+	  array || (array = Array(length));
+	  while (++index < length) {
+	    array[index] = source[index];
+	  }
+	  return array;
+	}
+
+	module.exports = copyArray;
+
+
+/***/ },
+/* 207 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var copyObject = __webpack_require__(122),
+	    getSymbols = __webpack_require__(208);
+
+	/**
+	 * Copies own symbol properties of `source` to `object`.
+	 *
+	 * @private
+	 * @param {Object} source The object to copy symbols from.
+	 * @param {Object} [object={}] The object to copy symbols to.
+	 * @returns {Object} Returns `object`.
+	 */
+	function copySymbols(source, object) {
+	  return copyObject(source, getSymbols(source), object);
+	}
+
+	module.exports = copySymbols;
+
+
+/***/ },
+/* 208 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var stubArray = __webpack_require__(209);
+
+	/** Built-in value references. */
+	var getOwnPropertySymbols = Object.getOwnPropertySymbols;
+
+	/**
+	 * Creates an array of the own enumerable symbol properties of `object`.
+	 *
+	 * @private
+	 * @param {Object} object The object to query.
+	 * @returns {Array} Returns the array of symbols.
+	 */
+	function getSymbols(object) {
+	  // Coerce `object` to an object to avoid non-object errors in V8.
+	  // See https://bugs.chromium.org/p/v8/issues/detail?id=3443 for more details.
+	  return getOwnPropertySymbols(Object(object));
+	}
+
+	// Fallback for IE < 11.
+	if (!getOwnPropertySymbols) {
+	  getSymbols = stubArray;
+	}
+
+	module.exports = getSymbols;
+
+
+/***/ },
+/* 209 */
+/***/ function(module, exports) {
+
+	/**
+	 * A method that returns a new empty array.
+	 *
+	 * @static
+	 * @memberOf _
+	 * @since 4.13.0
+	 * @category Util
+	 * @returns {Array} Returns the new empty array.
+	 * @example
+	 *
+	 * var arrays = _.times(2, _.stubArray);
+	 *
+	 * console.log(arrays);
+	 * // => [[], []]
+	 *
+	 * console.log(arrays[0] === arrays[1]);
+	 * // => false
+	 */
+	function stubArray() {
+	  return [];
+	}
+
+	module.exports = stubArray;
+
+
+/***/ },
+/* 210 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var baseGetAllKeys = __webpack_require__(211),
+	    getSymbols = __webpack_require__(208),
+	    keys = __webpack_require__(18);
+
+	/**
+	 * Creates an array of own enumerable property names and symbols of `object`.
+	 *
+	 * @private
+	 * @param {Object} object The object to query.
+	 * @returns {Array} Returns the array of property names and symbols.
+	 */
+	function getAllKeys(object) {
+	  return baseGetAllKeys(object, keys, getSymbols);
+	}
+
+	module.exports = getAllKeys;
+
+
+/***/ },
+/* 211 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var arrayPush = __webpack_require__(212),
+	    isArray = __webpack_require__(33);
+
+	/**
+	 * The base implementation of `getAllKeys` and `getAllKeysIn` which uses
+	 * `keysFunc` and `symbolsFunc` to get the enumerable property names and
+	 * symbols of `object`.
+	 *
+	 * @private
+	 * @param {Object} object The object to query.
+	 * @param {Function} keysFunc The function to get the keys of `object`.
+	 * @param {Function} symbolsFunc The function to get the symbols of `object`.
+	 * @returns {Array} Returns the array of property names and symbols.
+	 */
+	function baseGetAllKeys(object, keysFunc, symbolsFunc) {
+	  var result = keysFunc(object);
+	  return isArray(object) ? result : arrayPush(result, symbolsFunc(object));
+	}
+
+	module.exports = baseGetAllKeys;
+
+
+/***/ },
+/* 212 */
+/***/ function(module, exports) {
+
+	/**
+	 * Appends the elements of `values` to `array`.
+	 *
+	 * @private
+	 * @param {Array} array The array to modify.
+	 * @param {Array} values The values to append.
+	 * @returns {Array} Returns `array`.
+	 */
+	function arrayPush(array, values) {
+	  var index = -1,
+	      length = values.length,
+	      offset = array.length;
+
+	  while (++index < length) {
+	    array[offset + index] = values[index];
+	  }
+	  return array;
+	}
+
+	module.exports = arrayPush;
+
+
+/***/ },
+/* 213 */
+/***/ function(module, exports) {
+
+	/** Used for built-in method references. */
+	var objectProto = Object.prototype;
+
+	/** Used to check objects for own properties. */
+	var hasOwnProperty = objectProto.hasOwnProperty;
+
+	/**
+	 * Initializes an array clone.
+	 *
+	 * @private
+	 * @param {Array} array The array to clone.
+	 * @returns {Array} Returns the initialized clone.
+	 */
+	function initCloneArray(array) {
+	  var length = array.length,
+	      result = array.constructor(length);
+
+	  // Add properties assigned by `RegExp#exec`.
+	  if (length && typeof array[0] == 'string' && hasOwnProperty.call(array, 'index')) {
+	    result.index = array.index;
+	    result.input = array.input;
+	  }
+	  return result;
+	}
+
+	module.exports = initCloneArray;
+
+
+/***/ },
+/* 214 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var cloneArrayBuffer = __webpack_require__(215),
+	    cloneDataView = __webpack_require__(216),
+	    cloneMap = __webpack_require__(217),
+	    cloneRegExp = __webpack_require__(219),
+	    cloneSet = __webpack_require__(220),
+	    cloneSymbol = __webpack_require__(222),
+	    cloneTypedArray = __webpack_require__(223);
+
+	/** `Object#toString` result references. */
+	var boolTag = '[object Boolean]',
+	    dateTag = '[object Date]',
+	    mapTag = '[object Map]',
+	    numberTag = '[object Number]',
+	    regexpTag = '[object RegExp]',
+	    setTag = '[object Set]',
+	    stringTag = '[object String]',
+	    symbolTag = '[object Symbol]';
+
+	var arrayBufferTag = '[object ArrayBuffer]',
+	    dataViewTag = '[object DataView]',
+	    float32Tag = '[object Float32Array]',
+	    float64Tag = '[object Float64Array]',
+	    int8Tag = '[object Int8Array]',
+	    int16Tag = '[object Int16Array]',
+	    int32Tag = '[object Int32Array]',
+	    uint8Tag = '[object Uint8Array]',
+	    uint8ClampedTag = '[object Uint8ClampedArray]',
+	    uint16Tag = '[object Uint16Array]',
+	    uint32Tag = '[object Uint32Array]';
+
+	/**
+	 * Initializes an object clone based on its `toStringTag`.
+	 *
+	 * **Note:** This function only supports cloning values with tags of
+	 * `Boolean`, `Date`, `Error`, `Number`, `RegExp`, or `String`.
+	 *
+	 * @private
+	 * @param {Object} object The object to clone.
+	 * @param {string} tag The `toStringTag` of the object to clone.
+	 * @param {Function} cloneFunc The function to clone values.
+	 * @param {boolean} [isDeep] Specify a deep clone.
+	 * @returns {Object} Returns the initialized clone.
+	 */
+	function initCloneByTag(object, tag, cloneFunc, isDeep) {
+	  var Ctor = object.constructor;
+	  switch (tag) {
+	    case arrayBufferTag:
+	      return cloneArrayBuffer(object);
+
+	    case boolTag:
+	    case dateTag:
+	      return new Ctor(+object);
+
+	    case dataViewTag:
+	      return cloneDataView(object, isDeep);
+
+	    case float32Tag: case float64Tag:
+	    case int8Tag: case int16Tag: case int32Tag:
+	    case uint8Tag: case uint8ClampedTag: case uint16Tag: case uint32Tag:
+	      return cloneTypedArray(object, isDeep);
+
+	    case mapTag:
+	      return cloneMap(object, isDeep, cloneFunc);
+
+	    case numberTag:
+	    case stringTag:
+	      return new Ctor(object);
+
+	    case regexpTag:
+	      return cloneRegExp(object);
+
+	    case setTag:
+	      return cloneSet(object, isDeep, cloneFunc);
+
+	    case symbolTag:
+	      return cloneSymbol(object);
+	  }
+	}
+
+	module.exports = initCloneByTag;
+
+
+/***/ },
+/* 215 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Uint8Array = __webpack_require__(89);
+
+	/**
+	 * Creates a clone of `arrayBuffer`.
+	 *
+	 * @private
+	 * @param {ArrayBuffer} arrayBuffer The array buffer to clone.
+	 * @returns {ArrayBuffer} Returns the cloned array buffer.
+	 */
+	function cloneArrayBuffer(arrayBuffer) {
+	  var result = new arrayBuffer.constructor(arrayBuffer.byteLength);
+	  new Uint8Array(result).set(new Uint8Array(arrayBuffer));
+	  return result;
+	}
+
+	module.exports = cloneArrayBuffer;
+
+
+/***/ },
+/* 216 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var cloneArrayBuffer = __webpack_require__(215);
+
+	/**
+	 * Creates a clone of `dataView`.
+	 *
+	 * @private
+	 * @param {Object} dataView The data view to clone.
+	 * @param {boolean} [isDeep] Specify a deep clone.
+	 * @returns {Object} Returns the cloned data view.
+	 */
+	function cloneDataView(dataView, isDeep) {
+	  var buffer = isDeep ? cloneArrayBuffer(dataView.buffer) : dataView.buffer;
+	  return new dataView.constructor(buffer, dataView.byteOffset, dataView.byteLength);
+	}
+
+	module.exports = cloneDataView;
+
+
+/***/ },
+/* 217 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var addMapEntry = __webpack_require__(218),
+	    arrayReduce = __webpack_require__(163),
+	    mapToArray = __webpack_require__(90);
+
+	/**
+	 * Creates a clone of `map`.
+	 *
+	 * @private
+	 * @param {Object} map The map to clone.
+	 * @param {Function} cloneFunc The function to clone values.
+	 * @param {boolean} [isDeep] Specify a deep clone.
+	 * @returns {Object} Returns the cloned map.
+	 */
+	function cloneMap(map, isDeep, cloneFunc) {
+	  var array = isDeep ? cloneFunc(mapToArray(map), true) : mapToArray(map);
+	  return arrayReduce(array, addMapEntry, new map.constructor);
+	}
+
+	module.exports = cloneMap;
+
+
+/***/ },
+/* 218 */
+/***/ function(module, exports) {
+
+	/**
+	 * Adds the key-value `pair` to `map`.
+	 *
+	 * @private
+	 * @param {Object} map The map to modify.
+	 * @param {Array} pair The key-value pair to add.
+	 * @returns {Object} Returns `map`.
+	 */
+	function addMapEntry(map, pair) {
+	  // Don't return `Map#set` because it doesn't return the map instance in IE 11.
+	  map.set(pair[0], pair[1]);
+	  return map;
+	}
+
+	module.exports = addMapEntry;
+
+
+/***/ },
+/* 219 */
+/***/ function(module, exports) {
+
+	/** Used to match `RegExp` flags from their coerced string values. */
+	var reFlags = /\w*$/;
+
+	/**
+	 * Creates a clone of `regexp`.
+	 *
+	 * @private
+	 * @param {Object} regexp The regexp to clone.
+	 * @returns {Object} Returns the cloned regexp.
+	 */
+	function cloneRegExp(regexp) {
+	  var result = new regexp.constructor(regexp.source, reFlags.exec(regexp));
+	  result.lastIndex = regexp.lastIndex;
+	  return result;
+	}
+
+	module.exports = cloneRegExp;
+
+
+/***/ },
+/* 220 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var addSetEntry = __webpack_require__(221),
+	    arrayReduce = __webpack_require__(163),
+	    setToArray = __webpack_require__(91);
+
+	/**
+	 * Creates a clone of `set`.
+	 *
+	 * @private
+	 * @param {Object} set The set to clone.
+	 * @param {Function} cloneFunc The function to clone values.
+	 * @param {boolean} [isDeep] Specify a deep clone.
+	 * @returns {Object} Returns the cloned set.
+	 */
+	function cloneSet(set, isDeep, cloneFunc) {
+	  var array = isDeep ? cloneFunc(setToArray(set), true) : setToArray(set);
+	  return arrayReduce(array, addSetEntry, new set.constructor);
+	}
+
+	module.exports = cloneSet;
+
+
+/***/ },
+/* 221 */
+/***/ function(module, exports) {
+
+	/**
+	 * Adds `value` to `set`.
+	 *
+	 * @private
+	 * @param {Object} set The set to modify.
+	 * @param {*} value The value to add.
+	 * @returns {Object} Returns `set`.
+	 */
+	function addSetEntry(set, value) {
+	  set.add(value);
+	  return set;
+	}
+
+	module.exports = addSetEntry;
+
+
+/***/ },
+/* 222 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Symbol = __webpack_require__(88);
+
+	/** Used to convert symbols to primitives and strings. */
+	var symbolProto = Symbol ? Symbol.prototype : undefined,
+	    symbolValueOf = symbolProto ? symbolProto.valueOf : undefined;
+
+	/**
+	 * Creates a clone of the `symbol` object.
+	 *
+	 * @private
+	 * @param {Object} symbol The symbol object to clone.
+	 * @returns {Object} Returns the cloned symbol object.
+	 */
+	function cloneSymbol(symbol) {
+	  return symbolValueOf ? Object(symbolValueOf.call(symbol)) : {};
+	}
+
+	module.exports = cloneSymbol;
+
+
+/***/ },
+/* 223 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var cloneArrayBuffer = __webpack_require__(215);
+
+	/**
+	 * Creates a clone of `typedArray`.
+	 *
+	 * @private
+	 * @param {Object} typedArray The typed array to clone.
+	 * @param {boolean} [isDeep] Specify a deep clone.
+	 * @returns {Object} Returns the cloned typed array.
+	 */
+	function cloneTypedArray(typedArray, isDeep) {
+	  var buffer = isDeep ? cloneArrayBuffer(typedArray.buffer) : typedArray.buffer;
+	  return new typedArray.constructor(buffer, typedArray.byteOffset, typedArray.length);
+	}
+
+	module.exports = cloneTypedArray;
+
+
+/***/ },
+/* 224 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var baseCreate = __webpack_require__(225),
+	    getPrototype = __webpack_require__(20),
+	    isPrototype = __webpack_require__(36);
+
+	/**
+	 * Initializes an object clone.
+	 *
+	 * @private
+	 * @param {Object} object The object to clone.
+	 * @returns {Object} Returns the initialized clone.
+	 */
+	function initCloneObject(object) {
+	  return (typeof object.constructor == 'function' && !isPrototype(object))
+	    ? baseCreate(getPrototype(object))
+	    : {};
+	}
+
+	module.exports = initCloneObject;
+
+
+/***/ },
+/* 225 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var isObject = __webpack_require__(30);
+
+	/** Built-in value references. */
+	var objectCreate = Object.create;
+
+	/**
+	 * The base implementation of `_.create` without support for assigning
+	 * properties to the created object.
+	 *
+	 * @private
+	 * @param {Object} prototype The object to inherit from.
+	 * @returns {Object} Returns the new object.
+	 */
+	function baseCreate(proto) {
+	  return isObject(proto) ? objectCreate(proto) : {};
+	}
+
+	module.exports = baseCreate;
+
+
+/***/ },
+/* 226 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -19913,81 +18986,75 @@ var Kinvey =
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.DataStore = exports.DataStoreType = undefined;
+	exports.DataStoreManager = exports.SyncStore = exports.CacheStore = exports.NetworkStore = exports.DataStore = exports.DataStoreType = undefined;
 
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	/* eslint-disable no-underscore-dangle */
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /* eslint-disable no-underscore-dangle */
+	// eslint-disable-line no-unused-vars
 
 
-	var _errors = __webpack_require__(5);
+	var _errors = __webpack_require__(7);
 
-	var _cache = __webpack_require__(251);
+	var _cache = __webpack_require__(227);
 
-	var _cache2 = _interopRequireDefault(_cache);
+	var _deltafetch = __webpack_require__(228);
 
-	var _deltafetch = __webpack_require__(252);
+	var _network = __webpack_require__(198);
 
-	var _network = __webpack_require__(247);
+	var _request = __webpack_require__(151);
 
-	var _request8 = __webpack_require__(149);
+	var _query4 = __webpack_require__(10);
 
-	var _query4 = __webpack_require__(8);
+	var _observable = __webpack_require__(229);
 
-	var _observable = __webpack_require__(253);
+	var _client = __webpack_require__(139);
 
-	var _metadata = __webpack_require__(248);
+	var _sync = __webpack_require__(246);
 
-	var _client = __webpack_require__(137);
+	var _metadata = __webpack_require__(201);
 
-	var _client2 = _interopRequireDefault(_client);
+	var _regeneratorRuntime = __webpack_require__(2);
 
-	var _es6Symbol = __webpack_require__(221);
+	var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
 
-	var _es6Symbol2 = _interopRequireDefault(_es6Symbol);
-
-	var _sync = __webpack_require__(270);
-
-	var _sync2 = _interopRequireDefault(_sync);
-
-	var _differenceBy = __webpack_require__(279);
+	var _differenceBy = __webpack_require__(255);
 
 	var _differenceBy2 = _interopRequireDefault(_differenceBy);
 
-	var _keyBy = __webpack_require__(162);
+	var _keyBy = __webpack_require__(178);
 
 	var _keyBy2 = _interopRequireDefault(_keyBy);
 
-	var _isString = __webpack_require__(32);
+	var _isString = __webpack_require__(34);
 
 	var _isString2 = _interopRequireDefault(_isString);
 
-	var _url = __webpack_require__(142);
+	var _url = __webpack_require__(144);
 
 	var _url2 = _interopRequireDefault(_url);
 
-	var _filter = __webpack_require__(289);
+	var _filter = __webpack_require__(265);
 
 	var _filter2 = _interopRequireDefault(_filter);
 
-	var _map = __webpack_require__(210);
+	var _map = __webpack_require__(175);
 
 	var _map2 = _interopRequireDefault(_map);
 
-	var _result = __webpack_require__(136);
-
-	var _result2 = _interopRequireDefault(_result);
-
-	var _isArray = __webpack_require__(31);
-
-	var _isArray2 = _interopRequireDefault(_isArray);
-
-	var _xorWith = __webpack_require__(292);
+	var _xorWith = __webpack_require__(268);
 
 	var _xorWith2 = _interopRequireDefault(_xorWith);
 
+	var _isArray = __webpack_require__(33);
+
+	var _isArray2 = _interopRequireDefault(_isArray);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
 
@@ -19995,8 +19062,6 @@ var Kinvey =
 
 	var idAttribute = process.env.KINVEY_ID_ATTRIBUTE || '_id';
 	var appdataNamespace = process.env.KINVEY_DATASTORE_NAMESPACE || 'appdata';
-	var cacheEnabledSymbol = (0, _es6Symbol2.default)();
-	var onlineSymbol = (0, _es6Symbol2.default)();
 
 	/**
 	 * @typedef   {Object}    DataStoreType
@@ -20012,12 +19077,10 @@ var Kinvey =
 	Object.freeze(DataStoreType);
 	exports.DataStoreType = DataStoreType;
 
-	/**
-	 * The DataStore class is used to find, create, update, remove, count and group entities.
-	 */
-
-	var DataStore = function () {
+	var DataStore = exports.DataStore = function () {
 	  function DataStore(collection) {
+	    var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
 	    _classCallCheck(this, DataStore);
 
 	    if (collection && !(0, _isString2.default)(collection)) {
@@ -20030,31 +19093,9 @@ var Kinvey =
 	    this.collection = collection;
 
 	    /**
-	     * @type {number|undefined}
-	     */
-	    this.ttl = undefined;
-
-	    /**
-	     * @type {boolean}
-	     */
-	    this.useDeltaFetch = false;
-
-	    /**
-	     * @private
 	     * @type {Client}
 	     */
-	    this.client = _client2.default.sharedInstance();
-
-	    /**
-	     * @private
-	     * @type {Sync}
-	     */
-	    this.dataStoreSync = new _sync2.default();
-	    this.dataStoreSync.client = this.client;
-
-	    // The store is online and has the cache enabled by default.
-	    this.online();
-	    this.enableCache();
+	    this.client = options.client || _client.Client.sharedInstance();
 	  }
 
 	  /**
@@ -20064,295 +19105,298 @@ var Kinvey =
 
 
 	  _createClass(DataStore, [{
-	    key: 'disableCache',
+	    key: 'find',
+	    value: function () {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee() {
+	        return _regeneratorRuntime2.default.wrap(function _callee$(_context) {
+	          while (1) {
+	            switch (_context.prev = _context.next) {
+	              case 0:
+	                throw new _errors.KinveyError('A subclass of DataStore must override the find function.');
 
+	              case 1:
+	              case 'end':
+	                return _context.stop();
+	            }
+	          }
+	        }, _callee, this);
+	      }));
 
-	    /**
-	     * Disable the cache for the data store.
-	     * @return  {DataStore}  DataStore instance.
-	     */
-	    value: function disableCache() {
-	      if (!this.isOnline()) {
-	        throw new _errors.KinveyError('Unable to disable the cache when the store is offline. Please make the store ' + 'online by calling `store.online()`.');
+	      function find() {
+	        return ref.apply(this, arguments);
 	      }
 
-	      this[cacheEnabledSymbol] = false;
-	      return this;
-	    }
-
-	    /**
-	     * Enable the cache for the data store.
-	     * @return  {DataStore}  DataStore instance.
-	     */
-
+	      return find;
+	    }()
 	  }, {
-	    key: 'enableCache',
-	    value: function enableCache() {
-	      this[cacheEnabledSymbol] = true;
-	      return this;
-	    }
+	    key: 'findById',
+	    value: function () {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee2() {
+	        return _regeneratorRuntime2.default.wrap(function _callee2$(_context2) {
+	          while (1) {
+	            switch (_context2.prev = _context2.next) {
+	              case 0:
+	                throw new _errors.KinveyError('A subclass of DataStore must override the findById function.');
 
-	    /**
-	     * Check if the cache is enabled or disabled for the data store.
-	     * @return  {Boolean}  True or false depending on if the cache is enabled or disabled.
-	     */
+	              case 1:
+	              case 'end':
+	                return _context2.stop();
+	            }
+	          }
+	        }, _callee2, this);
+	      }));
 
-	  }, {
-	    key: 'isCacheEnabled',
-	    value: function isCacheEnabled() {
-	      return this[cacheEnabledSymbol];
-	    }
-
-	    /**
-	     * Make the data store go offline.
-	     * @return  {DataStore}  DataStore instance.
-	     */
-
-	  }, {
-	    key: 'offline',
-	    value: function offline() {
-	      if (!this.isCacheEnabled()) {
-	        throw new _errors.KinveyError('Unable to go offline when the cache for the store is disabled. Please enable the cache ' + 'by calling `store.enableCache()`.');
+	      function findById() {
+	        return ref.apply(this, arguments);
 	      }
 
-	      this[onlineSymbol] = false;
-	      return this;
-	    }
-
-	    /**
-	     * Make the data store go online.
-	     * @return  {DataStore}  DataStore instance.
-	     */
-
+	      return findById;
+	    }()
 	  }, {
-	    key: 'online',
-	    value: function online() {
-	      this[onlineSymbol] = true;
-	      return this;
-	    }
+	    key: 'create',
+	    value: function () {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee3() {
+	        return _regeneratorRuntime2.default.wrap(function _callee3$(_context3) {
+	          while (1) {
+	            switch (_context3.prev = _context3.next) {
+	              case 0:
+	                throw new _errors.KinveyError('A subclass of DataStore must override the create function.');
 
-	    /**
-	     * Check if the data store is online or offline.
-	     * @return  {Boolean}  True or false depending on if the data store is online or offline.
-	     */
+	              case 1:
+	              case 'end':
+	                return _context3.stop();
+	            }
+	          }
+	        }, _callee3, this);
+	      }));
 
+	      function create() {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return create;
+	    }()
 	  }, {
-	    key: 'isOnline',
-	    value: function isOnline() {
-	      return this[onlineSymbol];
-	    }
+	    key: 'update',
+	    value: function () {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee4() {
+	        return _regeneratorRuntime2.default.wrap(function _callee4$(_context4) {
+	          while (1) {
+	            switch (_context4.prev = _context4.next) {
+	              case 0:
+	                throw new _errors.KinveyError('A subclass of DataStore must override the update function.');
+
+	              case 1:
+	              case 'end':
+	                return _context4.stop();
+	            }
+	          }
+	        }, _callee4, this);
+	      }));
+
+	      function update() {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return update;
+	    }()
 
 	    /**
-	     * Find all entities in the data store. A query can be optionally provided to return
-	     * a subset of all entities in a collection or omitted to return all entities in
-	     * a collection. The number of entities returned adheres to the limits specified
-	     * at http://devcenter.kinvey.com/rest/guides/datastore#queryrestrictions.
+	     * Save a single or an array of entities on the data store.
 	     *
-	     * @param   {Query}                 [query]                             Query used to filter entities.
-	     * @param   {Object}                [options]                           Options
-	     * @param   {Properties}            [options.properties]                Custom properties to send with
-	     *                                                                      the request.
-	     * @param   {Number}                [options.timeout]                   Timeout for the request.
-	     * @param   {Boolean}               [options.useDeltaFetch]             Turn on or off the use of delta fetch.
-	     * @return  {Observable}                                                Observable.
+	     * @param   {Object|Array}          data                              Data that you want to save on the data store.
+	     * @param   {Object}                [options]                         Options
+	     * @param   {Properties}            [options.properties]              Custom properties to send with
+	     *                                                                    the request.
+	     * @param   {Number}                [options.timeout]                 Timeout for the request.
+	     * @return  {Promise}                                                 Promise.
 	     */
 
 	  }, {
+	    key: 'save',
+	    value: function save(data, options) {
+	      if (data[idAttribute]) {
+	        return this.update(data, options);
+	      }
+
+	      return this.create(data, options);
+	    }
+	  }, {
+	    key: 'remove',
+	    value: function () {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee5() {
+	        return _regeneratorRuntime2.default.wrap(function _callee5$(_context5) {
+	          while (1) {
+	            switch (_context5.prev = _context5.next) {
+	              case 0:
+	                throw new _errors.KinveyError('A subclass of DataStore must override the remove function.');
+
+	              case 1:
+	              case 'end':
+	                return _context5.stop();
+	            }
+	          }
+	        }, _callee5, this);
+	      }));
+
+	      function remove() {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return remove;
+	    }()
+	  }, {
+	    key: 'removeById',
+	    value: function () {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee6() {
+	        return _regeneratorRuntime2.default.wrap(function _callee6$(_context6) {
+	          while (1) {
+	            switch (_context6.prev = _context6.next) {
+	              case 0:
+	                throw new _errors.KinveyError('A subclass of DataStore must override the removeById function.');
+
+	              case 1:
+	              case 'end':
+	                return _context6.stop();
+	            }
+	          }
+	        }, _callee6, this);
+	      }));
+
+	      function removeById() {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return removeById;
+	    }()
+	  }, {
+	    key: 'pathname',
+	    get: function get() {
+	      var pathname = '/' + appdataNamespace + '/' + this.client.appKey;
+
+	      if (this.collection) {
+	        pathname = pathname + '/' + this.collection;
+	      }
+
+	      return pathname;
+	    }
+	  }]);
+
+	  return DataStore;
+	}();
+
+	var NetworkStore = exports.NetworkStore = function (_DataStore) {
+	  _inherits(NetworkStore, _DataStore);
+
+	  function NetworkStore(collection) {
+	    var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+	    _classCallCheck(this, NetworkStore);
+
+	    /**
+	     * @type {boolean}
+	     */
+
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(NetworkStore).call(this, collection, options));
+
+	    _this.useDeltaFetch = !!options.useDeltaFetch || false;
+	    return _this;
+	  }
+	  /**
+	   * Find all entities in the data store. A query can be optionally provided to return
+	   * a subset of all entities in a collection or omitted to return all entities in
+	   * a collection. The number of entities returned adheres to the limits specified
+	   * at http://devcenter.kinvey.com/rest/guides/datastore#queryrestrictions.
+	   *
+	   * @param   {Query}                 [query]                             Query used to filter entities.
+	   * @param   {Object}                [options]                           Options
+	   * @param   {Properties}            [options.properties]                Custom properties to send with
+	   *                                                                      the request.
+	   * @param   {Number}                [options.timeout]                   Timeout for the request.
+	   * @param   {Boolean}               [options.useDeltaFetch]             Turn on or off the use of delta fetch.
+	   * @return  {Observable}                                                Observable.
+	   */
+
+
+	  _createClass(NetworkStore, [{
 	    key: 'find',
 	    value: function find(query) {
-	      var _this = this;
+	      var _this2 = this;
 
 	      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
+	      var useDeltaFetch = options.useDeltaFetch || this.useDeltaFetch;
 	      var stream = _observable.KinveyObservable.create(function () {
-	        var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(observer) {
-	          var cacheData, networkData, count, config, request, response, useDeltaFetch, _config, _request, _response, removedData, removedIds, removeQuery, _config2, _request2;
-
-	          return regeneratorRuntime.wrap(function _callee$(_context) {
+	        var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee7(observer) {
+	          var config, request, response;
+	          return _regeneratorRuntime2.default.wrap(function _callee7$(_context7) {
 	            while (1) {
-	              switch (_context.prev = _context.next) {
+	              switch (_context7.prev = _context7.next) {
 	                case 0:
-	                  cacheData = [];
-	                  networkData = [];
-
-	                  // Check that the query is valid
+	                  _context7.prev = 0;
 
 	                  if (!(query && !(query instanceof _query4.Query))) {
-	                    _context.next = 4;
+	                    _context7.next = 3;
 	                    break;
 	                  }
 
-	                  return _context.abrupt('return', observer.error(new _errors.KinveyError('Invalid query. It must be an instance of the Query class.')));
+	                  throw new _errors.KinveyError('Invalid query. It must be an instance of the Query class.');
 
-	                case 4:
-	                  _context.prev = 4;
+	                case 3:
 
-	                  if (!_this.isCacheEnabled()) {
-	                    _context.next = 25;
-	                    break;
-	                  }
-
-	                  if (!_this.isOnline()) {
-	                    _context.next = 18;
-	                    break;
-	                  }
-
-	                  _context.next = 9;
-	                  return _this.syncCount();
-
-	                case 9:
-	                  count = _context.sent;
-
-	                  if (!(count > 0)) {
-	                    _context.next = 16;
-	                    break;
-	                  }
-
-	                  _context.next = 13;
-	                  return _this.push();
-
-	                case 13:
-	                  _context.next = 15;
-	                  return _this.syncCount();
-
-	                case 15:
-	                  count = _context.sent;
-
-	                case 16:
-	                  if (!(count > 0)) {
-	                    _context.next = 18;
-	                    break;
-	                  }
-
-	                  throw new _errors.KinveyError('Unable to load data from the network. ' + ('There are ' + count + ' entities that need ') + 'to be synced before data is loaded from the network.');
-
-	                case 18:
-	                  config = new _request8.KinveyRequestConfig({
-	                    method: _request8.RequestMethod.GET,
+	                  // Create the request
+	                  config = new _request.KinveyRequestConfig({
+	                    method: _request.RequestMethod.GET,
+	                    authType: _request.AuthType.Default,
 	                    url: _url2.default.format({
-	                      protocol: _this.client.protocol,
-	                      host: _this.client.host,
-	                      pathname: _this.pathname,
-	                      query: options.query
-	                    }),
-	                    properties: options.properties,
-	                    query: query,
-	                    timeout: options.timeout
-	                  });
-	                  request = new _cache2.default(config);
-	                  _context.next = 22;
-	                  return request.execute();
-
-	                case 22:
-	                  response = _context.sent;
-
-	                  cacheData = response.data;
-	                  observer.next(cacheData);
-
-	                case 25:
-	                  _context.next = 30;
-	                  break;
-
-	                case 27:
-	                  _context.prev = 27;
-	                  _context.t0 = _context['catch'](4);
-
-	                  observer.next([]);
-
-	                case 30:
-	                  _context.prev = 30;
-
-	                  if (!_this.isOnline()) {
-	                    _context.next = 51;
-	                    break;
-	                  }
-
-	                  useDeltaFetch = options.useDeltaFetch || !!_this.useDeltaFetch;
-	                  _config = new _request8.KinveyRequestConfig({
-	                    method: _request8.RequestMethod.GET,
-	                    authType: _request8.AuthType.Default,
-	                    url: _url2.default.format({
-	                      protocol: _this.client.protocol,
-	                      host: _this.client.host,
-	                      pathname: _this.pathname,
+	                      protocol: _this2.client.protocol,
+	                      host: _this2.client.host,
+	                      pathname: _this2.pathname,
 	                      query: options.query
 	                    }),
 	                    properties: options.properties,
 	                    query: query,
 	                    timeout: options.timeout,
-	                    client: _this.client
+	                    client: _this2.client
 	                  });
-	                  _request = new _network.NetworkRequest(_config);
+	                  request = new _network.NetworkRequest(config);
 
 	                  // Should we use delta fetch?
 
-	                  if (useDeltaFetch) {
-	                    _request = new _deltafetch.DeltaFetchRequest(_config);
+	                  if (useDeltaFetch === true) {
+	                    request = new _deltafetch.DeltaFetchRequest(config);
 	                  }
 
-	                  _context.next = 38;
-	                  return _request.execute();
+	                  // Execute the request
+	                  _context7.next = 8;
+	                  return request.execute();
 
-	                case 38:
-	                  _response = _context.sent;
+	                case 8:
+	                  response = _context7.sent;
 
-	                  networkData = _response.data;
 
-	                  if (!_this.isCacheEnabled()) {
-	                    _context.next = 50;
-	                    break;
-	                  }
-
-	                  // Remove data from the cache that no longer exists on the network and
-	                  // update the cache with data from the network
-	                  removedData = (0, _differenceBy2.default)(cacheData, networkData, idAttribute);
-	                  removedIds = Object.keys((0, _keyBy2.default)(removedData, idAttribute));
-	                  removeQuery = new _query4.Query().contains(idAttribute, removedIds);
-	                  _config2 = new _request8.KinveyRequestConfig({
-	                    method: _request8.RequestMethod.DELETE,
-	                    url: _url2.default.format({
-	                      protocol: _this.client.protocol,
-	                      host: _this.client.host,
-	                      pathname: _this.pathname,
-	                      query: options.query
-	                    }),
-	                    properties: options.properties,
-	                    query: removeQuery,
-	                    timeout: options.timeout
-	                  });
-	                  _request2 = new _cache2.default(_config2);
-	                  _context.next = 48;
-	                  return _request2.execute();
-
-	                case 48:
-	                  _context.next = 50;
-	                  return _this.updateCache(networkData);
-
-	                case 50:
-
-	                  observer.next(networkData);
-
-	                case 51:
-	                  _context.next = 56;
+	                  // Send the response
+	                  observer.next(response.data);
+	                  _context7.next = 15;
 	                  break;
 
-	                case 53:
-	                  _context.prev = 53;
-	                  _context.t1 = _context['catch'](30);
-	                  return _context.abrupt('return', observer.error(_context.t1));
+	                case 12:
+	                  _context7.prev = 12;
+	                  _context7.t0 = _context7['catch'](0);
+	                  return _context7.abrupt('return', observer.error(_context7.t0));
 
-	                case 56:
-	                  return _context.abrupt('return', observer.complete());
+	                case 15:
+	                  return _context7.abrupt('return', observer.complete());
 
-	                case 57:
+	                case 16:
 	                case 'end':
-	                  return _context.stop();
+	                  return _context7.stop();
 	              }
 	            }
-	          }, _callee, _this, [[4, 27], [30, 53]]);
+	          }, _callee7, _this2, [[0, 12]]);
 	        }));
 
-	        return function (_x2) {
+	        return function (_x4) {
 	          return ref.apply(this, arguments);
 	        };
 	      }());
@@ -20375,190 +19419,81 @@ var Kinvey =
 	  }, {
 	    key: 'findById',
 	    value: function findById(id) {
-	      var _this2 = this;
+	      var _this3 = this;
 
 	      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
+	      var useDeltaFetch = options.useDeltaFetch || this.useDeltaFetch;
 	      var stream = _observable.KinveyObservable.create(function () {
-	        var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(observer) {
-	          var count, config, request, response, useDeltaFetch, _config3, _request3, _response2, data, _config4, _request4;
-
-	          return regeneratorRuntime.wrap(function _callee2$(_context2) {
+	        var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee8(observer) {
+	          var config, request, response, data;
+	          return _regeneratorRuntime2.default.wrap(function _callee8$(_context8) {
 	            while (1) {
-	              switch (_context2.prev = _context2.next) {
+	              switch (_context8.prev = _context8.next) {
 	                case 0:
+	                  _context8.prev = 0;
+
 	                  if (id) {
-	                    _context2.next = 4;
+	                    _context8.next = 5;
 	                    break;
 	                  }
-
-	                  observer.next(null);
-	                  _context2.next = 53;
-	                  break;
-
-	                case 4:
-	                  _context2.prev = 4;
-
-	                  if (!_this2.isCacheEnabled()) {
-	                    _context2.next = 24;
-	                    break;
-	                  }
-
-	                  if (!_this2.isOnline()) {
-	                    _context2.next = 18;
-	                    break;
-	                  }
-
-	                  _context2.next = 9;
-	                  return _this2.syncCount();
-
-	                case 9:
-	                  count = _context2.sent;
-
-	                  if (!(count > 0)) {
-	                    _context2.next = 16;
-	                    break;
-	                  }
-
-	                  _context2.next = 13;
-	                  return _this2.push();
-
-	                case 13:
-	                  _context2.next = 15;
-	                  return _this2.syncCount();
-
-	                case 15:
-	                  count = _context2.sent;
-
-	                case 16:
-	                  if (!(count > 0)) {
-	                    _context2.next = 18;
-	                    break;
-	                  }
-
-	                  throw new _errors.KinveyError('Unable to load data. ' + ('There are ' + count + ' entities that need ') + 'to be synced before data can be loaded.');
-
-	                case 18:
-	                  config = new _request8.KinveyRequestConfig({
-	                    method: _request8.RequestMethod.GET,
-	                    url: _url2.default.format({
-	                      protocol: _this2.client.protocol,
-	                      host: _this2.client.host,
-	                      pathname: _this2.pathname + '/' + id,
-	                      query: options.query
-	                    }),
-	                    properties: options.properties,
-	                    timeout: options.timeout
-	                  });
-	                  request = new _cache2.default(config);
-	                  _context2.next = 22;
-	                  return request.execute();
-
-	                case 22:
-	                  response = _context2.sent;
-
-	                  observer.next(response.data);
-
-	                case 24:
-	                  _context2.next = 29;
-	                  break;
-
-	                case 26:
-	                  _context2.prev = 26;
-	                  _context2.t0 = _context2['catch'](4);
 
 	                  observer.next(undefined);
+	                  _context8.next = 13;
+	                  break;
 
-	                case 29:
-	                  _context2.prev = 29;
-
-	                  if (!_this2.isOnline()) {
-	                    _context2.next = 43;
-	                    break;
-	                  }
-
-	                  useDeltaFetch = options.useDeltaFetch || !!_this2.useDeltaFetch;
-	                  _config3 = new _request8.KinveyRequestConfig({
-	                    method: _request8.RequestMethod.GET,
-	                    authType: _request8.AuthType.Default,
+	                case 5:
+	                  // Fetch data from the network
+	                  config = new _request.KinveyRequestConfig({
+	                    method: _request.RequestMethod.GET,
+	                    authType: _request.AuthType.Default,
 	                    url: _url2.default.format({
-	                      protocol: _this2.client.protocol,
-	                      host: _this2.client.host,
-	                      pathname: _this2.pathname + '/' + id,
+	                      protocol: _this3.client.protocol,
+	                      host: _this3.client.host,
+	                      pathname: _this3.pathname + '/' + id,
 	                      query: options.query
 	                    }),
 	                    properties: options.properties,
 	                    timeout: options.timeout,
-	                    client: _this2.client
+	                    client: _this3.client
 	                  });
-	                  _request3 = new _network.NetworkRequest(_config3);
+	                  request = new _network.NetworkRequest(config);
 
 
-	                  if (useDeltaFetch) {
-	                    _request3 = new _deltafetch.DeltaFetchRequest(_config3);
+	                  if (useDeltaFetch === true) {
+	                    request = new _deltafetch.DeltaFetchRequest(config);
 	                  }
 
-	                  _context2.next = 37;
-	                  return _request3.execute();
+	                  _context8.next = 10;
+	                  return request.execute();
 
-	                case 37:
-	                  _response2 = _context2.sent;
-	                  data = _response2.data;
+	                case 10:
+	                  response = _context8.sent;
+	                  data = response.data;
 
 	                  observer.next(data);
 
-	                  if (!_this2.isCacheEnabled()) {
-	                    _context2.next = 43;
-	                    break;
-	                  }
-
-	                  _context2.next = 43;
-	                  return _this2.updateCache(data);
-
-	                case 43:
-	                  _context2.next = 53;
+	                case 13:
+	                  _context8.next = 18;
 	                  break;
 
-	                case 45:
-	                  _context2.prev = 45;
-	                  _context2.t1 = _context2['catch'](29);
+	                case 15:
+	                  _context8.prev = 15;
+	                  _context8.t0 = _context8['catch'](0);
+	                  return _context8.abrupt('return', observer.error(_context8.t0));
 
-	                  if (!(_context2.t1 instanceof _errors.NotFoundError && _this2.isCacheEnabled())) {
-	                    _context2.next = 52;
-	                    break;
-	                  }
+	                case 18:
+	                  return _context8.abrupt('return', observer.complete());
 
-	                  _config4 = new _request8.KinveyRequestConfig({
-	                    method: _request8.RequestMethod.DELETE,
-	                    authType: _request8.AuthType.Default,
-	                    url: _url2.default.format({
-	                      protocol: _this2.client.protocol,
-	                      host: _this2.client.host,
-	                      pathname: _this2.pathname + '/' + id,
-	                      query: options.query
-	                    }),
-	                    properties: options.properties,
-	                    timeout: options.timeout
-	                  });
-	                  _request4 = new _cache2.default(_config4);
-	                  _context2.next = 52;
-	                  return _request4.execute();
-
-	                case 52:
-	                  return _context2.abrupt('return', observer.error(_context2.t1));
-
-	                case 53:
-	                  return _context2.abrupt('return', observer.complete());
-
-	                case 54:
+	                case 19:
 	                case 'end':
-	                  return _context2.stop();
+	                  return _context8.stop();
 	              }
 	            }
-	          }, _callee2, _this2, [[4, 26], [29, 45]]);
+	          }, _callee8, _this3, [[0, 15]]);
 	        }));
 
-	        return function (_x4) {
+	        return function (_x6) {
 	          return ref.apply(this, arguments);
 	        };
 	      }());
@@ -20583,153 +19518,77 @@ var Kinvey =
 	  }, {
 	    key: 'count',
 	    value: function count(query) {
-	      var _this3 = this;
+	      var _this4 = this;
 
 	      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
 	      var stream = _observable.KinveyObservable.create(function () {
-	        var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee3(observer) {
-	          var count, config, request, response, data, _config5, _request5, _response3, _data;
-
-	          return regeneratorRuntime.wrap(function _callee3$(_context3) {
+	        var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee9(observer) {
+	          var config, request, response, data;
+	          return _regeneratorRuntime2.default.wrap(function _callee9$(_context9) {
 	            while (1) {
-	              switch (_context3.prev = _context3.next) {
+	              switch (_context9.prev = _context9.next) {
 	                case 0:
+	                  _context9.prev = 0;
+
 	                  if (!(query && !(query instanceof _query4.Query))) {
-	                    _context3.next = 2;
+	                    _context9.next = 3;
 	                    break;
 	                  }
 
-	                  return _context3.abrupt('return', observer.error(new _errors.KinveyError('Invalid query. It must be an instance of the Query class.')));
+	                  throw new _errors.KinveyError('Invalid query. It must be an instance of the Query class.');
 
-	                case 2:
-	                  _context3.prev = 2;
+	                case 3:
 
-	                  if (!_this3.isCacheEnabled()) {
-	                    _context3.next = 23;
-	                    break;
-	                  }
-
-	                  if (!_this3.isOnline()) {
-	                    _context3.next = 16;
-	                    break;
-	                  }
-
-	                  _context3.next = 7;
-	                  return _this3.syncCount();
-
-	                case 7:
-	                  count = _context3.sent;
-
-	                  if (!(count > 0)) {
-	                    _context3.next = 14;
-	                    break;
-	                  }
-
-	                  _context3.next = 11;
-	                  return _this3.push();
-
-	                case 11:
-	                  _context3.next = 13;
-	                  return _this3.syncCount();
-
-	                case 13:
-	                  count = _context3.sent;
-
-	                case 14:
-	                  if (!(count > 0)) {
-	                    _context3.next = 16;
-	                    break;
-	                  }
-
-	                  throw new _errors.KinveyError('Unable to count data. ' + ('There are ' + count + ' entities that need ') + 'to be synced before data is counted.');
-
-	                case 16:
-	                  config = new _request8.KinveyRequestConfig({
-	                    method: _request8.RequestMethod.GET,
+	                  // Create the request
+	                  config = new _request.KinveyRequestConfig({
+	                    method: _request.RequestMethod.GET,
+	                    authType: _request.AuthType.Default,
 	                    url: _url2.default.format({
-	                      protocol: _this3.client.protocol,
-	                      host: _this3.client.host,
-	                      pathname: _this3.pathname + '/_count',
-	                      query: options.query
-	                    }),
-	                    properties: options.properties,
-	                    query: query,
-	                    timeout: options.timeout
-	                  });
-	                  request = new _cache2.default(config);
-	                  _context3.next = 20;
-	                  return request.execute();
-
-	                case 20:
-	                  response = _context3.sent;
-	                  data = response.data;
-
-	                  observer.next(data ? data.count : 0);
-
-	                case 23:
-	                  _context3.next = 28;
-	                  break;
-
-	                case 25:
-	                  _context3.prev = 25;
-	                  _context3.t0 = _context3['catch'](2);
-
-	                  observer.next(null);
-
-	                case 28:
-	                  _context3.prev = 28;
-
-	                  if (!_this3.isOnline()) {
-	                    _context3.next = 37;
-	                    break;
-	                  }
-
-	                  _config5 = new _request8.KinveyRequestConfig({
-	                    method: _request8.RequestMethod.GET,
-	                    authType: _request8.AuthType.Default,
-	                    url: _url2.default.format({
-	                      protocol: _this3.client.protocol,
-	                      host: _this3.client.host,
-	                      pathname: _this3.pathname + '/_count',
+	                      protocol: _this4.client.protocol,
+	                      host: _this4.client.host,
+	                      pathname: _this4.pathname + '/_count',
 	                      query: options.query
 	                    }),
 	                    properties: options.properties,
 	                    query: query,
 	                    timeout: options.timeout,
-	                    client: _this3.client
+	                    client: _this4.client
 	                  });
-	                  _request5 = new _network.NetworkRequest(_config5);
-	                  _context3.next = 34;
-	                  return _request5.execute();
+	                  request = new _network.NetworkRequest(config);
 
-	                case 34:
-	                  _response3 = _context3.sent;
-	                  _data = _response3.data;
+	                  // Execute the request
 
-	                  observer.next(_data ? _data.count : 0);
+	                  _context9.next = 7;
+	                  return request.execute();
 
-	                case 37:
-	                  _context3.next = 42;
+	                case 7:
+	                  response = _context9.sent;
+	                  data = response.data;
+
+	                  // Emit the count
+
+	                  observer.next(data ? data.count : 0);
+	                  _context9.next = 15;
 	                  break;
 
-	                case 39:
-	                  _context3.prev = 39;
-	                  _context3.t1 = _context3['catch'](28);
-	                  return _context3.abrupt('return', observer.error(_context3.t1));
+	                case 12:
+	                  _context9.prev = 12;
+	                  _context9.t0 = _context9['catch'](0);
+	                  return _context9.abrupt('return', observer.error(_context9.t0));
 
-	                case 42:
-	                  return _context3.abrupt('return', observer.complete());
+	                case 15:
+	                  return _context9.abrupt('return', observer.complete());
 
-	                case 43:
+	                case 16:
 	                case 'end':
-	                  return _context3.stop();
+	                  return _context9.stop();
 	              }
 	            }
-	          }, _callee3, _this3, [[2, 25], [28, 39]]);
+	          }, _callee9, _this4, [[0, 12]]);
 	        }));
 
-	        return function (_x6) {
+	        return function (_x8) {
 	          return ref.apply(this, arguments);
 	        };
 	      }());
@@ -20751,26 +19610,26 @@ var Kinvey =
 	  }, {
 	    key: 'create',
 	    value: function create(data) {
-	      var _this4 = this;
+	      var _this5 = this;
 
 	      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
 	      var stream = _observable.KinveyObservable.create(function () {
-	        var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee4(observer) {
-	          var singular, config, request, response, ids, query, push, responses;
-	          return regeneratorRuntime.wrap(function _callee4$(_context4) {
+	        var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee10(observer) {
+	          var singular, responses;
+	          return _regeneratorRuntime2.default.wrap(function _callee10$(_context10) {
 	            while (1) {
-	              switch (_context4.prev = _context4.next) {
+	              switch (_context10.prev = _context10.next) {
 	                case 0:
-	                  _context4.prev = 0;
+	                  _context10.prev = 0;
 
 	                  if (data) {
-	                    _context4.next = 5;
+	                    _context10.next = 5;
 	                    break;
 	                  }
 
 	                  observer.next(null);
-	                  _context4.next = 34;
+	                  _context10.next = 12;
 	                  break;
 
 	                case 5:
@@ -20782,95 +19641,28 @@ var Kinvey =
 	                    data = [data];
 	                  }
 
-	                  if (!_this4.isCacheEnabled()) {
-	                    _context4.next = 28;
-	                    break;
-	                  }
-
-	                  config = new _request8.KinveyRequestConfig({
-	                    method: _request8.RequestMethod.POST,
-	                    url: _url2.default.format({
-	                      protocol: _this4.client.protocol,
-	                      host: _this4.client.host,
-	                      pathname: _this4.pathname,
-	                      query: options.query
-	                    }),
-	                    properties: options.properties,
-	                    body: data,
-	                    timeout: options.timeout
-	                  });
-	                  request = new _cache2.default(config);
-	                  _context4.next = 12;
-	                  return request.execute();
-
-	                case 12:
-	                  response = _context4.sent;
-
-	                  data = response.data;
-
-	                  if (!(data.length > 0)) {
-	                    _context4.next = 25;
-	                    break;
-	                  }
-
-	                  _context4.next = 17;
-	                  return _this4.dataStoreSync.addCreateOperation(_this4.collection, data, options);
-
-	                case 17:
-	                  if (!_this4.isOnline()) {
-	                    _context4.next = 25;
-	                    break;
-	                  }
-
-	                  ids = Object.keys((0, _keyBy2.default)(data, idAttribute));
-	                  query = new _query4.Query().contains('entity._id', ids);
-	                  _context4.next = 22;
-	                  return _this4.push(query, options);
-
-	                case 22:
-	                  push = _context4.sent;
-
-	                  push = (0, _filter2.default)(push, function (result) {
-	                    return !result.error;
-	                  });
-	                  data = (0, _map2.default)(push, function (result) {
-	                    return result.entity;
-	                  });
-
-	                case 25:
-
-	                  observer.next(singular ? data[0] : data);
-	                  _context4.next = 34;
-	                  break;
-
-	                case 28:
-	                  if (!_this4.isOnline()) {
-	                    _context4.next = 34;
-	                    break;
-	                  }
-
-	                  _context4.next = 31;
+	                  _context10.next = 9;
 	                  return Promise.all((0, _map2.default)(data, function (entity) {
-	                    var config = new _request8.KinveyRequestConfig({
-	                      method: _request8.RequestMethod.POST,
-	                      authType: _request8.AuthType.Default,
+	                    var config = new _request.KinveyRequestConfig({
+	                      method: _request.RequestMethod.POST,
+	                      authType: _request.AuthType.Default,
 	                      url: _url2.default.format({
-	                        protocol: _this4.client.protocol,
-	                        host: _this4.client.host,
-	                        pathname: _this4.pathname,
+	                        protocol: _this5.client.protocol,
+	                        host: _this5.client.host,
+	                        pathname: _this5.pathname,
 	                        query: options.query
 	                      }),
 	                      properties: options.properties,
 	                      data: entity,
 	                      timeout: options.timeout,
-	                      client: _this4.client
+	                      client: _this5.client
 	                    });
 	                    var request = new _network.NetworkRequest(config);
 	                    return request.execute();
 	                  }));
 
-	                case 31:
-	                  responses = _context4.sent;
+	                case 9:
+	                  responses = _context10.sent;
 
 
 	                  data = (0, _map2.default)(responses, function (response) {
@@ -20878,27 +19670,27 @@ var Kinvey =
 	                  });
 	                  observer.next(singular ? data[0] : data);
 
-	                case 34:
-	                  _context4.next = 39;
+	                case 12:
+	                  _context10.next = 17;
 	                  break;
 
-	                case 36:
-	                  _context4.prev = 36;
-	                  _context4.t0 = _context4['catch'](0);
-	                  return _context4.abrupt('return', observer.error(_context4.t0));
+	                case 14:
+	                  _context10.prev = 14;
+	                  _context10.t0 = _context10['catch'](0);
+	                  return _context10.abrupt('return', observer.error(_context10.t0));
 
-	                case 39:
-	                  return _context4.abrupt('return', observer.complete());
+	                case 17:
+	                  return _context10.abrupt('return', observer.complete());
 
-	                case 40:
+	                case 18:
 	                case 'end':
-	                  return _context4.stop();
+	                  return _context10.stop();
 	              }
 	            }
-	          }, _callee4, _this4, [[0, 36]]);
+	          }, _callee10, _this5, [[0, 14]]);
 	        }));
 
-	        return function (_x8) {
+	        return function (_x10) {
 	          return ref.apply(this, arguments);
 	        };
 	      }());
@@ -20920,31 +19712,30 @@ var Kinvey =
 	  }, {
 	    key: 'update',
 	    value: function update(data) {
-	      var _this5 = this;
+	      var _this6 = this;
 
 	      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
 	      var stream = _observable.KinveyObservable.create(function () {
-	        var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee5(observer) {
-	          var singular, id, config, request, response, ids, query, push, responses;
-	          return regeneratorRuntime.wrap(function _callee5$(_context5) {
+	        var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee11(observer) {
+	          var singular, responses;
+	          return _regeneratorRuntime2.default.wrap(function _callee11$(_context11) {
 	            while (1) {
-	              switch (_context5.prev = _context5.next) {
+	              switch (_context11.prev = _context11.next) {
 	                case 0:
-	                  _context5.prev = 0;
+	                  _context11.prev = 0;
 
 	                  if (data) {
-	                    _context5.next = 5;
+	                    _context11.next = 5;
 	                    break;
 	                  }
 
 	                  observer.next(null);
-	                  _context5.next = 35;
+	                  _context11.next = 12;
 	                  break;
 
 	                case 5:
 	                  singular = false;
-	                  id = data[idAttribute];
 
 
 	                  if (!(0, _isArray2.default)(data)) {
@@ -20952,149 +19743,61 @@ var Kinvey =
 	                    data = [data];
 	                  }
 
-	                  if (!_this5.isCacheEnabled()) {
-	                    _context5.next = 29;
-	                    break;
-	                  }
-
-	                  config = new _request8.KinveyRequestConfig({
-	                    method: _request8.RequestMethod.PUT,
-	                    url: _url2.default.format({
-	                      protocol: _this5.client.protocol,
-	                      host: _this5.client.host,
-	                      pathname: id ? _this5.pathname + '/' + id : _this5.pathname,
-	                      query: options.query
-	                    }),
-	                    properties: options.properties,
-	                    body: data,
-	                    timeout: options.timeout
-	                  });
-	                  request = new _cache2.default(config);
-	                  _context5.next = 13;
-	                  return request.execute();
-
-	                case 13:
-	                  response = _context5.sent;
-
-	                  data = response.data;
-
-	                  if (!(data.length > 0)) {
-	                    _context5.next = 26;
-	                    break;
-	                  }
-
-	                  _context5.next = 18;
-	                  return _this5.dataStoreSync.addUpdateOperation(_this5.collection, data, options);
-
-	                case 18:
-	                  if (!_this5.isOnline()) {
-	                    _context5.next = 26;
-	                    break;
-	                  }
-
-	                  ids = Object.keys((0, _keyBy2.default)(data, idAttribute));
-	                  query = new _query4.Query().contains('entity._id', ids);
-	                  _context5.next = 23;
-	                  return _this5.push(query, options);
-
-	                case 23:
-	                  push = _context5.sent;
-
-	                  push = (0, _filter2.default)(push, function (result) {
-	                    return !result.error;
-	                  });
-	                  data = (0, _map2.default)(push, function (result) {
-	                    return result.entity;
-	                  });
-
-	                case 26:
-
-	                  observer.next(singular ? data[0] : data);
-	                  _context5.next = 35;
-	                  break;
-
-	                case 29:
-	                  if (!_this5.isOnline()) {
-	                    _context5.next = 35;
-	                    break;
-	                  }
-
-	                  _context5.next = 32;
+	                  _context11.next = 9;
 	                  return Promise.all((0, _map2.default)(data, function (entity) {
-	                    var id = entity[idAttribute];
-	                    var config = new _request8.KinveyRequestConfig({
-	                      method: _request8.RequestMethod.PUT,
-	                      authType: _request8.AuthType.Default,
+	                    var config = new _request.KinveyRequestConfig({
+	                      method: _request.RequestMethod.PUT,
+	                      authType: _request.AuthType.Default,
 	                      url: _url2.default.format({
-	                        protocol: _this5.client.protocol,
-	                        host: _this5.client.host,
-	                        pathname: id ? _this5.pathname + '/' + id : _this5.pathname,
+	                        protocol: _this6.client.protocol,
+	                        host: _this6.client.host,
+	                        pathname: _this6.pathname + '/' + entity[idAttribute],
 	                        query: options.query
 	                      }),
 	                      properties: options.properties,
 	                      data: entity,
 	                      timeout: options.timeout,
-	                      client: _this5.client
+	                      client: _this6.client
 	                    });
 	                    var request = new _network.NetworkRequest(config);
 	                    return request.execute();
 	                  }));
 
-	                case 32:
-	                  responses = _context5.sent;
+	                case 9:
+	                  responses = _context11.sent;
+
 
 	                  data = (0, _map2.default)(responses, function (response) {
 	                    return response.data;
 	                  });
 	                  observer.next(singular ? data[0] : data);
 
-	                case 35:
-	                  _context5.next = 40;
+	                case 12:
+	                  _context11.next = 17;
 	                  break;
 
-	                case 37:
-	                  _context5.prev = 37;
-	                  _context5.t0 = _context5['catch'](0);
-	                  return _context5.abrupt('return', observer.error(_context5.t0));
+	                case 14:
+	                  _context11.prev = 14;
+	                  _context11.t0 = _context11['catch'](0);
+	                  return _context11.abrupt('return', observer.error(_context11.t0));
 
-	                case 40:
-	                  return _context5.abrupt('return', observer.complete());
+	                case 17:
+	                  return _context11.abrupt('return', observer.complete());
 
-	                case 41:
+	                case 18:
 	                case 'end':
-	                  return _context5.stop();
+	                  return _context11.stop();
 	              }
 	            }
-	          }, _callee5, _this5, [[0, 37]]);
+	          }, _callee11, _this6, [[0, 14]]);
 	        }));
 
-	        return function (_x10) {
+	        return function (_x12) {
 	          return ref.apply(this, arguments);
 	        };
 	      }());
 
 	      return stream.toPromise();
-	    }
-
-	    /**
-	     * Save a single or an array of entities on the data store.
-	     *
-	     * @param   {Object|Array}          data                              Data that you want to save on the data store.
-	     * @param   {Object}                [options]                         Options
-	     * @param   {Properties}            [options.properties]              Custom properties to send with
-	     *                                                                    the request.
-	     * @param   {Number}                [options.timeout]                 Timeout for the request.
-	     * @return  {Promise}                                                 Promise.
-	     */
-
-	  }, {
-	    key: 'save',
-	    value: function save(data, options) {
-	      if (data[idAttribute]) {
-	        return this.update(data, options);
-	      }
-
-	      return this.create(data, options);
 	    }
 
 	    /**
@@ -21114,153 +19817,69 @@ var Kinvey =
 	  }, {
 	    key: 'remove',
 	    value: function remove(query) {
-	      var _this6 = this;
+	      var _this7 = this;
 
 	      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
 	      var stream = _observable.KinveyObservable.create(function () {
-	        var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee6(observer) {
-	          var config, request, response, data, localData, _query, syncData, ids, _query2, push, _config6, _request6, _response4;
-
-	          return regeneratorRuntime.wrap(function _callee6$(_context6) {
+	        var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee12(observer) {
+	          var config, request, response;
+	          return _regeneratorRuntime2.default.wrap(function _callee12$(_context12) {
 	            while (1) {
-	              switch (_context6.prev = _context6.next) {
+	              switch (_context12.prev = _context12.next) {
 	                case 0:
-	                  _context6.prev = 0;
+	                  _context12.prev = 0;
 
 	                  if (!(query && !(query instanceof _query4.Query))) {
-	                    _context6.next = 5;
+	                    _context12.next = 3;
 	                    break;
 	                  }
 
 	                  throw new _errors.KinveyError('Invalid query. It must be an instance of the Query class.');
 
-	                case 5:
-	                  if (!_this6.isCacheEnabled()) {
-	                    _context6.next = 31;
-	                    break;
-	                  }
-
-	                  config = new _request8.KinveyRequestConfig({
-	                    method: _request8.RequestMethod.DELETE,
+	                case 3:
+	                  config = new _request.KinveyRequestConfig({
+	                    method: _request.RequestMethod.DELETE,
+	                    authType: _request.AuthType.Default,
 	                    url: _url2.default.format({
-	                      protocol: _this6.client.protocol,
-	                      host: _this6.client.host,
-	                      pathname: _this6.pathname,
-	                      query: options.query
-	                    }),
-	                    properties: options.properties,
-	                    query: query,
-	                    timeout: options.timeout
-	                  });
-	                  request = new _cache2.default(config);
-	                  _context6.next = 10;
-	                  return request.execute();
-
-	                case 10:
-	                  response = _context6.sent;
-	                  data = response.data;
-
-	                  if (!(data.length > 0)) {
-	                    _context6.next = 28;
-	                    break;
-	                  }
-
-	                  // Clear local data from the sync table
-	                  localData = (0, _filter2.default)(data, function (entity) {
-	                    var metadata = new _metadata.Metadata(entity);
-	                    return metadata.isLocal();
-	                  });
-	                  _query = new _query4.Query().contains('entity._id', Object.keys((0, _keyBy2.default)(localData, idAttribute)));
-	                  _context6.next = 17;
-	                  return _this6.dataStoreSync.clear(_query, options);
-
-	                case 17:
-
-	                  // Create delete operations for non local data in the sync table
-	                  syncData = (0, _xorWith2.default)(data, localData, function (entity, localEntity) {
-	                    return entity[idAttribute] === localEntity[idAttribute];
-	                  });
-	                  _context6.next = 20;
-	                  return _this6.dataStoreSync.addDeleteOperation(_this6.collection, syncData, options);
-
-	                case 20:
-	                  if (!_this6.isOnline()) {
-	                    _context6.next = 28;
-	                    break;
-	                  }
-
-	                  ids = Object.keys((0, _keyBy2.default)(syncData, idAttribute));
-	                  _query2 = new _query4.Query().contains('entity._id', ids);
-	                  _context6.next = 25;
-	                  return _this6.push(_query2, options);
-
-	                case 25:
-	                  push = _context6.sent;
-
-	                  push = (0, _filter2.default)(push, function (result) {
-	                    return !result.error;
-	                  });
-	                  data = (0, _map2.default)(push, function (result) {
-	                    return result.entity;
-	                  });
-
-	                case 28:
-
-	                  observer.next(data);
-	                  _context6.next = 38;
-	                  break;
-
-	                case 31:
-	                  if (!_this6.isOnline()) {
-	                    _context6.next = 38;
-	                    break;
-	                  }
-
-	                  _config6 = new _request8.KinveyRequestConfig({
-	                    method: _request8.RequestMethod.DELETE,
-	                    authType: _request8.AuthType.Default,
-	                    url: _url2.default.format({
-	                      protocol: _this6.client.protocol,
-	                      host: _this6.client.host,
-	                      pathname: _this6.pathname,
+	                      protocol: _this7.client.protocol,
+	                      host: _this7.client.host,
+	                      pathname: _this7.pathname,
 	                      query: options.query
 	                    }),
 	                    properties: options.properties,
 	                    query: query,
 	                    timeout: options.timeout,
-	                    client: _this6.client
+	                    client: _this7.client
 	                  });
-	                  _request6 = new _network.NetworkRequest(_config6);
-	                  _context6.next = 36;
-	                  return _request6.execute();
+	                  request = new _network.NetworkRequest(config);
+	                  _context12.next = 7;
+	                  return request.execute();
 
-	                case 36:
-	                  _response4 = _context6.sent;
+	                case 7:
+	                  response = _context12.sent;
 
-	                  observer.next(_response4.data);
-
-	                case 38:
-	                  _context6.next = 43;
+	                  observer.next(response.data);
+	                  _context12.next = 14;
 	                  break;
 
-	                case 40:
-	                  _context6.prev = 40;
-	                  _context6.t0 = _context6['catch'](0);
-	                  return _context6.abrupt('return', observer.error(_context6.t0));
+	                case 11:
+	                  _context12.prev = 11;
+	                  _context12.t0 = _context12['catch'](0);
+	                  return _context12.abrupt('return', observer.error(_context12.t0));
 
-	                case 43:
-	                  return _context6.abrupt('return', observer.complete());
+	                case 14:
+	                  return _context12.abrupt('return', observer.complete());
 
-	                case 44:
+	                case 15:
 	                case 'end':
-	                  return _context6.stop();
+	                  return _context12.stop();
 	              }
 	            }
-	          }, _callee6, _this6, [[0, 40]]);
+	          }, _callee12, _this7, [[0, 11]]);
 	        }));
 
-	        return function (_x12) {
+	        return function (_x14) {
 	          return ref.apply(this, arguments);
 	        };
 	      }());
@@ -21282,148 +19901,1079 @@ var Kinvey =
 	  }, {
 	    key: 'removeById',
 	    value: function removeById(id) {
-	      var _this7 = this;
+	      var _this8 = this;
 
 	      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
 	      var stream = _observable.KinveyObservable.create(function () {
-	        var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee7(observer) {
-	          var config, request, response, data, metadata, query, _query3, push, _config7, _request7, _response5;
-
-	          return regeneratorRuntime.wrap(function _callee7$(_context7) {
+	        var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee13(observer) {
+	          var config, request, response;
+	          return _regeneratorRuntime2.default.wrap(function _callee13$(_context13) {
 	            while (1) {
-	              switch (_context7.prev = _context7.next) {
+	              switch (_context13.prev = _context13.next) {
 	                case 0:
-	                  _context7.prev = 0;
+	                  _context13.prev = 0;
 
 	                  if (id) {
-	                    _context7.next = 5;
+	                    _context13.next = 5;
+	                    break;
+	                  }
+
+	                  observer.next(undefined);
+	                  _context13.next = 11;
+	                  break;
+
+	                case 5:
+	                  config = new _request.KinveyRequestConfig({
+	                    method: _request.RequestMethod.DELETE,
+	                    authType: _request.AuthType.Default,
+	                    url: _url2.default.format({
+	                      protocol: _this8.client.protocol,
+	                      host: _this8.client.host,
+	                      pathname: _this8.pathname + '/' + id,
+	                      query: options.query
+	                    }),
+	                    properties: options.properties,
+	                    timeout: options.timeout
+	                  });
+	                  request = new _network.NetworkRequest(config);
+	                  _context13.next = 9;
+	                  return request.execute();
+
+	                case 9:
+	                  response = _context13.sent;
+
+	                  observer.next(response.data);
+
+	                case 11:
+	                  _context13.next = 16;
+	                  break;
+
+	                case 13:
+	                  _context13.prev = 13;
+	                  _context13.t0 = _context13['catch'](0);
+	                  return _context13.abrupt('return', observer.error(_context13.t0));
+
+	                case 16:
+	                  return _context13.abrupt('return', observer.complete());
+
+	                case 17:
+	                case 'end':
+	                  return _context13.stop();
+	              }
+	            }
+	          }, _callee13, _this8, [[0, 13]]);
+	        }));
+
+	        return function (_x16) {
+	          return ref.apply(this, arguments);
+	        };
+	      }());
+
+	      return stream.toPromise();
+	    }
+	  }]);
+
+	  return NetworkStore;
+	}(DataStore);
+
+	var CacheStore = exports.CacheStore = function (_NetworkStore) {
+	  _inherits(CacheStore, _NetworkStore);
+
+	  function CacheStore(collection) {
+	    var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+	    _classCallCheck(this, CacheStore);
+
+	    /**
+	     * @type {number|undefined}
+	     */
+
+	    var _this9 = _possibleConstructorReturn(this, Object.getPrototypeOf(CacheStore).call(this, collection, options));
+
+	    _this9.ttl = options.ttl || undefined;
+
+	    /**
+	     * @type {SyncManager}
+	     */
+	    _this9.syncManager = new _sync.SyncManager(_this9.collection, options);
+	    return _this9;
+	  }
+
+	  _createClass(CacheStore, [{
+	    key: 'find',
+
+
+	    /**
+	     * Find all entities in the data store. A query can be optionally provided to return
+	     * a subset of all entities in a collection or omitted to return all entities in
+	     * a collection. The number of entities returned adheres to the limits specified
+	     * at http://devcenter.kinvey.com/rest/guides/datastore#queryrestrictions.
+	     *
+	     * @param   {Query}                 [query]                             Query used to filter entities.
+	     * @param   {Object}                [options]                           Options
+	     * @param   {Properties}            [options.properties]                Custom properties to send with
+	     *                                                                      the request.
+	     * @param   {Number}                [options.timeout]                   Timeout for the request.
+	     * @param   {Boolean}               [options.useDeltaFetch]             Turn on or off the use of delta fetch.
+	     * @return  {Observable}                                                Observable.
+	     */
+	    value: function find(query) {
+	      var _this10 = this;
+
+	      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+	      var stream = _observable.KinveyObservable.create(function () {
+	        var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee14(observer) {
+	          var syncCount, cacheEntities, config, request, response, networkEntities, removedEntities, removedIds, removeQuery, saveConfig, saveRequest;
+	          return _regeneratorRuntime2.default.wrap(function _callee14$(_context14) {
+	            while (1) {
+	              switch (_context14.prev = _context14.next) {
+	                case 0:
+	                  _context14.prev = 0;
+
+	                  if (!(query && !(query instanceof _query4.Query))) {
+	                    _context14.next = 3;
+	                    break;
+	                  }
+
+	                  throw new _errors.KinveyError('Invalid query. It must be an instance of the Query class.');
+
+	                case 3:
+	                  _context14.next = 5;
+	                  return _this10.syncCount(null, options);
+
+	                case 5:
+	                  syncCount = _context14.sent;
+
+	                  if (!(syncCount > 0)) {
+	                    _context14.next = 12;
+	                    break;
+	                  }
+
+	                  _context14.next = 9;
+	                  return _this10.push(null, options);
+
+	                case 9:
+	                  _context14.next = 11;
+	                  return _this10.syncCount(null, options);
+
+	                case 11:
+	                  syncCount = _context14.sent;
+
+	                case 12:
+	                  if (!(syncCount > 0)) {
+	                    _context14.next = 14;
+	                    break;
+	                  }
+
+	                  throw new _errors.KinveyError('Unable to load data from the network.' + (' There are ' + syncCount + ' entities that need') + ' to be synced before data is loaded from the network.');
+
+	                case 14:
+	                  cacheEntities = [];
+	                  _context14.prev = 15;
+
+	                  // Fetch the cache entities
+	                  config = new _request.KinveyRequestConfig({
+	                    method: _request.RequestMethod.GET,
+	                    url: _url2.default.format({
+	                      protocol: _this10.client.protocol,
+	                      host: _this10.client.host,
+	                      pathname: _this10.pathname,
+	                      query: options.query
+	                    }),
+	                    properties: options.properties,
+	                    query: query,
+	                    timeout: options.timeout
+	                  });
+	                  request = new _cache.CacheRequest(config);
+
+	                  // Execute the request
+
+	                  _context14.next = 20;
+	                  return request.execute();
+
+	                case 20:
+	                  response = _context14.sent;
+
+	                  cacheEntities = response.data;
+
+	                  // Emit the cache entities
+	                  observer.next(cacheEntities);
+	                  _context14.next = 28;
+	                  break;
+
+	                case 25:
+	                  _context14.prev = 25;
+	                  _context14.t0 = _context14['catch'](15);
+
+	                  // Swalllow the error and emit an empty array
+	                  observer.next(cacheEntities);
+
+	                case 28:
+	                  _context14.next = 30;
+	                  return _get(Object.getPrototypeOf(CacheStore.prototype), 'find', _this10).call(_this10, query, options).toPromise();
+
+	                case 30:
+	                  networkEntities = _context14.sent;
+
+
+	                  // Remove entities from the cache that no longer exists
+	                  removedEntities = (0, _differenceBy2.default)(cacheEntities, networkEntities, idAttribute);
+	                  removedIds = Object.keys((0, _keyBy2.default)(removedEntities, idAttribute));
+	                  removeQuery = new _query4.Query().contains(idAttribute, removedIds);
+	                  _context14.next = 36;
+	                  return _this10.clear(removeQuery, options);
+
+	                case 36:
+
+	                  // Save network entities to cache
+	                  saveConfig = new _request.KinveyRequestConfig({
+	                    method: _request.RequestMethod.PUT,
+	                    url: _url2.default.format({
+	                      protocol: _this10.client.protocol,
+	                      host: _this10.client.host,
+	                      pathname: _this10.pathname,
+	                      query: options.query
+	                    }),
+	                    properties: options.properties,
+	                    body: networkEntities,
+	                    timeout: options.timeout
+	                  });
+	                  saveRequest = new _cache.CacheRequest(saveConfig);
+	                  _context14.next = 40;
+	                  return saveRequest.execute();
+
+	                case 40:
+
+	                  // Emit the network entities
+	                  observer.next(networkEntities);
+	                  _context14.next = 46;
+	                  break;
+
+	                case 43:
+	                  _context14.prev = 43;
+	                  _context14.t1 = _context14['catch'](0);
+	                  return _context14.abrupt('return', observer.error(_context14.t1));
+
+	                case 46:
+	                  return _context14.abrupt('return', observer.complete());
+
+	                case 47:
+	                case 'end':
+	                  return _context14.stop();
+	              }
+	            }
+	          }, _callee14, _this10, [[0, 43], [15, 25]]);
+	        }));
+
+	        return function (_x19) {
+	          return ref.apply(this, arguments);
+	        };
+	      }());
+
+	      return stream;
+	    }
+
+	    /**
+	     * Find a single entity in the data store by id.
+	     *
+	     * @param   {string}                id                               Entity by id to find.
+	     * @param   {Object}                [options]                        Options
+	     * @param   {Properties}            [options.properties]             Custom properties to send with
+	     *                                                                   the request.
+	     * @param   {Number}                [options.timeout]                Timeout for the request.
+	     * @param   {Boolean}               [options.useDeltaFetch]          Turn on or off the use of delta fetch.
+	     * @return  {Observable}                                             Observable.
+	     */
+
+	  }, {
+	    key: 'findById',
+	    value: function findById(id) {
+	      var _this11 = this;
+
+	      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+	      var stream = _observable.KinveyObservable.create(function () {
+	        var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee15(observer) {
+	          var syncCount, config, request, response, cacheEntity, networkEntity, saveConfig, saveRequest;
+	          return _regeneratorRuntime2.default.wrap(function _callee15$(_context15) {
+	            while (1) {
+	              switch (_context15.prev = _context15.next) {
+	                case 0:
+	                  _context15.prev = 0;
+
+	                  if (id) {
+	                    _context15.next = 5;
+	                    break;
+	                  }
+
+	                  observer.next(undefined);
+	                  _context15.next = 37;
+	                  break;
+
+	                case 5:
+	                  _context15.next = 7;
+	                  return _this11.syncCount(null, options);
+
+	                case 7:
+	                  syncCount = _context15.sent;
+
+	                  if (!(syncCount > 0)) {
+	                    _context15.next = 14;
+	                    break;
+	                  }
+
+	                  _context15.next = 11;
+	                  return _this11.push(null, options);
+
+	                case 11:
+	                  _context15.next = 13;
+	                  return _this11.syncCount(null, options);
+
+	                case 13:
+	                  syncCount = _context15.sent;
+
+	                case 14:
+	                  if (!(syncCount > 0)) {
+	                    _context15.next = 16;
+	                    break;
+	                  }
+
+	                  throw new _errors.KinveyError('Unable to load data from the network.' + (' There are ' + syncCount + ' entities that need') + ' to be synced before data is loaded from the network.');
+
+	                case 16:
+	                  _context15.prev = 16;
+
+	                  // Fetch from the cache
+	                  config = new _request.KinveyRequestConfig({
+	                    method: _request.RequestMethod.GET,
+	                    url: _url2.default.format({
+	                      protocol: _this11.client.protocol,
+	                      host: _this11.client.host,
+	                      pathname: _this11.pathname + '/' + id,
+	                      query: options.query
+	                    }),
+	                    properties: options.properties,
+	                    timeout: options.timeout
+	                  });
+	                  request = new _cache.CacheRequest(config);
+	                  _context15.next = 21;
+	                  return request.execute();
+
+	                case 21:
+	                  response = _context15.sent;
+	                  cacheEntity = response.data;
+
+	                  // Emit the cache entity
+
+	                  observer.next(cacheEntity);
+	                  _context15.next = 29;
+	                  break;
+
+	                case 26:
+	                  _context15.prev = 26;
+	                  _context15.t0 = _context15['catch'](16);
+
+	                  // Swallow the error and emit undefined
+	                  observer.next(undefined);
+
+	                case 29:
+	                  _context15.next = 31;
+	                  return _get(Object.getPrototypeOf(CacheStore.prototype), 'findById', _this11).call(_this11, id, options).toPromise();
+
+	                case 31:
+	                  networkEntity = _context15.sent;
+
+
+	                  // Save the network entity to cache
+	                  saveConfig = new _request.KinveyRequestConfig({
+	                    method: _request.RequestMethod.PUT,
+	                    url: _url2.default.format({
+	                      protocol: _this11.client.protocol,
+	                      host: _this11.client.host,
+	                      pathname: _this11.pathname,
+	                      query: options.query
+	                    }),
+	                    properties: options.properties,
+	                    body: networkEntity,
+	                    timeout: options.timeout
+	                  });
+	                  saveRequest = new _cache.CacheRequest(saveConfig);
+	                  _context15.next = 36;
+	                  return saveRequest.execute();
+
+	                case 36:
+
+	                  // Emit the network entity
+	                  observer.next(networkEntity);
+
+	                case 37:
+	                  _context15.next = 42;
+	                  break;
+
+	                case 39:
+	                  _context15.prev = 39;
+	                  _context15.t1 = _context15['catch'](0);
+	                  return _context15.abrupt('return', observer.error(_context15.t1));
+
+	                case 42:
+	                  return _context15.abrupt('return', observer.complete());
+
+	                case 43:
+	                case 'end':
+	                  return _context15.stop();
+	              }
+	            }
+	          }, _callee15, _this11, [[0, 39], [16, 26]]);
+	        }));
+
+	        return function (_x21) {
+	          return ref.apply(this, arguments);
+	        };
+	      }());
+
+	      return stream;
+	    }
+
+	    /**
+	     * Count all entities in the data store. A query can be optionally provided to return
+	     * a subset of all entities in a collection or omitted to return all entities in
+	     * a collection. The number of entities returned adheres to the limits specified
+	     * at http://devcenter.kinvey.com/rest/guides/datastore#queryrestrictions.
+	     *
+	     * @param   {Query}                 [query]                          Query used to filter entities.
+	     * @param   {Object}                [options]                        Options
+	     * @param   {Properties}            [options.properties]             Custom properties to send with
+	     *                                                                   the request.
+	     * @param   {Number}                [options.timeout]                Timeout for the request.
+	     * @return  {Observable}                                             Observable.
+	     */
+
+	  }, {
+	    key: 'count',
+	    value: function count(query) {
+	      var _this12 = this;
+
+	      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+	      var stream = _observable.KinveyObservable.create(function () {
+	        var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee16(observer) {
+	          var syncCount, config, request, response, data, networkCount;
+	          return _regeneratorRuntime2.default.wrap(function _callee16$(_context16) {
+	            while (1) {
+	              switch (_context16.prev = _context16.next) {
+	                case 0:
+	                  _context16.prev = 0;
+
+	                  if (!(query && !(query instanceof _query4.Query))) {
+	                    _context16.next = 3;
+	                    break;
+	                  }
+
+	                  throw new _errors.KinveyError('Invalid query. It must be an instance of the Query class.');
+
+	                case 3:
+	                  _context16.next = 5;
+	                  return _this12.syncCount(null, options);
+
+	                case 5:
+	                  syncCount = _context16.sent;
+
+	                  if (!(syncCount > 0)) {
+	                    _context16.next = 12;
+	                    break;
+	                  }
+
+	                  _context16.next = 9;
+	                  return _this12.push(null, options);
+
+	                case 9:
+	                  _context16.next = 11;
+	                  return _this12.syncCount(null, options);
+
+	                case 11:
+	                  syncCount = _context16.sent;
+
+	                case 12:
+	                  if (!(syncCount > 0)) {
+	                    _context16.next = 14;
+	                    break;
+	                  }
+
+	                  throw new _errors.KinveyError('Unable to load data from the network.' + (' There are ' + syncCount + ' entities that need') + ' to be synced before data is loaded from the network.');
+
+	                case 14:
+	                  _context16.prev = 14;
+
+	                  // Count the entities in the cache
+	                  config = new _request.KinveyRequestConfig({
+	                    method: _request.RequestMethod.GET,
+	                    url: _url2.default.format({
+	                      protocol: _this12.client.protocol,
+	                      host: _this12.client.host,
+	                      pathname: _this12.pathname + '/_count',
+	                      query: options.query
+	                    }),
+	                    properties: options.properties,
+	                    query: query,
+	                    timeout: options.timeout
+	                  });
+	                  request = new _cache.CacheRequest(config);
+
+	                  // Execute the request
+
+	                  _context16.next = 19;
+	                  return request.execute();
+
+	                case 19:
+	                  response = _context16.sent;
+	                  data = response.data;
+
+	                  // Emit the cache count
+
+	                  observer.next(data ? data.count : 0);
+	                  _context16.next = 27;
+	                  break;
+
+	                case 24:
+	                  _context16.prev = 24;
+	                  _context16.t0 = _context16['catch'](14);
+
+	                  // Swallow the error and emit 0
+	                  observer.next(0);
+
+	                case 27:
+	                  _context16.next = 29;
+	                  return _get(Object.getPrototypeOf(CacheStore.prototype), 'count', _this12).call(_this12, query, options).toPromise();
+
+	                case 29:
+	                  networkCount = _context16.sent;
+
+
+	                  // Emit the network count
+	                  observer.next(networkCount);
+	                  _context16.next = 36;
+	                  break;
+
+	                case 33:
+	                  _context16.prev = 33;
+	                  _context16.t1 = _context16['catch'](0);
+	                  return _context16.abrupt('return', observer.error(_context16.t1));
+
+	                case 36:
+	                  return _context16.abrupt('return', observer.complete());
+
+	                case 37:
+	                case 'end':
+	                  return _context16.stop();
+	              }
+	            }
+	          }, _callee16, _this12, [[0, 33], [14, 24]]);
+	        }));
+
+	        return function (_x23) {
+	          return ref.apply(this, arguments);
+	        };
+	      }());
+
+	      return stream;
+	    }
+
+	    /**
+	     * Create a single or an array of entities on the data store.
+	     *
+	     * @param   {Object|Array}          data                              Data that you want to create on the data store.
+	     * @param   {Object}                [options]                         Options
+	     * @param   {Properties}            [options.properties]              Custom properties to send with
+	     *                                                                    the request.
+	     * @param   {Number}                [options.timeout]                 Timeout for the request.
+	     * @return  {Promise}                                                 Promise.
+	     */
+
+	  }, {
+	    key: 'create',
+	    value: function create(data) {
+	      var _this13 = this;
+
+	      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+	      var stream = _observable.KinveyObservable.create(function () {
+	        var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee17(observer) {
+	          var singular, config, request, response, ids, query;
+	          return _regeneratorRuntime2.default.wrap(function _callee17$(_context17) {
+	            while (1) {
+	              switch (_context17.prev = _context17.next) {
+	                case 0:
+	                  _context17.prev = 0;
+
+	                  if (data) {
+	                    _context17.next = 5;
 	                    break;
 	                  }
 
 	                  observer.next(null);
-	                  _context7.next = 34;
+	                  _context17.next = 21;
 	                  break;
 
 	                case 5:
-	                  if (!_this7.isCacheEnabled()) {
-	                    _context7.next = 33;
-	                    break;
+	                  singular = false;
+
+	                  // Cast the data to an array
+
+	                  if (!(0, _isArray2.default)(data)) {
+	                    singular = true;
+	                    data = [data];
 	                  }
 
-	                  config = new _request8.KinveyRequestConfig({
-	                    method: _request8.RequestMethod.DELETE,
+	                  // Save the data to the cache
+	                  config = new _request.KinveyRequestConfig({
+	                    method: _request.RequestMethod.POST,
 	                    url: _url2.default.format({
-	                      protocol: _this7.client.protocol,
-	                      host: _this7.client.host,
-	                      pathname: _this7.pathname + '/' + id,
+	                      protocol: _this13.client.protocol,
+	                      host: _this13.client.host,
+	                      pathname: _this13.pathname,
 	                      query: options.query
 	                    }),
 	                    properties: options.properties,
-	                    authType: _request8.AuthType.Default,
+	                    body: data,
 	                    timeout: options.timeout
 	                  });
-	                  request = new _cache2.default(config);
-	                  _context7.next = 10;
+	                  request = new _cache.CacheRequest(config);
+
+	                  // Execute the request
+
+	                  _context17.next = 11;
 	                  return request.execute();
 
-	                case 10:
-	                  response = _context7.sent;
+	                case 11:
+	                  response = _context17.sent;
+
 	                  data = response.data;
 
-	                  if (!data) {
-	                    _context7.next = 30;
+	                  // Add a create operation to sync
+	                  _context17.next = 15;
+	                  return _this13.syncManager.addCreateOperation(data, options);
+
+	                case 15:
+	                  if (!(_this13.syncAutomatically === true)) {
+	                    _context17.next = 20;
 	                    break;
 	                  }
 
-	                  metadata = new _metadata.Metadata(data);
+	                  ids = Object.keys((0, _keyBy2.default)(data, idAttribute));
+	                  query = new _query4.Query().contains('entity._id', ids);
+	                  _context17.next = 20;
+	                  return _this13.push(query, options);
+
+	                case 20:
+
+	                  // Emit the data
+	                  observer.next(singular ? data[0] : data);
+
+	                case 21:
+	                  _context17.next = 26;
+	                  break;
+
+	                case 23:
+	                  _context17.prev = 23;
+	                  _context17.t0 = _context17['catch'](0);
+	                  return _context17.abrupt('return', observer.error(_context17.t0));
+
+	                case 26:
+	                  return _context17.abrupt('return', observer.complete());
+
+	                case 27:
+	                case 'end':
+	                  return _context17.stop();
+	              }
+	            }
+	          }, _callee17, _this13, [[0, 23]]);
+	        }));
+
+	        return function (_x25) {
+	          return ref.apply(this, arguments);
+	        };
+	      }());
+
+	      return stream.toPromise();
+	    }
+
+	    /**
+	     * Update a single or an array of entities on the data store.
+	     *
+	     * @param   {Object|Array}          data                              Data that you want to update on the data store.
+	     * @param   {Object}                [options]                         Options
+	     * @param   {Properties}            [options.properties]              Custom properties to send with
+	     *                                                                    the request.
+	     * @param   {Number}                [options.timeout]                 Timeout for the request.
+	     * @return  {Promise}                                                 Promise.
+	     */
+
+	  }, {
+	    key: 'update',
+	    value: function update(data) {
+	      var _this14 = this;
+
+	      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+	      var stream = _observable.KinveyObservable.create(function () {
+	        var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee18(observer) {
+	          var singular, config, request, response, ids, query;
+	          return _regeneratorRuntime2.default.wrap(function _callee18$(_context18) {
+	            while (1) {
+	              switch (_context18.prev = _context18.next) {
+	                case 0:
+	                  _context18.prev = 0;
+
+	                  if (data) {
+	                    _context18.next = 5;
+	                    break;
+	                  }
+
+	                  observer.next(null);
+	                  _context18.next = 21;
+	                  break;
+
+	                case 5:
+	                  singular = false;
+
+	                  // Cast the data to an array
+
+	                  if (!(0, _isArray2.default)(data)) {
+	                    singular = true;
+	                    data = [data];
+	                  }
+
+	                  // Save the data to the cache
+	                  config = new _request.KinveyRequestConfig({
+	                    method: _request.RequestMethod.PUT,
+	                    url: _url2.default.format({
+	                      protocol: _this14.client.protocol,
+	                      host: _this14.client.host,
+	                      pathname: _this14.pathname,
+	                      query: options.query
+	                    }),
+	                    properties: options.properties,
+	                    body: data,
+	                    timeout: options.timeout
+	                  });
+	                  request = new _cache.CacheRequest(config);
+
+	                  // Execute the request
+
+	                  _context18.next = 11;
+	                  return request.execute();
+
+	                case 11:
+	                  response = _context18.sent;
+
+	                  data = response.data;
+
+	                  // Add an update operation to sync
+	                  _context18.next = 15;
+	                  return _this14.syncManager.addUpdateOperation(data, options);
+
+	                case 15:
+	                  if (!(_this14.syncAutomatically === true)) {
+	                    _context18.next = 20;
+	                    break;
+	                  }
+
+	                  ids = Object.keys((0, _keyBy2.default)(data, idAttribute));
+	                  query = new _query4.Query().contains('entity._id', ids);
+	                  _context18.next = 20;
+	                  return _this14.push(query, options);
+
+	                case 20:
+
+	                  // Emit the data
+	                  observer.next(singular ? data[0] : data);
+
+	                case 21:
+	                  _context18.next = 26;
+	                  break;
+
+	                case 23:
+	                  _context18.prev = 23;
+	                  _context18.t0 = _context18['catch'](0);
+	                  return _context18.abrupt('return', observer.error(_context18.t0));
+
+	                case 26:
+	                  return _context18.abrupt('return', observer.complete());
+
+	                case 27:
+	                case 'end':
+	                  return _context18.stop();
+	              }
+	            }
+	          }, _callee18, _this14, [[0, 23]]);
+	        }));
+
+	        return function (_x27) {
+	          return ref.apply(this, arguments);
+	        };
+	      }());
+
+	      return stream.toPromise();
+	    }
+
+	    /**
+	     * Remove all entities in the data store. A query can be optionally provided to remove
+	     * a subset of all entities in a collection or omitted to remove all entities in
+	     * a collection. The number of entities removed adheres to the limits specified
+	     * at http://devcenter.kinvey.com/rest/guides/datastore#queryrestrictions.
+	     *
+	     * @param   {Query}                 [query]                           Query used to filter entities.
+	     * @param   {Object}                [options]                         Options
+	     * @param   {Properties}            [options.properties]              Custom properties to send with
+	     *                                                                    the request.
+	     * @param   {Number}                [options.timeout]                 Timeout for the request.
+	     * @return  {Promise}                                                 Promise.
+	     */
+
+	  }, {
+	    key: 'remove',
+	    value: function remove(query) {
+	      var _this15 = this;
+
+	      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+	      var stream = _observable.KinveyObservable.create(function () {
+	        var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee19(observer) {
+	          var config, request, response, entities, localEntities, _query, syncData, ids, _query2;
+
+	          return _regeneratorRuntime2.default.wrap(function _callee19$(_context19) {
+	            while (1) {
+	              switch (_context19.prev = _context19.next) {
+	                case 0:
+	                  _context19.prev = 0;
+
+	                  if (!(query && !(query instanceof _query4.Query))) {
+	                    _context19.next = 3;
+	                    break;
+	                  }
+
+	                  throw new _errors.KinveyError('Invalid query. It must be an instance of the Query class.');
+
+	                case 3:
+
+	                  // Remove the data from the cache
+	                  config = new _request.KinveyRequestConfig({
+	                    method: _request.RequestMethod.DELETE,
+	                    url: _url2.default.format({
+	                      protocol: _this15.client.protocol,
+	                      host: _this15.client.host,
+	                      pathname: _this15.pathname,
+	                      query: options.query
+	                    }),
+	                    properties: options.properties,
+	                    query: query,
+	                    timeout: options.timeout
+	                  });
+	                  request = new _cache.CacheRequest(config);
+
+	                  // Execute the request
+
+	                  _context19.next = 7;
+	                  return request.execute();
+
+	                case 7:
+	                  response = _context19.sent;
+	                  entities = response.data;
+
+	                  if (!(entities && entities.length > 0)) {
+	                    _context19.next = 17;
+	                    break;
+	                  }
+
+	                  // Clear local entities from the sync table
+	                  localEntities = (0, _filter2.default)(entities, function (entity) {
+	                    var metadata = new _metadata.Metadata(entity);
+	                    return metadata.isLocal();
+	                  });
+	                  _query = new _query4.Query().contains('entity._id', Object.keys((0, _keyBy2.default)(localEntities, idAttribute)));
+	                  _context19.next = 14;
+	                  return _this15.clearSync(_query, options);
+
+	                case 14:
+
+	                  // Create delete operations for non local data in the sync table
+	                  syncData = (0, _xorWith2.default)(entities, localEntities, function (entity, localEntity) {
+	                    return entity[idAttribute] === localEntity[idAttribute];
+	                  });
+	                  _context19.next = 17;
+	                  return _this15.syncManager.addDeleteOperation(syncData, options);
+
+	                case 17:
+	                  if (!(_this15.syncAutomatically === true)) {
+	                    _context19.next = 22;
+	                    break;
+	                  }
+
+	                  ids = Object.keys((0, _keyBy2.default)(entities, idAttribute));
+	                  _query2 = new _query4.Query().contains('entity._id', ids);
+	                  _context19.next = 22;
+	                  return _this15.push(_query2, options);
+
+	                case 22:
+
+	                  // Emit the data
+	                  observer.next(entities);
+	                  _context19.next = 28;
+	                  break;
+
+	                case 25:
+	                  _context19.prev = 25;
+	                  _context19.t0 = _context19['catch'](0);
+	                  return _context19.abrupt('return', observer.error(_context19.t0));
+
+	                case 28:
+	                  return _context19.abrupt('return', observer.complete());
+
+	                case 29:
+	                case 'end':
+	                  return _context19.stop();
+	              }
+	            }
+	          }, _callee19, _this15, [[0, 25]]);
+	        }));
+
+	        return function (_x29) {
+	          return ref.apply(this, arguments);
+	        };
+	      }());
+
+	      return stream.toPromise();
+	    }
+
+	    /**
+	     * Remove a single entity in the data store by id.
+	     *
+	     * @param   {string}                id                               Entity by id to remove.
+	     * @param   {Object}                [options]                        Options
+	     * @param   {Properties}            [options.properties]             Custom properties to send with
+	     *                                                                   the request.
+	     * @param   {Number}                [options.timeout]                Timeout for the request.
+	     * @return  {Observable}                                             Observable.
+	     */
+
+	  }, {
+	    key: 'removeById',
+	    value: function removeById(id) {
+	      var _this16 = this;
+
+	      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+	      var stream = _observable.KinveyObservable.create(function () {
+	        var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee20(observer) {
+	          var config, request, response, entity, metadata, query, _query3;
+
+	          return _regeneratorRuntime2.default.wrap(function _callee20$(_context20) {
+	            while (1) {
+	              switch (_context20.prev = _context20.next) {
+	                case 0:
+	                  _context20.prev = 0;
+
+	                  if (id) {
+	                    _context20.next = 5;
+	                    break;
+	                  }
+
+	                  observer.next(undefined);
+	                  _context20.next = 27;
+	                  break;
+
+	                case 5:
+	                  // Remove from cache
+	                  config = new _request.KinveyRequestConfig({
+	                    method: _request.RequestMethod.DELETE,
+	                    url: _url2.default.format({
+	                      protocol: _this16.client.protocol,
+	                      host: _this16.client.host,
+	                      pathname: _this16.pathname + '/' + id,
+	                      query: options.query
+	                    }),
+	                    properties: options.properties,
+	                    authType: _request.AuthType.Default,
+	                    timeout: options.timeout
+	                  });
+	                  request = new _cache.CacheRequest(config);
+
+	                  // Execute the request
+
+	                  _context20.next = 9;
+	                  return request.execute();
+
+	                case 9:
+	                  response = _context20.sent;
+	                  entity = response.data;
+
+	                  if (!entity) {
+	                    _context20.next = 22;
+	                    break;
+	                  }
+
+	                  metadata = new _metadata.Metadata(entity);
+
+	                  // Clear any pending sync items if the entity
+	                  // was created locally
 
 	                  if (!metadata.isLocal()) {
-	                    _context7.next = 21;
+	                    _context20.next = 20;
 	                    break;
 	                  }
 
 	                  query = new _query4.Query();
 
-	                  query.equalTo('entity._id', data[idAttribute]);
-	                  _context7.next = 19;
-	                  return _this7.dataStoreSync.clear(_this7.collection, query, options);
+	                  query.equalTo('entity._id', entity[idAttribute]);
+	                  _context20.next = 18;
+	                  return _this16.clearSync(query, options);
 
-	                case 19:
-	                  _context7.next = 23;
+	                case 18:
+	                  _context20.next = 22;
 	                  break;
 
-	                case 21:
-	                  _context7.next = 23;
-	                  return _this7.dataStoreSync.addDeleteOperation(_this7.collection, data, options);
+	                case 20:
+	                  _context20.next = 22;
+	                  return _this16.syncManager.addDeleteOperation(entity, options);
 
-	                case 23:
-	                  if (!_this7.isOnline()) {
-	                    _context7.next = 30;
+	                case 22:
+	                  if (!(_this16.syncAutomatically === true)) {
+	                    _context20.next = 26;
 	                    break;
 	                  }
 
-	                  _query3 = new _query4.Query().equalTo('entity._id', data[idAttribute]);
-	                  _context7.next = 27;
-	                  return _this7.push(_query3, options);
+	                  _query3 = new _query4.Query().equalTo('entity._id', entity[idAttribute]);
+	                  _context20.next = 26;
+	                  return _this16.push(_query3, options);
+
+	                case 26:
+
+	                  // Emit the data
+	                  observer.next(entity);
 
 	                case 27:
-	                  push = _context7.sent;
-
-	                  push = (0, _filter2.default)(push, function (result) {
-	                    return !result.error;
-	                  });
-	                  data = (0, _map2.default)(push, function (result) {
-	                    return result.entity;
-	                  });
-
-	                case 30:
-
-	                  observer.next(data);
-	                  _context7.next = 34;
+	                  _context20.next = 32;
 	                  break;
+
+	                case 29:
+	                  _context20.prev = 29;
+	                  _context20.t0 = _context20['catch'](0);
+	                  return _context20.abrupt('return', observer.error(_context20.t0));
+
+	                case 32:
+	                  return _context20.abrupt('return', observer.complete());
 
 	                case 33:
-	                  if (_this7.isOnline()) {
-	                    _config7 = new _request8.KinveyRequestConfig({
-	                      method: _request8.RequestMethod.DELETE,
-	                      authType: _request8.AuthType.Default,
-	                      url: _url2.default.format({
-	                        protocol: _this7.client.protocol,
-	                        host: _this7.client.host,
-	                        pathname: _this7.pathname + '/' + id,
-	                        query: options.query
-	                      }),
-	                      properties: options.properties,
-	                      timeout: options.timeout
-	                    });
-	                    _request7 = new _network.NetworkRequest(_config7);
-	                    _response5 = _request7.execute();
-
-	                    observer.next(_response5.data);
-	                  }
-
-	                case 34:
-	                  _context7.next = 39;
-	                  break;
-
-	                case 36:
-	                  _context7.prev = 36;
-	                  _context7.t0 = _context7['catch'](0);
-	                  return _context7.abrupt('return', observer.error(_context7.t0));
-
-	                case 39:
-	                  return _context7.abrupt('return', observer.complete());
-
-	                case 40:
 	                case 'end':
-	                  return _context7.stop();
+	                  return _context20.stop();
 	              }
 	            }
-	          }, _callee7, _this7, [[0, 36]]);
+	          }, _callee20, _this16, [[0, 29]]);
 	        }));
 
-	        return function (_x14) {
+	        return function (_x31) {
 	          return ref.apply(this, arguments);
 	        };
 	      }());
@@ -21445,350 +20995,106 @@ var Kinvey =
 	  }, {
 	    key: 'clear',
 	    value: function clear(query) {
-	      var _this8 = this;
+	      var _this17 = this;
 
 	      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
 	      var stream = _observable.KinveyObservable.create(function () {
-	        var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee8(observer) {
-	          var config, request, response, data, syncQuery, _syncQuery;
-
-	          return regeneratorRuntime.wrap(function _callee8$(_context8) {
+	        var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee21(observer) {
+	          var config, request, response, data, syncQuery;
+	          return _regeneratorRuntime2.default.wrap(function _callee21$(_context21) {
 	            while (1) {
-	              switch (_context8.prev = _context8.next) {
+	              switch (_context21.prev = _context21.next) {
 	                case 0:
+	                  _context21.prev = 0;
+
 	                  if (!(query && !(query instanceof _query4.Query))) {
-	                    _context8.next = 2;
+	                    _context21.next = 5;
 	                    break;
 	                  }
 
-	                  return _context8.abrupt('return', observer.error(new _errors.KinveyError('Invalid query. It must be an instance of the Query class.')));
+	                  throw new _errors.KinveyError('Invalid query. It must be an instance of the Query class.');
 
-	                case 2:
-	                  _context8.prev = 2;
-
-	                  if (!_this8.isCacheEnabled()) {
-	                    _context8.next = 21;
-	                    break;
-	                  }
-
-	                  config = new _request8.KinveyRequestConfig({
-	                    method: _request8.RequestMethod.DELETE,
+	                case 5:
+	                  // Create the request
+	                  config = new _request.KinveyRequestConfig({
+	                    method: _request.RequestMethod.DELETE,
 	                    url: _url2.default.format({
-	                      protocol: _this8.client.protocol,
-	                      host: _this8.client.host,
-	                      pathname: _this8.pathname,
+	                      protocol: _this17.client.protocol,
+	                      host: _this17.client.host,
+	                      pathname: _this17.pathname,
 	                      query: options.query
 	                    }),
 	                    properties: options.properties,
 	                    query: query,
 	                    timeout: options.timeout
 	                  });
-	                  request = new _cache2.default(config);
-	                  _context8.next = 8;
+	                  request = new _cache.CacheRequest(config);
+
+	                  // Execute the request
+
+	                  _context21.next = 9;
 	                  return request.execute();
 
-	                case 8:
-	                  response = _context8.sent;
+	                case 9:
+	                  response = _context21.sent;
 	                  data = response.data;
 
-	                  if (!(data.length > 0)) {
-	                    _context8.next = 16;
+	                  // Remove the data from sync
+
+	                  if (!(data && data.length > 0)) {
+	                    _context21.next = 17;
 	                    break;
 	                  }
 
 	                  syncQuery = new _query4.Query().contains('entity._id', Object.keys((0, _keyBy2.default)(data, idAttribute)));
-	                  _context8.next = 14;
-	                  return _this8.dataStoreSync.clear(syncQuery, options);
+	                  _context21.next = 15;
+	                  return _this17.clearSync(syncQuery, options);
 
-	                case 14:
-	                  _context8.next = 20;
+	                case 15:
+	                  _context21.next = 20;
 	                  break;
 
-	                case 16:
+	                case 17:
 	                  if (query) {
-	                    _context8.next = 20;
+	                    _context21.next = 20;
 	                    break;
 	                  }
 
-	                  _syncQuery = new _query4.Query().equalTo('collection', _this8.collection);
-	                  _context8.next = 20;
-	                  return _this8.dataStoreSync.clear(_syncQuery, options);
+	                  _context21.next = 20;
+	                  return _this17.clearSync(null, options);
 
 	                case 20:
 
 	                  observer.next(data);
 
 	                case 21:
-	                  _context8.next = 26;
+	                  _context21.next = 26;
 	                  break;
 
 	                case 23:
-	                  _context8.prev = 23;
-	                  _context8.t0 = _context8['catch'](2);
-	                  return _context8.abrupt('return', observer.error(_context8.t0));
+	                  _context21.prev = 23;
+	                  _context21.t0 = _context21['catch'](0);
+	                  return _context21.abrupt('return', observer.error(_context21.t0));
 
 	                case 26:
-	                  return _context8.abrupt('return', observer.complete());
+	                  return _context21.abrupt('return', observer.complete());
 
 	                case 27:
 	                case 'end':
-	                  return _context8.stop();
+	                  return _context21.stop();
 	              }
 	            }
-	          }, _callee8, _this8, [[2, 23]]);
+	          }, _callee21, _this17, [[0, 23]]);
 	        }));
 
-	        return function (_x16) {
+	        return function (_x33) {
 	          return ref.apply(this, arguments);
 	        };
 	      }());
 
 	      return stream.toPromise();
 	    }
-
-	    /**
-	     * Push sync items for the data store to the network. A promise will be returned that will be
-	     * resolved with the result of the push or rejected with an error.
-	     *
-	     * @param   {Query}                 [query]                                   Query to push a subset of items.
-	     * @param   {Object}                options                                   Options
-	     * @param   {Properties}            [options.properties]                      Custom properties to send with
-	     *                                                                            the request.
-	     * @param   {Number}                [options.timeout]                         Timeout for the request.
-	     * @return  {Promise}                                                         Promise
-	     *
-	     * @example
-	     * var store = Kinvey.DataStore.getInstance('books');
-	     * store.push().then(function(result) {
-	     *   ...
-	     * }).catch(function(err) {
-	     *   ...
-	     * });
-	     */
-
-	  }, {
-	    key: 'push',
-	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee9() {
-	        var query = arguments.length <= 0 || arguments[0] === undefined ? new _query4.Query() : arguments[0];
-	        var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-	        return regeneratorRuntime.wrap(function _callee9$(_context9) {
-	          while (1) {
-	            switch (_context9.prev = _context9.next) {
-	              case 0:
-	                if (!this.isCacheEnabled()) {
-	                  _context9.next = 4;
-	                  break;
-	                }
-
-	                if (!(query instanceof _query4.Query)) {
-	                  query = new _query4.Query((0, _result2.default)(query, 'toJSON', query));
-	                }
-
-	                query.equalTo('collection', this.collection);
-	                return _context9.abrupt('return', this.dataStoreSync.push(query, options));
-
-	              case 4:
-	                throw new _errors.KinveyError('Unable to push because the cache is disabled.');
-
-	              case 5:
-	              case 'end':
-	                return _context9.stop();
-	            }
-	          }
-	        }, _callee9, this);
-	      }));
-
-	      function push(_x17, _x18) {
-	        return ref.apply(this, arguments);
-	      }
-
-	      return push;
-	    }()
-
-	    /**
-	     * Pull items for the data store from the network to your local cache. A promise will be
-	     * returned that will be resolved with the result of the pull or rejected with an error.
-	     *
-	     * @param   {Query}                 [query]                                   Query to pull a subset of items.
-	     * @param   {Object}                options                                   Options
-	     * @param   {Properties}            [options.properties]                      Custom properties to send with
-	     *                                                                            the request.
-	     * @param   {Number}                [options.timeout]                         Timeout for the request.
-	     * @return  {Promise}                                                         Promise
-	     *
-	     * @example
-	     * var store = Kinvey.Store.getInstance('books');
-	     * store.pull().then(function(result) {
-	     *   ...
-	     * }).catch(function(err) {
-	     *   ...
-	     * });
-	     */
-
-	  }, {
-	    key: 'pull',
-	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee11(query) {
-	        var _this9 = this;
-
-	        var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-	        var _ret;
-
-	        return regeneratorRuntime.wrap(function _callee11$(_context11) {
-	          while (1) {
-	            switch (_context11.prev = _context11.next) {
-	              case 0:
-	                if (!this.isCacheEnabled()) {
-	                  _context11.next = 5;
-	                  break;
-	                }
-
-	                return _context11.delegateYield(regeneratorRuntime.mark(function _callee10() {
-	                  var count, prevOnlineState;
-	                  return regeneratorRuntime.wrap(function _callee10$(_context10) {
-	                    while (1) {
-	                      switch (_context10.prev = _context10.next) {
-	                        case 0:
-	                          _context10.next = 2;
-	                          return _this9.syncCount(null, options);
-
-	                        case 2:
-	                          count = _context10.sent;
-
-	                          if (!(count > 0)) {
-	                            _context10.next = 5;
-	                            break;
-	                          }
-
-	                          throw new _errors.KinveyError(count + ' items could not be pushed to the backend.' + ' You must push all pending sync items before new data is pulled.', 'Call push() on the data store instance to push the remaining sync items.');
-
-	                        case 5:
-	                          prevOnlineState = _this9.isOnline();
-
-	                          _this9.online();
-	                          return _context10.abrupt('return', {
-	                            v: _this9.find(query, options).toPromise().then(function (data) {
-	                              if (prevOnlineState === false) {
-	                                _this9.offline();
-	                              }
-
-	                              return data;
-	                            }).catch(function (error) {
-	                              if (prevOnlineState === false) {
-	                                _this9.offline();
-	                              }
-
-	                              throw error;
-	                            })
-	                          });
-
-	                        case 8:
-	                        case 'end':
-	                          return _context10.stop();
-	                      }
-	                    }
-	                  }, _callee10, _this9);
-	                })(), 't0', 2);
-
-	              case 2:
-	                _ret = _context11.t0;
-
-	                if (!((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object")) {
-	                  _context11.next = 5;
-	                  break;
-	                }
-
-	                return _context11.abrupt('return', _ret.v);
-
-	              case 5:
-	                throw new _errors.KinveyError('Unable to pull because the cache is disabled.');
-
-	              case 6:
-	              case 'end':
-	                return _context11.stop();
-	            }
-	          }
-	        }, _callee11, this);
-	      }));
-
-	      function pull(_x21, _x22) {
-	        return ref.apply(this, arguments);
-	      }
-
-	      return pull;
-	    }()
-
-	    /**
-	     * Sync items for the data store. This will push pending sync items first and then
-	     * pull items from the network into your local cache. A promise will be
-	     * returned that will be resolved with the result of the pull or rejected with an error.
-	     *
-	     * @param   {Query}                 [query]                                   Query to pull a subset of items.
-	     * @param   {Object}                options                                   Options
-	     * @param   {Properties}            [options.properties]                      Custom properties to send with
-	     *                                                                            the request.
-	     * @param   {Number}                [options.timeout]                         Timeout for the request.
-	     * @return  {Promise}                                                         Promise
-	     *
-	     * @example
-	     * var store = Kinvey.Store.getInstance('books');
-	     * store.sync().then(function(result) {
-	     *   ...
-	     * }).catch(function(err) {
-	     *   ...
-	     * });
-	     */
-
-	  }, {
-	    key: 'sync',
-	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee12(query) {
-	        var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-	        var push, pull;
-	        return regeneratorRuntime.wrap(function _callee12$(_context12) {
-	          while (1) {
-	            switch (_context12.prev = _context12.next) {
-	              case 0:
-	                if (!this.isCacheEnabled()) {
-	                  _context12.next = 8;
-	                  break;
-	                }
-
-	                _context12.next = 3;
-	                return this.push(null, options);
-
-	              case 3:
-	                push = _context12.sent;
-	                _context12.next = 6;
-	                return this.pull(query, options);
-
-	              case 6:
-	                pull = _context12.sent;
-	                return _context12.abrupt('return', {
-	                  push: push,
-	                  pull: pull
-	                });
-
-	              case 8:
-	                throw new _errors.KinveyError('Unable to sync because the cache is disabled.');
-
-	              case 9:
-	              case 'end':
-	                return _context12.stop();
-	            }
-	          }
-	        }, _callee12, this);
-	      }));
-
-	      function sync(_x24, _x25) {
-	        return ref.apply(this, arguments);
-	      }
-
-	      return sync;
-	    }()
 
 	    /**
 	     * Count the number of entities waiting to be pushed to the network. A promise will be
@@ -21802,61 +21108,24 @@ var Kinvey =
 	     * @param   {Number}                [options.ttl]                             Time to live for data retrieved
 	     *                                                                            from the local cache.
 	     * @return  {Promise}                                                         Promise
-	     *
-	     * @example
-	     * var store = Kinvey.Store.getInstance('books');
-	     * store.syncCount().then(function(count) {
-	     *   ...
-	     * }).catch(function(err) {
-	     *   ...
-	     * });
 	     */
 
 	  }, {
 	    key: 'syncCount',
-	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee13() {
-	        var query = arguments.length <= 0 || arguments[0] === undefined ? new _query4.Query() : arguments[0];
-	        var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-	        return regeneratorRuntime.wrap(function _callee13$(_context13) {
-	          while (1) {
-	            switch (_context13.prev = _context13.next) {
-	              case 0:
-	                if (!this.isCacheEnabled()) {
-	                  _context13.next = 4;
-	                  break;
-	                }
-
-	                if (!(query instanceof _query4.Query)) {
-	                  query = new _query4.Query((0, _result2.default)(query, 'toJSON', query));
-	                }
-
-	                query.equalTo('collection', this.collection);
-	                return _context13.abrupt('return', this.dataStoreSync.count(query, options));
-
-	              case 4:
-	                throw new _errors.KinveyError('Unable to get the sync count because the cache is disabled.');
-
-	              case 5:
-	              case 'end':
-	                return _context13.stop();
-	            }
-	          }
-	        }, _callee13, this);
-	      }));
-
-	      function syncCount(_x27, _x28) {
-	        return ref.apply(this, arguments);
-	      }
-
-	      return syncCount;
-	    }()
+	    value: function syncCount(query, options) {
+	      return this.syncManager.count(query, options);
+	    }
+	  }, {
+	    key: 'pendingSyncItems',
+	    value: function pendingSyncItems(query, options) {
+	      return this.syncManager.find(query, options);
+	    }
 
 	    /**
-	     * Add or update entities stored in the cache. A promise will be returned with the entities
-	     * or rejected with an error.
+	     * Push sync items for the data store to the network. A promise will be returned that will be
+	     * resolved with the result of the push or rejected with an error.
 	     *
-	     * @param   {Object|Array}          entities                                  Entity(s) to add or update in the cache.
+	     * @param   {Query}                 [query]                                   Query to push a subset of items.
 	     * @param   {Object}                options                                   Options
 	     * @param   {Properties}            [options.properties]                      Custom properties to send with
 	     *                                                                            the request.
@@ -21865,57 +21134,371 @@ var Kinvey =
 	     */
 
 	  }, {
-	    key: 'updateCache',
-	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee14(entities) {
-	        var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-	        var config, request, response;
-	        return regeneratorRuntime.wrap(function _callee14$(_context14) {
-	          while (1) {
-	            switch (_context14.prev = _context14.next) {
-	              case 0:
-	                if (!this.isCacheEnabled()) {
-	                  _context14.next = 7;
+	    key: 'push',
+	    value: function push(query, options) {
+	      return this.syncManager.push(query, options);
+	    }
+
+	    /**
+	     * Pull items for the data store from the network to your local cache. A promise will be
+	     * returned that will be resolved with the result of the pull or rejected with an error.
+	     *
+	     * @param   {Query}                 [query]                                   Query to pull a subset of items.
+	     * @param   {Object}                options                                   Options
+	     * @param   {Properties}            [options.properties]                      Custom properties to send with
+	     *                                                                            the request.
+	     * @param   {Number}                [options.timeout]                         Timeout for the request.
+	     * @return  {Promise}                                                         Promise
+	     */
+
+	  }, {
+	    key: 'pull',
+	    value: function pull(query, options) {
+	      return this.syncManager.pull(query, options);
+	    }
+
+	    /**
+	     * Sync items for the data store. This will push pending sync items first and then
+	     * pull items from the network into your local cache. A promise will be
+	     * returned that will be resolved with the result of the pull or rejected with an error.
+	     *
+	     * @param   {Query}                 [query]                                   Query to pull a subset of items.
+	     * @param   {Object}                options                                   Options
+	     * @param   {Properties}            [options.properties]                      Custom properties to send with
+	     *                                                                            the request.
+	     * @param   {Number}                [options.timeout]                         Timeout for the request.
+	     * @return  {Promise}                                                         Promise
+	     */
+
+	  }, {
+	    key: 'sync',
+	    value: function sync(query, options) {
+	      return this.syncManager.sync(query, options);
+	    }
+	  }, {
+	    key: 'clearSync',
+	    value: function clearSync(query, options) {
+	      return this.syncManager.clear(query, options);
+	    }
+	  }, {
+	    key: 'syncAutomatically',
+	    get: function get() {
+	      return true;
+	    }
+	  }]);
+
+	  return CacheStore;
+	}(NetworkStore);
+
+	var SyncStore = exports.SyncStore = function (_CacheStore) {
+	  _inherits(SyncStore, _CacheStore);
+
+	  function SyncStore() {
+	    _classCallCheck(this, SyncStore);
+
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(SyncStore).apply(this, arguments));
+	  }
+
+	  _createClass(SyncStore, [{
+	    key: 'find',
+
+
+	    /**
+	     * Find all entities in the data store. A query can be optionally provided to return
+	     * a subset of all entities in a collection or omitted to return all entities in
+	     * a collection. The number of entities returned adheres to the limits specified
+	     * at http://devcenter.kinvey.com/rest/guides/datastore#queryrestrictions.
+	     *
+	     * @param   {Query}                 [query]                             Query used to filter entities.
+	     * @param   {Object}                [options]                           Options
+	     * @param   {Properties}            [options.properties]                Custom properties to send with
+	     *                                                                      the request.
+	     * @param   {Number}                [options.timeout]                   Timeout for the request.
+	     * @param   {Boolean}               [options.useDeltaFetch]             Turn on or off the use of delta fetch.
+	     * @return  {Observable}                                                Observable.
+	     */
+	    value: function find(query) {
+	      var _this19 = this;
+
+	      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+	      var stream = _observable.KinveyObservable.create(function () {
+	        var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee22(observer) {
+	          var config, request, response;
+	          return _regeneratorRuntime2.default.wrap(function _callee22$(_context22) {
+	            while (1) {
+	              switch (_context22.prev = _context22.next) {
+	                case 0:
+	                  _context22.prev = 0;
+
+	                  if (!(query && !(query instanceof _query4.Query))) {
+	                    _context22.next = 3;
+	                    break;
+	                  }
+
+	                  throw new _errors.KinveyError('Invalid query. It must be an instance of the Query class.');
+
+	                case 3:
+
+	                  // Create the request
+	                  config = new _request.KinveyRequestConfig({
+	                    method: _request.RequestMethod.GET,
+	                    url: _url2.default.format({
+	                      protocol: _this19.client.protocol,
+	                      host: _this19.client.host,
+	                      pathname: _this19.pathname,
+	                      query: options.query
+	                    }),
+	                    properties: options.properties,
+	                    query: query,
+	                    timeout: options.timeout
+	                  });
+	                  request = new _cache.CacheRequest(config);
+
+	                  // Execute the request
+
+	                  _context22.next = 7;
+	                  return request.execute();
+
+	                case 7:
+	                  response = _context22.sent;
+
+
+	                  // Send the response
+	                  observer.next(response.data);
+	                  _context22.next = 14;
 	                  break;
-	                }
 
-	                config = new _request8.KinveyRequestConfig({
-	                  method: _request8.RequestMethod.PUT,
-	                  url: _url2.default.format({
-	                    protocol: this.client.protocol,
-	                    host: this.client.host,
-	                    pathname: this.pathname,
-	                    query: options.query
-	                  }),
-	                  properties: options.properties,
-	                  data: entities,
-	                  timeout: options.timeout
-	                });
-	                request = new _cache2.default(config);
-	                _context14.next = 5;
-	                return request.execute();
+	                case 11:
+	                  _context22.prev = 11;
+	                  _context22.t0 = _context22['catch'](0);
+	                  return _context22.abrupt('return', observer.error(_context22.t0));
 
-	              case 5:
-	                response = _context14.sent;
-	                return _context14.abrupt('return', response.data);
+	                case 14:
+	                  return _context22.abrupt('return', observer.complete());
 
-	              case 7:
-	                throw new _errors.KinveyError('Unable to update the cache because the cache is disabled.');
-
-	              case 8:
-	              case 'end':
-	                return _context14.stop();
+	                case 15:
+	                case 'end':
+	                  return _context22.stop();
+	              }
 	            }
-	          }
-	        }, _callee14, this);
-	      }));
+	          }, _callee22, _this19, [[0, 11]]);
+	        }));
 
-	      function updateCache(_x31, _x32) {
-	        return ref.apply(this, arguments);
-	      }
+	        return function (_x35) {
+	          return ref.apply(this, arguments);
+	        };
+	      }());
 
-	      return updateCache;
-	    }()
+	      return stream;
+	    }
+
+	    /**
+	     * Find a single entity in the data store by id.
+	     *
+	     * @param   {string}                id                               Entity by id to find.
+	     * @param   {Object}                [options]                        Options
+	     * @param   {Properties}            [options.properties]             Custom properties to send with
+	     *                                                                   the request.
+	     * @param   {Number}                [options.timeout]                Timeout for the request.
+	     * @param   {Boolean}               [options.useDeltaFetch]          Turn on or off the use of delta fetch.
+	     * @return  {Observable}                                             Observable.
+	     */
+
+	  }, {
+	    key: 'findById',
+	    value: function findById(id) {
+	      var _this20 = this;
+
+	      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+	      var stream = _observable.KinveyObservable.create(function () {
+	        var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee23(observer) {
+	          var config, request, response;
+	          return _regeneratorRuntime2.default.wrap(function _callee23$(_context23) {
+	            while (1) {
+	              switch (_context23.prev = _context23.next) {
+	                case 0:
+	                  _context23.prev = 0;
+
+	                  if (id) {
+	                    _context23.next = 5;
+	                    break;
+	                  }
+
+	                  observer.next(undefined);
+	                  _context23.next = 11;
+	                  break;
+
+	                case 5:
+	                  // Create the request
+	                  config = new _request.KinveyRequestConfig({
+	                    method: _request.RequestMethod.GET,
+	                    url: _url2.default.format({
+	                      protocol: _this20.client.protocol,
+	                      host: _this20.client.host,
+	                      pathname: _this20.pathname + '/' + id,
+	                      query: options.query
+	                    }),
+	                    properties: options.properties,
+	                    timeout: options.timeout
+	                  });
+	                  request = new _cache.CacheRequest(config);
+
+	                  // Execute the request
+
+	                  _context23.next = 9;
+	                  return request.execute();
+
+	                case 9:
+	                  response = _context23.sent;
+
+
+	                  // Emit the data
+	                  observer.next(response.data);
+
+	                case 11:
+	                  _context23.next = 16;
+	                  break;
+
+	                case 13:
+	                  _context23.prev = 13;
+	                  _context23.t0 = _context23['catch'](0);
+	                  return _context23.abrupt('return', observer.error(_context23.t0));
+
+	                case 16:
+	                  return _context23.abrupt('return', observer.complete());
+
+	                case 17:
+	                case 'end':
+	                  return _context23.stop();
+	              }
+	            }
+	          }, _callee23, _this20, [[0, 13]]);
+	        }));
+
+	        return function (_x37) {
+	          return ref.apply(this, arguments);
+	        };
+	      }());
+
+	      return stream;
+	    }
+
+	    /**
+	     * Count all entities in the data store. A query can be optionally provided to return
+	     * a subset of all entities in a collection or omitted to return all entities in
+	     * a collection. The number of entities returned adheres to the limits specified
+	     * at http://devcenter.kinvey.com/rest/guides/datastore#queryrestrictions.
+	     *
+	     * @param   {Query}                 [query]                          Query used to filter entities.
+	     * @param   {Object}                [options]                        Options
+	     * @param   {Properties}            [options.properties]             Custom properties to send with
+	     *                                                                   the request.
+	     * @param   {Number}                [options.timeout]                Timeout for the request.
+	     * @return  {Observable}                                             Observable.
+	     */
+
+	  }, {
+	    key: 'count',
+	    value: function count(query) {
+	      var _this21 = this;
+
+	      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+	      var stream = _observable.KinveyObservable.create(function () {
+	        var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee24(observer) {
+	          var config, request, response, data;
+	          return _regeneratorRuntime2.default.wrap(function _callee24$(_context24) {
+	            while (1) {
+	              switch (_context24.prev = _context24.next) {
+	                case 0:
+	                  _context24.prev = 0;
+
+	                  if (!(query && !(query instanceof _query4.Query))) {
+	                    _context24.next = 3;
+	                    break;
+	                  }
+
+	                  throw new _errors.KinveyError('Invalid query. It must be an instance of the Query class.');
+
+	                case 3:
+
+	                  // Count the entities in the cache
+	                  config = new _request.KinveyRequestConfig({
+	                    method: _request.RequestMethod.GET,
+	                    url: _url2.default.format({
+	                      protocol: _this21.client.protocol,
+	                      host: _this21.client.host,
+	                      pathname: _this21.pathname + '/_count',
+	                      query: options.query
+	                    }),
+	                    properties: options.properties,
+	                    query: query,
+	                    timeout: options.timeout
+	                  });
+	                  request = new _cache.CacheRequest(config);
+
+	                  // Execute the request
+
+	                  _context24.next = 7;
+	                  return request.execute();
+
+	                case 7:
+	                  response = _context24.sent;
+	                  data = response.data;
+
+	                  // Emit the cache count
+
+	                  observer.next(data ? data.count : 0);
+	                  _context24.next = 15;
+	                  break;
+
+	                case 12:
+	                  _context24.prev = 12;
+	                  _context24.t0 = _context24['catch'](0);
+	                  return _context24.abrupt('return', observer.error(_context24.t0));
+
+	                case 15:
+	                  return _context24.abrupt('return', observer.complete());
+
+	                case 16:
+	                case 'end':
+	                  return _context24.stop();
+	              }
+	            }
+	          }, _callee24, _this21, [[0, 12]]);
+	        }));
+
+	        return function (_x39) {
+	          return ref.apply(this, arguments);
+	        };
+	      }());
+
+	      return stream;
+	    }
+	  }, {
+	    key: 'syncAutomatically',
+	    get: function get() {
+	      return false;
+	    }
+	  }]);
+
+	  return SyncStore;
+	}(CacheStore);
+
+	/**
+	 * The DataStore class is used to find, create, update, remove, count and group entities.
+	 */
+
+
+	var DataStoreManager = function () {
+	  function DataStoreManager() {
+	    _classCallCheck(this, DataStoreManager);
+	  }
+
+	  _createClass(DataStoreManager, null, [{
+	    key: 'collection',
 
 	    /**
 	     * Returns an instance of the Store class based on the type provided.
@@ -21924,42 +21507,22 @@ var Kinvey =
 	     * @param  {StoreType}    [type=DataStoreType.Network]  Type of store to return.
 	     * @return {DataStore}                                  DataStore instance.
 	     */
-
-	  }, {
-	    key: 'pathname',
-	    get: function get() {
-	      var pathname = '/' + appdataNamespace;
-
-	      if (this.client) {
-	        pathname = pathname + '/' + this.client.appKey;
-	      }
-
-	      if (this.collection) {
-	        pathname = pathname + '/' + this.collection;
-	      }
-
-	      return pathname;
-	    }
-	  }], [{
-	    key: 'collection',
 	    value: function collection(_collection) {
 	      var type = arguments.length <= 1 || arguments[1] === undefined ? DataStoreType.Cache : arguments[1];
+	      var options = arguments[2];
 
-	      var store = new DataStore(_collection);
+	      var store = void 0;
 
 	      switch (type) {
 	        case DataStoreType.Network:
-	          store.online();
-	          store.disableCache();
+	          store = new NetworkStore(_collection, options);
 	          break;
 	        case DataStoreType.Sync:
-	          store.enableCache();
-	          store.offline();
+	          store = new SyncStore(_collection, options);
 	          break;
 	        case DataStoreType.Cache:
 	        default:
-	          store.online();
-	          store.enableCache();
+	          store = new CacheStore(_collection, options);
 
 	      }
 
@@ -21967,69 +21530,19 @@ var Kinvey =
 	    }
 	  }, {
 	    key: 'getInstance',
-	    value: function getInstance(collection, type) {
-	      return DataStore.collection(collection, type);
+	    value: function getInstance(collection, type, options) {
+	      return this.collection(collection, type, options);
 	    }
-
-	    /**
-	     * Deletes the database.
-	     */
-
-	  }, {
-	    key: 'clear',
-	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee15() {
-	        var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-	        var client, pathname, config, request, response;
-	        return regeneratorRuntime.wrap(function _callee15$(_context15) {
-	          while (1) {
-	            switch (_context15.prev = _context15.next) {
-	              case 0:
-	                client = options.client || _client2.default.sharedInstance();
-	                pathname = '/' + appdataNamespace + '/' + client.appKey;
-	                config = new _request8.KinveyRequestConfig({
-	                  method: _request8.RequestMethod.DELETE,
-	                  url: _url2.default.format({
-	                    protocol: client.protocol,
-	                    host: client.host,
-	                    pathname: pathname,
-	                    query: options.query
-	                  }),
-	                  properties: options.properties,
-	                  timeout: options.timeout
-	                });
-	                request = new _cache2.default(config);
-	                _context15.next = 6;
-	                return request.execute();
-
-	              case 6:
-	                response = _context15.sent;
-	                return _context15.abrupt('return', response.data);
-
-	              case 8:
-	              case 'end':
-	                return _context15.stop();
-	            }
-	          }
-	        }, _callee15, this);
-	      }));
-
-	      function clear(_x35) {
-	        return ref.apply(this, arguments);
-	      }
-
-	      return clear;
-	    }()
 	  }]);
 
-	  return DataStore;
+	  return DataStoreManager;
 	}();
 
-	exports.DataStore = DataStore;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+	exports.DataStoreManager = DataStoreManager;
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ },
-/* 251 */
+/* 227 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -22037,18 +21550,25 @@ var Kinvey =
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
+	exports.CacheRequest = undefined;
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-	var _request = __webpack_require__(149);
+	var _request = __webpack_require__(151);
 
-	var _rack = __webpack_require__(154);
+	var _rack = __webpack_require__(156);
 
-	var _errors = __webpack_require__(5);
+	var _errors = __webpack_require__(7);
 
-	var _response = __webpack_require__(212);
+	var _response = __webpack_require__(167);
+
+	var _regeneratorRuntime = __webpack_require__(2);
+
+	var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
 
@@ -22058,11 +21578,13 @@ var Kinvey =
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+	// eslint-disable-line no-unused-vars
+
 	/**
 	 * @private
 	 */
 
-	var CacheRequest = function (_KinveyRequest) {
+	var CacheRequest = exports.CacheRequest = function (_KinveyRequest) {
 	  _inherits(CacheRequest, _KinveyRequest);
 
 	  function CacheRequest(options) {
@@ -22070,16 +21592,16 @@ var Kinvey =
 
 	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(CacheRequest).call(this, options));
 
-	    _this.rack = _rack.CacheRack.sharedInstance();
+	    _this.rack = _rack.KinveyRackManager.cacheRack;
 	    return _this;
 	  }
 
 	  _createClass(CacheRequest, [{
 	    key: 'execute',
 	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee() {
 	        var response, config;
-	        return regeneratorRuntime.wrap(function _callee$(_context) {
+	        return _regeneratorRuntime2.default.wrap(function _callee$(_context) {
 	          while (1) {
 	            switch (_context.prev = _context.next) {
 	              case 0:
@@ -22151,8 +21673,8 @@ var Kinvey =
 	  }, {
 	    key: 'cancel',
 	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee2() {
-	        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee2() {
+	        return _regeneratorRuntime2.default.wrap(function _callee2$(_context2) {
 	          while (1) {
 	            switch (_context2.prev = _context2.next) {
 	              case 0:
@@ -22181,10 +21703,8 @@ var Kinvey =
 	  return CacheRequest;
 	}(_request.KinveyRequest);
 
-	exports.default = CacheRequest;
-
 /***/ },
-/* 252 */
+/* 228 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -22202,45 +21722,47 @@ var Kinvey =
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-	var _request = __webpack_require__(149);
+	var _request = __webpack_require__(151);
 
-	var _cache = __webpack_require__(251);
+	var _cache = __webpack_require__(227);
 
-	var _cache2 = _interopRequireDefault(_cache);
+	var _network = __webpack_require__(198);
 
-	var _network = __webpack_require__(247);
+	var _response = __webpack_require__(167);
 
-	var _response = __webpack_require__(212);
+	var _errors = __webpack_require__(7);
 
-	var _errors = __webpack_require__(5);
+	var _query3 = __webpack_require__(10);
 
-	var _query3 = __webpack_require__(8);
+	var _regeneratorRuntime = __webpack_require__(2);
 
-	var _keyBy = __webpack_require__(162);
+	var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
+
+	var _keyBy = __webpack_require__(178);
 
 	var _keyBy2 = _interopRequireDefault(_keyBy);
 
-	var _reduce = __webpack_require__(216);
+	var _reduce = __webpack_require__(162);
 
 	var _reduce2 = _interopRequireDefault(_reduce);
 
-	var _result = __webpack_require__(136);
+	var _result = __webpack_require__(138);
 
 	var _result2 = _interopRequireDefault(_result);
 
-	var _values = __webpack_require__(200);
+	var _values = __webpack_require__(182);
 
 	var _values2 = _interopRequireDefault(_values);
 
-	var _forEach = __webpack_require__(10);
+	var _forEach = __webpack_require__(12);
 
 	var _forEach2 = _interopRequireDefault(_forEach);
 
-	var _isArray = __webpack_require__(31);
+	var _isArray = __webpack_require__(33);
 
 	var _isArray2 = _interopRequireDefault(_isArray);
 
-	var _isString = __webpack_require__(32);
+	var _isString = __webpack_require__(34);
 
 	var _isString2 = _interopRequireDefault(_isString);
 
@@ -22253,6 +21775,7 @@ var Kinvey =
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /* eslint-disable no-underscore-dangle */
+	// eslint-disable-line no-unused-vars
 
 
 	var idAttribute = process.env.KINVEY_ID_ATTRIBUTE || '_id';
@@ -22275,12 +21798,12 @@ var Kinvey =
 	  _createClass(DeltaFetchRequest, [{
 	    key: 'execute',
 	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee2() {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee2() {
 	        var _this2 = this;
 
 	        var cacheData, request, _ret, networkRequest;
 
-	        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+	        return _regeneratorRuntime2.default.wrap(function _callee2$(_context2) {
 	          while (1) {
 	            switch (_context2.prev = _context2.next) {
 	              case 0:
@@ -22290,7 +21813,7 @@ var Kinvey =
 
 	              case 3:
 	                _context2.prev = 3;
-	                request = new _cache2.default({
+	                request = new _cache.CacheRequest({
 	                  method: _request.RequestMethod.GET,
 	                  url: this.url,
 	                  headers: this.headers,
@@ -22329,10 +21852,10 @@ var Kinvey =
 	                  break;
 	                }
 
-	                return _context2.delegateYield(regeneratorRuntime.mark(function _callee() {
+	                return _context2.delegateYield(_regeneratorRuntime2.default.mark(function _callee() {
 	                  var cacheDocuments, query, networkRequest, networkData, networkDocuments, deltaSet, cacheDocumentIds, deltaSetIds, promises, i, _query, ids, _networkRequest, promise, responses, response, _query2;
 
-	                  return regeneratorRuntime.wrap(function _callee$(_context) {
+	                  return _regeneratorRuntime2.default.wrap(function _callee$(_context) {
 	                    while (1) {
 	                      switch (_context.prev = _context.next) {
 	                        case 0:
@@ -22509,10 +22032,10 @@ var Kinvey =
 
 	  return DeltaFetchRequest;
 	}(_request.KinveyRequest);
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ },
-/* 253 */
+/* 229 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -22524,9 +22047,9 @@ var Kinvey =
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _Observable2 = __webpack_require__(254);
+	var _Observable2 = __webpack_require__(230);
 
-	var _toPromise2 = __webpack_require__(269);
+	var _toPromise2 = __webpack_require__(245);
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -22559,13 +22082,13 @@ var Kinvey =
 	}(_Observable2.Observable);
 
 /***/ },
-/* 254 */
+/* 230 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var root_1 = __webpack_require__(255);
-	var toSubscriber_1 = __webpack_require__(256);
-	var $$observable = __webpack_require__(267);
+	var root_1 = __webpack_require__(231);
+	var toSubscriber_1 = __webpack_require__(232);
+	var $$observable = __webpack_require__(243);
 	/**
 	 * A representation of any set of values over any amount of time. This the most basic building block
 	 * of RxJS.
@@ -22704,7 +22227,7 @@ var Kinvey =
 	//# sourceMappingURL=Observable.js.map
 
 /***/ },
-/* 255 */
+/* 231 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(module, global) {"use strict";
@@ -22725,15 +22248,15 @@ var Kinvey =
 	    exports.root = freeGlobal;
 	}
 	//# sourceMappingURL=root.js.map
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(132)(module), (function() { return this; }())))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(134)(module), (function() { return this; }())))
 
 /***/ },
-/* 256 */
+/* 232 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var Subscriber_1 = __webpack_require__(257);
-	var rxSubscriber_1 = __webpack_require__(266);
+	var Subscriber_1 = __webpack_require__(233);
+	var rxSubscriber_1 = __webpack_require__(242);
 	function toSubscriber(nextOrObserver, error, complete) {
 	    if (nextOrObserver) {
 	        if (nextOrObserver instanceof Subscriber_1.Subscriber) {
@@ -22752,7 +22275,7 @@ var Kinvey =
 	//# sourceMappingURL=toSubscriber.js.map
 
 /***/ },
-/* 257 */
+/* 233 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -22761,10 +22284,10 @@ var Kinvey =
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var isFunction_1 = __webpack_require__(258);
-	var Subscription_1 = __webpack_require__(259);
-	var Observer_1 = __webpack_require__(265);
-	var rxSubscriber_1 = __webpack_require__(266);
+	var isFunction_1 = __webpack_require__(234);
+	var Subscription_1 = __webpack_require__(235);
+	var Observer_1 = __webpack_require__(241);
+	var rxSubscriber_1 = __webpack_require__(242);
 	/**
 	 * Implements the {@link Observer} interface and extends the
 	 * {@link Subscription} class. While the {@link Observer} is the public API for
@@ -23006,7 +22529,7 @@ var Kinvey =
 	//# sourceMappingURL=Subscriber.js.map
 
 /***/ },
-/* 258 */
+/* 234 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -23017,16 +22540,16 @@ var Kinvey =
 	//# sourceMappingURL=isFunction.js.map
 
 /***/ },
-/* 259 */
+/* 235 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var isArray_1 = __webpack_require__(260);
-	var isObject_1 = __webpack_require__(261);
-	var isFunction_1 = __webpack_require__(258);
-	var tryCatch_1 = __webpack_require__(262);
-	var errorObject_1 = __webpack_require__(263);
-	var UnsubscriptionError_1 = __webpack_require__(264);
+	var isArray_1 = __webpack_require__(236);
+	var isObject_1 = __webpack_require__(237);
+	var isFunction_1 = __webpack_require__(234);
+	var tryCatch_1 = __webpack_require__(238);
+	var errorObject_1 = __webpack_require__(239);
+	var UnsubscriptionError_1 = __webpack_require__(240);
 	/**
 	 * Represents a disposable resource, such as the execution of an Observable. A
 	 * Subscription has one important method, `unsubscribe`, that takes no argument
@@ -23172,7 +22695,7 @@ var Kinvey =
 	//# sourceMappingURL=Subscription.js.map
 
 /***/ },
-/* 260 */
+/* 236 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -23180,7 +22703,7 @@ var Kinvey =
 	//# sourceMappingURL=isArray.js.map
 
 /***/ },
-/* 261 */
+/* 237 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -23191,11 +22714,11 @@ var Kinvey =
 	//# sourceMappingURL=isObject.js.map
 
 /***/ },
-/* 262 */
+/* 238 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var errorObject_1 = __webpack_require__(263);
+	var errorObject_1 = __webpack_require__(239);
 	var tryCatchTarget;
 	function tryCatcher() {
 	    try {
@@ -23215,7 +22738,7 @@ var Kinvey =
 	//# sourceMappingURL=tryCatch.js.map
 
 /***/ },
-/* 263 */
+/* 239 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -23224,7 +22747,7 @@ var Kinvey =
 	//# sourceMappingURL=errorObject.js.map
 
 /***/ },
-/* 264 */
+/* 240 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -23251,7 +22774,7 @@ var Kinvey =
 	//# sourceMappingURL=UnsubscriptionError.js.map
 
 /***/ },
-/* 265 */
+/* 241 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -23264,29 +22787,29 @@ var Kinvey =
 	//# sourceMappingURL=Observer.js.map
 
 /***/ },
-/* 266 */
+/* 242 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var root_1 = __webpack_require__(255);
+	var root_1 = __webpack_require__(231);
 	var Symbol = root_1.root.Symbol;
 	exports.$$rxSubscriber = (typeof Symbol === 'function' && typeof Symbol.for === 'function') ?
 	    Symbol.for('rxSubscriber') : '@@rxSubscriber';
 	//# sourceMappingURL=rxSubscriber.js.map
 
 /***/ },
-/* 267 */
+/* 243 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {/* global window */
 	'use strict';
 
-	module.exports = __webpack_require__(268)(global || window || this);
+	module.exports = __webpack_require__(244)(global || window || this);
 
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 268 */
+/* 244 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -23311,11 +22834,11 @@ var Kinvey =
 
 
 /***/ },
-/* 269 */
+/* 245 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var root_1 = __webpack_require__(255);
+	var root_1 = __webpack_require__(231);
 	/**
 	 * @param PromiseCtor
 	 * @return {Promise<T>}
@@ -23344,7 +22867,7 @@ var Kinvey =
 	//# sourceMappingURL=toPromise.js.map
 
 /***/ },
-/* 270 */
+/* 246 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -23352,45 +22875,56 @@ var Kinvey =
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.SyncOperation = undefined;
+	exports.SyncManager = exports.SyncOperation = undefined;
 
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); // eslint-disable-line no-unused-vars
 
-	var _request2 = __webpack_require__(149);
 
-	var _errors = __webpack_require__(5);
+	var _request2 = __webpack_require__(151);
 
-	var _cache = __webpack_require__(251);
+	var _errors = __webpack_require__(7);
 
-	var _cache2 = _interopRequireDefault(_cache);
+	var _cache = __webpack_require__(227);
 
-	var _network = __webpack_require__(247);
+	var _network = __webpack_require__(198);
 
-	var _client = __webpack_require__(137);
+	var _deltafetch = __webpack_require__(228);
 
-	var _client2 = _interopRequireDefault(_client);
+	var _client = __webpack_require__(139);
 
-	var _query = __webpack_require__(8);
+	var _query = __webpack_require__(10);
 
-	var _url = __webpack_require__(142);
+	var _regeneratorRuntime = __webpack_require__(2);
+
+	var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
+
+	var _url = __webpack_require__(144);
 
 	var _url2 = _interopRequireDefault(_url);
 
-	var _map = __webpack_require__(210);
+	var _map = __webpack_require__(175);
 
 	var _map2 = _interopRequireDefault(_map);
 
-	var _isArray = __webpack_require__(31);
+	var _result = __webpack_require__(138);
+
+	var _result2 = _interopRequireDefault(_result);
+
+	var _isArray = __webpack_require__(33);
 
 	var _isArray2 = _interopRequireDefault(_isArray);
 
-	var _orderBy = __webpack_require__(271);
+	var _isString = __webpack_require__(34);
+
+	var _isString2 = _interopRequireDefault(_isString);
+
+	var _orderBy = __webpack_require__(247);
 
 	var _orderBy2 = _interopRequireDefault(_orderBy);
 
-	var _sortedUniqBy = __webpack_require__(277);
+	var _sortedUniqBy = __webpack_require__(253);
 
 	var _sortedUniqBy2 = _interopRequireDefault(_sortedUniqBy);
 
@@ -23415,15 +22949,29 @@ var Kinvey =
 	Object.freeze(SyncOperation);
 	exports.SyncOperation = SyncOperation;
 
-	var Sync = function () {
-	  function Sync() {
-	    _classCallCheck(this, Sync);
+	var SyncManager = exports.SyncManager = function () {
+	  function SyncManager(collection) {
+	    var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+	    _classCallCheck(this, SyncManager);
+
+	    if (!collection) {
+	      throw new _errors.SyncError('A collection is required.');
+	    }
+
+	    if (!(0, _isString2.default)(collection)) {
+	      throw new _errors.SyncError('Collection must be a string.');
+	    }
 
 	    /**
-	     * @private
+	     * @type {string}
+	     */
+	    this.collection = collection;
+
+	    /**
 	     * @type {Client}
 	     */
-	    this.client = _client2.default.sharedInstance();
+	    this.client = options.client || _client.Client.sharedInstance();
 	  }
 
 	  /**
@@ -23433,40 +22981,28 @@ var Kinvey =
 	   */
 
 
-	  _createClass(Sync, [{
-	    key: 'count',
-
-
-	    /**
-	     * Count the number of entities that are waiting to be synced. A query can be
-	     * provided to only count a subset of entities.
-	     *
-	     * @param   {Query}         [query]                     Query
-	     * @param   {Object}        [options={}]                Options
-	     * @param   {Number}        [options.timeout]           Timeout for the request.
-	     * @return  {Promise}                                   Promise
-	     *
-	     * @example
-	     * var sync = new Sync();
-	     * var promise = sync.count().then(function(count) {
-	     *   ...
-	     * }).catch(function(error) {
-	     *   ...
-	     * });
-	     */
+	  _createClass(SyncManager, [{
+	    key: 'find',
 	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(query) {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee() {
+	        var query = arguments.length <= 0 || arguments[0] === undefined ? new _query.Query() : arguments[0];
 	        var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 	        var syncEntities, request;
-	        return regeneratorRuntime.wrap(function _callee$(_context) {
+	        return _regeneratorRuntime2.default.wrap(function _callee$(_context) {
 	          while (1) {
 	            switch (_context.prev = _context.next) {
 	              case 0:
 	                syncEntities = [];
 
-	                // Get all sync entities
 
-	                request = new _cache2.default({
+	                if (!(query instanceof _query.Query)) {
+	                  query = new _query.Query((0, _result2.default)(query, 'toJSON', query));
+	                }
+
+	                query.equalTo('collection', this.collection);
+
+	                // Get all sync entities
+	                request = new _cache.CacheRequest({
 	                  method: _request2.RequestMethod.GET,
 	                  url: _url2.default.format({
 	                    protocol: this.client.protocol,
@@ -23478,12 +23014,12 @@ var Kinvey =
 	                  timeout: options.timeout,
 	                  client: this.client
 	                });
-	                _context.next = 4;
+	                _context.next = 6;
 	                return request.execute().then(function (response) {
 	                  return response.data;
 	                });
 
-	              case 4:
+	              case 6:
 	                syncEntities = _context.sent;
 
 
@@ -23495,9 +23031,9 @@ var Kinvey =
 	                });
 
 	                // Return the length of sync entities
-	                return _context.abrupt('return', syncEntities.length);
+	                return _context.abrupt('return', syncEntities);
 
-	              case 8:
+	              case 10:
 	              case 'end':
 	                return _context.stop();
 	            }
@@ -23505,7 +23041,50 @@ var Kinvey =
 	        }, _callee, this);
 	      }));
 
-	      function count(_x, _x2) {
+	      function find(_x2, _x3) {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return find;
+	    }()
+
+	    /**
+	     * Count the number of entities that are waiting to be synced. A query can be
+	     * provided to only count a subset of entities.
+	     *
+	     * @param   {Query}         [query]                     Query
+	     * @param   {Object}        [options={}]                Options
+	     * @param   {Number}        [options.timeout]           Timeout for the request.
+	     * @return  {Promise}                                   Promise
+	     */
+
+	  }, {
+	    key: 'count',
+	    value: function () {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee2() {
+	        var query = arguments.length <= 0 || arguments[0] === undefined ? new _query.Query() : arguments[0];
+	        var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	        var syncEntities;
+	        return _regeneratorRuntime2.default.wrap(function _callee2$(_context2) {
+	          while (1) {
+	            switch (_context2.prev = _context2.next) {
+	              case 0:
+	                _context2.next = 2;
+	                return this.find(query, options);
+
+	              case 2:
+	                syncEntities = _context2.sent;
+	                return _context2.abrupt('return', syncEntities.length);
+
+	              case 4:
+	              case 'end':
+	                return _context2.stop();
+	            }
+	          }
+	        }, _callee2, this);
+	      }));
+
+	      function count(_x6, _x7) {
 	        return ref.apply(this, arguments);
 	      }
 
@@ -23514,38 +23093,13 @@ var Kinvey =
 	  }, {
 	    key: 'addCreateOperation',
 	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(collection, entities) {
-	        var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
-	        return regeneratorRuntime.wrap(function _callee2$(_context2) {
-	          while (1) {
-	            switch (_context2.prev = _context2.next) {
-	              case 0:
-	                return _context2.abrupt('return', this.addOperation(SyncOperation.Create, collection, entities, options));
-
-	              case 1:
-	              case 'end':
-	                return _context2.stop();
-	            }
-	          }
-	        }, _callee2, this);
-	      }));
-
-	      function addCreateOperation(_x4, _x5, _x6) {
-	        return ref.apply(this, arguments);
-	      }
-
-	      return addCreateOperation;
-	    }()
-	  }, {
-	    key: 'addUpdateOperation',
-	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee3(collection, entities) {
-	        var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
-	        return regeneratorRuntime.wrap(function _callee3$(_context3) {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee3(entities) {
+	        var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	        return _regeneratorRuntime2.default.wrap(function _callee3$(_context3) {
 	          while (1) {
 	            switch (_context3.prev = _context3.next) {
 	              case 0:
-	                return _context3.abrupt('return', this.addOperation(SyncOperation.Update, collection, entities, options));
+	                return _context3.abrupt('return', this.addOperation(SyncOperation.Create, entities, options));
 
 	              case 1:
 	              case 'end':
@@ -23555,22 +23109,22 @@ var Kinvey =
 	        }, _callee3, this);
 	      }));
 
-	      function addUpdateOperation(_x8, _x9, _x10) {
+	      function addCreateOperation(_x10, _x11) {
 	        return ref.apply(this, arguments);
 	      }
 
-	      return addUpdateOperation;
+	      return addCreateOperation;
 	    }()
 	  }, {
-	    key: 'addDeleteOperation',
+	    key: 'addUpdateOperation',
 	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee4(collection, entities) {
-	        var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
-	        return regeneratorRuntime.wrap(function _callee4$(_context4) {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee4(entities) {
+	        var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	        return _regeneratorRuntime2.default.wrap(function _callee4$(_context4) {
 	          while (1) {
 	            switch (_context4.prev = _context4.next) {
 	              case 0:
-	                return _context4.abrupt('return', this.addOperation(SyncOperation.Delete, collection, entities, options));
+	                return _context4.abrupt('return', this.addOperation(SyncOperation.Update, entities, options));
 
 	              case 1:
 	              case 'end':
@@ -23580,7 +23134,32 @@ var Kinvey =
 	        }, _callee4, this);
 	      }));
 
-	      function addDeleteOperation(_x12, _x13, _x14) {
+	      function addUpdateOperation(_x13, _x14) {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return addUpdateOperation;
+	    }()
+	  }, {
+	    key: 'addDeleteOperation',
+	    value: function () {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee5(entities) {
+	        var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	        return _regeneratorRuntime2.default.wrap(function _callee5$(_context5) {
+	          while (1) {
+	            switch (_context5.prev = _context5.next) {
+	              case 0:
+	                return _context5.abrupt('return', this.addOperation(SyncOperation.Delete, entities, options));
+
+	              case 1:
+	              case 'end':
+	                return _context5.stop();
+	            }
+	          }
+	        }, _callee5, this);
+	      }));
+
+	      function addDeleteOperation(_x16, _x17) {
 	        return ref.apply(this, arguments);
 	      }
 
@@ -23589,53 +23168,42 @@ var Kinvey =
 	  }, {
 	    key: 'addOperation',
 	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee6() {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee7() {
 	        var operation = arguments.length <= 0 || arguments[0] === undefined ? SyncOperation.Create : arguments[0];
-	        var collection = arguments[1];
 
 	        var _this = this;
 
-	        var entities = arguments[2];
-	        var options = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
+	        var entities = arguments[1];
+	        var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 	        var singular;
-	        return regeneratorRuntime.wrap(function _callee6$(_context6) {
+	        return _regeneratorRuntime2.default.wrap(function _callee7$(_context7) {
 	          while (1) {
-	            switch (_context6.prev = _context6.next) {
+	            switch (_context7.prev = _context7.next) {
 	              case 0:
 	                singular = false;
 
-	                // Check that a name was provided
-
-	                if (collection) {
-	                  _context6.next = 3;
-	                  break;
-	                }
-
-	                throw new _errors.SyncError('A name for a collection must be provided to add entities to the sync table.');
-
-	              case 3:
-
 	                // Cast the entities to an array
+
 	                if (!(0, _isArray2.default)(entities)) {
 	                  singular = true;
 	                  entities = [entities];
 	                }
 
 	                // Process the array of entities
-	                _context6.next = 6;
+	                _context7.next = 4;
 	                return Promise.all((0, _map2.default)(entities, function () {
-	                  var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee5(entity) {
+	                  var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee6(entity) {
 	                    var id, query, findConfig, findRequest, response, syncEntities, syncEntity, request;
-	                    return regeneratorRuntime.wrap(function _callee5$(_context5) {
+	                    return _regeneratorRuntime2.default.wrap(function _callee6$(_context6) {
 	                      while (1) {
-	                        switch (_context5.prev = _context5.next) {
+	                        switch (_context6.prev = _context6.next) {
 	                          case 0:
 	                            if (entity) {
-	                              _context5.next = 2;
+	                              _context6.next = 2;
 	                              break;
 	                            }
 
-	                            return _context5.abrupt('return', null);
+	                            return _context6.abrupt('return', null);
 
 	                          case 2:
 
@@ -23643,7 +23211,7 @@ var Kinvey =
 	                            id = entity[idAttribute];
 
 	                            if (id) {
-	                              _context5.next = 5;
+	                              _context6.next = 5;
 	                              break;
 	                            }
 
@@ -23664,14 +23232,14 @@ var Kinvey =
 	                              query: query,
 	                              timeout: options.timeout
 	                            });
-	                            findRequest = new _cache2.default(findConfig);
-	                            _context5.next = 10;
+	                            findRequest = new _cache.CacheRequest(findConfig);
+	                            _context6.next = 10;
 	                            return findRequest.execute();
 
 	                          case 10:
-	                            response = _context5.sent;
+	                            response = _context6.sent;
 	                            syncEntities = response.data;
-	                            syncEntity = syncEntities.length === 1 ? syncEntities[0] : { collection: collection, state: {} };
+	                            syncEntity = syncEntities.length === 1 ? syncEntities[0] : { collection: _this.collection, state: {} };
 
 	                            // Update the state
 
@@ -23682,7 +23250,7 @@ var Kinvey =
 	                            syncEntity.entity = entity;
 
 	                            // Send a request to save the sync entity
-	                            request = new _cache2.default({
+	                            request = new _cache.CacheRequest({
 	                              method: _request2.RequestMethod.PUT,
 	                              url: _url2.default.format({
 	                                protocol: _this.client.protocol,
@@ -23693,37 +23261,150 @@ var Kinvey =
 	                              body: syncEntity,
 	                              timeout: options.timeout
 	                            });
-	                            return _context5.abrupt('return', request.execute());
+	                            return _context6.abrupt('return', request.execute());
 
 	                          case 18:
 	                          case 'end':
-	                            return _context5.stop();
+	                            return _context6.stop();
 	                        }
 	                      }
-	                    }, _callee5, _this);
+	                    }, _callee6, _this);
 	                  }));
 
-	                  return function (_x22) {
+	                  return function (_x24) {
 	                    return ref.apply(this, arguments);
 	                  };
 	                }()));
 
-	              case 6:
-	                return _context6.abrupt('return', singular ? entities[0] : entities);
+	              case 4:
+	                return _context7.abrupt('return', singular ? entities[0] : entities);
 
-	              case 7:
+	              case 5:
 	              case 'end':
-	                return _context6.stop();
+	                return _context7.stop();
 	            }
 	          }
-	        }, _callee6, this);
+	        }, _callee7, this);
 	      }));
 
-	      function addOperation(_x16, _x17, _x18, _x19) {
+	      function addOperation(_x19, _x20, _x21) {
 	        return ref.apply(this, arguments);
 	      }
 
 	      return addOperation;
+	    }()
+	  }, {
+	    key: 'pull',
+	    value: function () {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee8(query) {
+	        var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	        var count, config, request, response, networkEntities, saveConfig, saveRequest;
+	        return _regeneratorRuntime2.default.wrap(function _callee8$(_context8) {
+	          while (1) {
+	            switch (_context8.prev = _context8.next) {
+	              case 0:
+	                if (!(query && !(query instanceof _query.Query))) {
+	                  _context8.next = 2;
+	                  break;
+	                }
+
+	                throw new _errors.SyncError('Invalid query. It must be an instance of the Query class.');
+
+	              case 2:
+	                _context8.next = 4;
+	                return this.count();
+
+	              case 4:
+	                count = _context8.sent;
+
+	                if (!(count > 0)) {
+	                  _context8.next = 11;
+	                  break;
+	                }
+
+	                _context8.next = 8;
+	                return this.push();
+
+	              case 8:
+	                _context8.next = 10;
+	                return this.count();
+
+	              case 10:
+	                count = _context8.sent;
+
+	              case 11:
+	                if (!(count > 0)) {
+	                  _context8.next = 13;
+	                  break;
+	                }
+
+	                throw new _errors.SyncError('Unable to pull data from the network.' + (' There are ' + count + ' entities that need') + ' to be synced before data is loaded from the network.');
+
+	              case 13:
+	                config = new _request2.KinveyRequestConfig({
+	                  method: _request2.RequestMethod.GET,
+	                  authType: _request2.AuthType.Default,
+	                  url: _url2.default.format({
+	                    protocol: this.client.protocol,
+	                    host: this.client.host,
+	                    pathname: this.backendPathname,
+	                    query: options.query
+	                  }),
+	                  properties: options.properties,
+	                  query: query,
+	                  timeout: options.timeout,
+	                  client: this.client
+	                });
+	                request = new _network.NetworkRequest(config);
+
+	                // Should we use delta fetch?
+
+	                if (options.useDeltaFetch === true) {
+	                  request = new _deltafetch.DeltaFetchRequest(config);
+	                }
+
+	                // Execute the request
+	                _context8.next = 18;
+	                return request.execute();
+
+	              case 18:
+	                response = _context8.sent;
+	                networkEntities = response.data;
+
+	                // Save network entities to cache
+
+	                saveConfig = new _request2.KinveyRequestConfig({
+	                  method: _request2.RequestMethod.PUT,
+	                  url: _url2.default.format({
+	                    protocol: this.client.protocol,
+	                    host: this.client.host,
+	                    pathname: this.pathname,
+	                    query: options.query
+	                  }),
+	                  properties: options.properties,
+	                  body: networkEntities,
+	                  timeout: options.timeout
+	                });
+	                saveRequest = new _cache.CacheRequest(saveConfig);
+	                _context8.next = 24;
+	                return saveRequest.execute();
+
+	              case 24:
+	                return _context8.abrupt('return', networkEntities);
+
+	              case 25:
+	              case 'end':
+	                return _context8.stop();
+	            }
+	          }
+	        }, _callee8, this);
+	      }));
+
+	      function pull(_x25, _x26) {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return pull;
 	    }()
 
 	    /*
@@ -23734,55 +23415,35 @@ var Kinvey =
 	     * @param   {Object}        [options={}]                Options
 	     * @param   {Number}        [options.timeout]           Timeout for the request.
 	     * @return  {Promise}                                   Promise
-	     *
-	     * @example
-	     * var sync = new Sync();
-	     * var promise = sync.push().then(function(response) {
-	     *   ...
-	     * }).catch(function(error) {
-	     *   ...
-	     * });
 	     */
 
 	  }, {
 	    key: 'push',
 	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee12(query) {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee14(query) {
 	        var _this2 = this;
 
 	        var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
-	        var batchSize, i, getRequest, response, syncEntities, _ret;
+	        var batchSize, i, syncEntities, _ret;
 
-	        return regeneratorRuntime.wrap(function _callee12$(_context12) {
+	        return _regeneratorRuntime2.default.wrap(function _callee14$(_context14) {
 	          while (1) {
-	            switch (_context12.prev = _context12.next) {
+	            switch (_context14.prev = _context14.next) {
 	              case 0:
 	                batchSize = 100;
 	                i = 0;
 
-	                // Make a request for the pending sync entities
+	                // Get the pending sync items
 
-	                getRequest = new _cache2.default({
-	                  method: _request2.RequestMethod.GET,
-	                  url: _url2.default.format({
-	                    protocol: this.client.protocol,
-	                    host: this.client.host,
-	                    pathname: this.pathname
-	                  }),
-	                  properties: options.properties,
-	                  query: query,
-	                  timeout: options.timeout
-	                });
-	                _context12.next = 5;
-	                return getRequest.execute();
+	                _context14.next = 4;
+	                return this.find(query);
 
-	              case 5:
-	                response = _context12.sent;
-	                syncEntities = response.data;
+	              case 4:
+	                syncEntities = _context14.sent;
 
 	                if (!(syncEntities.length > 0)) {
-	                  _context12.next = 11;
+	                  _context14.next = 9;
 	                  break;
 	                }
 
@@ -23797,27 +23458,26 @@ var Kinvey =
 	                  // Sync the entities in batches to prevent exhausting
 	                  // available network connections
 	                  var batchSync = function () {
-	                    var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee11(syncResults) {
+	                    var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee13(syncResults) {
 	                      var promise;
-	                      return regeneratorRuntime.wrap(function _callee11$(_context11) {
+	                      return _regeneratorRuntime2.default.wrap(function _callee13$(_context13) {
 	                        while (1) {
-	                          switch (_context11.prev = _context11.next) {
+	                          switch (_context13.prev = _context13.next) {
 	                            case 0:
 	                              promise = new Promise(function () {
-	                                var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee10(resolve) {
+	                                var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee12(resolve) {
 	                                  var batch, results;
-	                                  return regeneratorRuntime.wrap(function _callee10$(_context10) {
+	                                  return _regeneratorRuntime2.default.wrap(function _callee12$(_context12) {
 	                                    while (1) {
-	                                      switch (_context10.prev = _context10.next) {
+	                                      switch (_context12.prev = _context12.next) {
 	                                        case 0:
 	                                          batch = syncEntities.slice(i, i + batchSize);
 
 	                                          i += batchSize;
 
 	                                          // Get the results of syncing all of the entities
-	                                          _context10.next = 4;
+	                                          _context12.next = 4;
 	                                          return Promise.all((0, _map2.default)(batch, function (syncEntity) {
-	                                            var collection = syncEntity.collection;
 	                                            var entity = syncEntity.entity;
 	                                            var originalId = entity[idAttribute];
 	                                            var method = syncEntity.state.method;
@@ -23830,7 +23490,7 @@ var Kinvey =
 	                                                url: _url2.default.format({
 	                                                  protocol: _this2.client.protocol,
 	                                                  host: _this2.client.host,
-	                                                  pathname: '/' + appdataNamespace + '/' + _this2.client.appKey + '/' + collection + '/' + originalId
+	                                                  pathname: _this2.backendPathname + '/' + originalId
 	                                                }),
 	                                                properties: options.properties,
 	                                                timeout: options.timeout,
@@ -23848,84 +23508,103 @@ var Kinvey =
 	                                                  properties: options.properties,
 	                                                  timeout: options.timeout
 	                                                });
-	                                                var request = new _cache2.default(config);
+	                                                var request = new _cache.CacheRequest(config);
 	                                                return request.execute();
 	                                              }).then(function () {
 	                                                // Return the result
 	                                                var result = { _id: originalId, entity: entity };
 	                                                return result;
 	                                              }).catch(function () {
-	                                                var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee7(error) {
-	                                                  var getNetworkRequest, originalEntity, putCacheRequest;
-	                                                  return regeneratorRuntime.wrap(function _callee7$(_context7) {
+	                                                var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee9(error) {
+	                                                  var getNetworkRequest, originalEntity, putCacheRequest, deleteSyncRequest;
+	                                                  return _regeneratorRuntime2.default.wrap(function _callee9$(_context9) {
 	                                                    while (1) {
-	                                                      switch (_context7.prev = _context7.next) {
+	                                                      switch (_context9.prev = _context9.next) {
 	                                                        case 0:
 	                                                          if (!(error instanceof _errors.InsufficientCredentialsError)) {
-	                                                            _context7.next = 13;
+	                                                            _context9.next = 16;
 	                                                            break;
 	                                                          }
 
-	                                                          _context7.prev = 1;
+	                                                          _context9.prev = 1;
 
-	                                                          // Try and reset the state of the entity
+	                                                          // Get the original entity
 	                                                          getNetworkRequest = new _network.NetworkRequest({
 	                                                            method: _request2.RequestMethod.GET,
 	                                                            authType: _request2.AuthType.Default,
 	                                                            url: _url2.default.format({
 	                                                              protocol: _this2.client.protocol,
 	                                                              host: _this2.client.host,
-	                                                              pathname: '/' + appdataNamespace + '/' + _this2.client.appKey + '/' + collection + '/' + originalId
+	                                                              pathname: _this2.backendPathname + '/' + originalId
 	                                                            }),
 	                                                            properties: options.properties,
 	                                                            timeout: options.timeout,
 	                                                            client: _this2.client
 	                                                          });
-	                                                          _context7.next = 5;
+	                                                          _context9.next = 5;
 	                                                          return getNetworkRequest.execute().then(function (response) {
 	                                                            return response.data;
 	                                                          });
 
 	                                                        case 5:
-	                                                          originalEntity = _context7.sent;
-	                                                          putCacheRequest = new _cache2.default({
+	                                                          originalEntity = _context9.sent;
+
+
+	                                                          // Update the cache with the original entity
+	                                                          putCacheRequest = new _cache.CacheRequest({
 	                                                            method: _request2.RequestMethod.PUT,
 	                                                            url: _url2.default.format({
 	                                                              protocol: _this2.client.protocol,
 	                                                              host: _this2.client.host,
-	                                                              pathname: '/' + appdataNamespace + '/' + _this2.client.appKey + '/' + collection + '/' + originalId
+	                                                              pathname: _this2.backendPathname + '/' + originalId
 	                                                            }),
 	                                                            properties: options.properties,
 	                                                            timeout: options.timeout,
 	                                                            body: originalEntity
 	                                                          });
-	                                                          _context7.next = 9;
+	                                                          _context9.next = 9;
 	                                                          return putCacheRequest.execute();
 
 	                                                        case 9:
-	                                                          _context7.next = 13;
+
+	                                                          // Clear the item from the sync table
+	                                                          deleteSyncRequest = new _cache.CacheRequest({
+	                                                            method: _request2.RequestMethod.DELETE,
+	                                                            url: _url2.default.format({
+	                                                              protocol: _this2.client.protocol,
+	                                                              host: _this2.client.host,
+	                                                              pathname: _this2.pathname + '/' + syncEntity[idAttribute]
+	                                                            }),
+	                                                            properties: options.properties,
+	                                                            timeout: options.timeout
+	                                                          });
+	                                                          _context9.next = 12;
+	                                                          return deleteSyncRequest.execute();
+
+	                                                        case 12:
+	                                                          _context9.next = 16;
 	                                                          break;
 
-	                                                        case 11:
-	                                                          _context7.prev = 11;
-	                                                          _context7.t0 = _context7['catch'](1);
+	                                                        case 14:
+	                                                          _context9.prev = 14;
+	                                                          _context9.t0 = _context9['catch'](1);
 
-	                                                        case 13:
-	                                                          return _context7.abrupt('return', {
+	                                                        case 16:
+	                                                          return _context9.abrupt('return', {
 	                                                            _id: originalId,
 	                                                            entity: entity,
 	                                                            error: error
 	                                                          });
 
-	                                                        case 14:
+	                                                        case 17:
 	                                                        case 'end':
-	                                                          return _context7.stop();
+	                                                          return _context9.stop();
 	                                                      }
 	                                                    }
-	                                                  }, _callee7, _this2, [[1, 11]]);
+	                                                  }, _callee9, _this2, [[1, 14]]);
 	                                                }));
 
-	                                                return function (_x28) {
+	                                                return function (_x33) {
 	                                                  return ref.apply(this, arguments);
 	                                                };
 	                                              }());
@@ -23937,7 +23616,7 @@ var Kinvey =
 	                                                url: _url2.default.format({
 	                                                  protocol: _this2.client.protocol,
 	                                                  host: _this2.client.host,
-	                                                  pathname: '/' + appdataNamespace + '/' + _this2.client.appKey + '/' + collection + '/' + originalId
+	                                                  pathname: _this2.backendPathname + '/' + originalId
 	                                                }),
 	                                                properties: options.properties,
 	                                                timeout: options.timeout,
@@ -23953,7 +23632,7 @@ var Kinvey =
 	                                                _request.url = _url2.default.format({
 	                                                  protocol: _this2.client.protocol,
 	                                                  host: _this2.client.host,
-	                                                  pathname: '/' + appdataNamespace + '/' + _this2.client.appKey + '/' + collection
+	                                                  pathname: _this2.backendPathname
 	                                                });
 	                                                _request.body = entity;
 	                                              }
@@ -23961,11 +23640,11 @@ var Kinvey =
 	                                              return _request.execute().then(function (response) {
 	                                                return response.data;
 	                                              }).then(function () {
-	                                                var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee8(entity) {
+	                                                var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee10(entity) {
 	                                                  var deleteConfig, deleteRequest, putCacheRequest, deleteCacheRequest;
-	                                                  return regeneratorRuntime.wrap(function _callee8$(_context8) {
+	                                                  return _regeneratorRuntime2.default.wrap(function _callee10$(_context10) {
 	                                                    while (1) {
-	                                                      switch (_context8.prev = _context8.next) {
+	                                                      switch (_context10.prev = _context10.next) {
 	                                                        case 0:
 	                                                          // Remove the sync entity
 	                                                          deleteConfig = new _request2.KinveyRequestConfig({
@@ -23978,143 +23657,163 @@ var Kinvey =
 	                                                            properties: options.properties,
 	                                                            timeout: options.timeout
 	                                                          });
-	                                                          deleteRequest = new _cache2.default(deleteConfig);
-	                                                          _context8.next = 4;
+	                                                          deleteRequest = new _cache.CacheRequest(deleteConfig);
+	                                                          _context10.next = 4;
 	                                                          return deleteRequest.execute();
 
 	                                                        case 4:
 
 	                                                          // Save the result of the network request locally.
-	                                                          putCacheRequest = new _cache2.default({
+	                                                          putCacheRequest = new _cache.CacheRequest({
 	                                                            method: _request2.RequestMethod.PUT,
 	                                                            url: _url2.default.format({
 	                                                              protocol: _this2.client.protocol,
 	                                                              host: _this2.client.host,
-	                                                              pathname: '/' + appdataNamespace + '/' + _this2.client.appKey + '/' + collection + '/' + entity[idAttribute]
+	                                                              pathname: _this2.backendPathname + '/' + entity[idAttribute]
 	                                                            }),
 	                                                            properties: options.properties,
 	                                                            timeout: options.timeout,
 	                                                            body: entity
 	                                                          });
-	                                                          _context8.next = 7;
+	                                                          _context10.next = 7;
 	                                                          return putCacheRequest.execute().then(function (response) {
 	                                                            return response.data;
 	                                                          });
 
 	                                                        case 7:
-	                                                          entity = _context8.sent;
+	                                                          entity = _context10.sent;
 
 	                                                          if (!(method === _request2.RequestMethod.POST)) {
-	                                                            _context8.next = 12;
+	                                                            _context10.next = 12;
 	                                                            break;
 	                                                          }
 
-	                                                          deleteCacheRequest = new _cache2.default({
+	                                                          deleteCacheRequest = new _cache.CacheRequest({
 	                                                            method: _request2.RequestMethod.DELETE,
 	                                                            url: _url2.default.format({
 	                                                              protocol: _this2.client.protocol,
 	                                                              host: _this2.client.host,
-	                                                              pathname: '/' + appdataNamespace + '/' + _this2.client.appKey + '/' + collection + '/' + originalId
+	                                                              pathname: _this2.backendPathname + '/' + originalId
 	                                                            }),
 	                                                            properties: options.properties,
 	                                                            timeout: options.timeout
 	                                                          });
-	                                                          _context8.next = 12;
+	                                                          _context10.next = 12;
 	                                                          return deleteCacheRequest.execute();
 
 	                                                        case 12:
-	                                                          return _context8.abrupt('return', {
+	                                                          return _context10.abrupt('return', {
 	                                                            _id: originalId,
 	                                                            entity: entity
 	                                                          });
 
 	                                                        case 13:
 	                                                        case 'end':
-	                                                          return _context8.stop();
+	                                                          return _context10.stop();
 	                                                      }
 	                                                    }
-	                                                  }, _callee8, _this2);
+	                                                  }, _callee10, _this2);
 	                                                }));
 
-	                                                return function (_x29) {
+	                                                return function (_x34) {
 	                                                  return ref.apply(this, arguments);
 	                                                };
 	                                              }()).catch(function () {
-	                                                var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee9(error) {
-	                                                  var getNetworkRequest, originalEntity, putCacheRequest;
-	                                                  return regeneratorRuntime.wrap(function _callee9$(_context9) {
+	                                                var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee11(error) {
+	                                                  var getNetworkRequest, originalEntity, putCacheRequest, deleteSyncRequest;
+	                                                  return _regeneratorRuntime2.default.wrap(function _callee11$(_context11) {
 	                                                    while (1) {
-	                                                      switch (_context9.prev = _context9.next) {
+	                                                      switch (_context11.prev = _context11.next) {
 	                                                        case 0:
 	                                                          if (!(error instanceof _errors.InsufficientCredentialsError)) {
-	                                                            _context9.next = 14;
+	                                                            _context11.next = 17;
 	                                                            break;
 	                                                          }
 
-	                                                          _context9.prev = 1;
+	                                                          _context11.prev = 1;
 
 	                                                          if (!(method !== _request2.RequestMethod.POST)) {
-	                                                            _context9.next = 10;
+	                                                            _context11.next = 13;
 	                                                            break;
 	                                                          }
 
+	                                                          // Get the original entity
 	                                                          getNetworkRequest = new _network.NetworkRequest({
 	                                                            method: _request2.RequestMethod.GET,
 	                                                            authType: _request2.AuthType.Default,
 	                                                            url: _url2.default.format({
 	                                                              protocol: _this2.client.protocol,
 	                                                              host: _this2.client.host,
-	                                                              pathname: '/' + appdataNamespace + '/' + _this2.client.appKey + '/' + collection + '/' + originalId
+	                                                              pathname: _this2.backendPathname + '/' + originalId
 	                                                            }),
 	                                                            properties: options.properties,
 	                                                            timeout: options.timeout,
 	                                                            client: _this2.client
 	                                                          });
-	                                                          _context9.next = 6;
+	                                                          _context11.next = 6;
 	                                                          return getNetworkRequest.execute().then(function (response) {
 	                                                            return response.data;
 	                                                          });
 
 	                                                        case 6:
-	                                                          originalEntity = _context9.sent;
-	                                                          putCacheRequest = new _cache2.default({
+	                                                          originalEntity = _context11.sent;
+
+
+	                                                          // Update the cache with the original entity
+	                                                          putCacheRequest = new _cache.CacheRequest({
 	                                                            method: _request2.RequestMethod.PUT,
 	                                                            url: _url2.default.format({
 	                                                              protocol: _this2.client.protocol,
 	                                                              host: _this2.client.host,
-	                                                              pathname: '/' + appdataNamespace + '/' + _this2.client.appKey + '/' + collection + '/' + originalId
+	                                                              pathname: _this2.backendPathname + '/' + originalId
 	                                                            }),
 	                                                            properties: options.properties,
 	                                                            timeout: options.timeout,
 	                                                            body: originalEntity
 	                                                          });
-	                                                          _context9.next = 10;
+	                                                          _context11.next = 10;
 	                                                          return putCacheRequest.execute();
 
 	                                                        case 10:
-	                                                          _context9.next = 14;
+
+	                                                          // Clear the item from the sync table
+	                                                          deleteSyncRequest = new _cache.CacheRequest({
+	                                                            method: _request2.RequestMethod.DELETE,
+	                                                            url: _url2.default.format({
+	                                                              protocol: _this2.client.protocol,
+	                                                              host: _this2.client.host,
+	                                                              pathname: _this2.pathname + '/' + syncEntity[idAttribute]
+	                                                            }),
+	                                                            properties: options.properties,
+	                                                            timeout: options.timeout
+	                                                          });
+	                                                          _context11.next = 13;
+	                                                          return deleteSyncRequest.execute();
+
+	                                                        case 13:
+	                                                          _context11.next = 17;
 	                                                          break;
 
-	                                                        case 12:
-	                                                          _context9.prev = 12;
-	                                                          _context9.t0 = _context9['catch'](1);
+	                                                        case 15:
+	                                                          _context11.prev = 15;
+	                                                          _context11.t0 = _context11['catch'](1);
 
-	                                                        case 14:
-	                                                          return _context9.abrupt('return', {
+	                                                        case 17:
+	                                                          return _context11.abrupt('return', {
 	                                                            _id: originalId,
 	                                                            entity: entity,
 	                                                            error: error
 	                                                          });
 
-	                                                        case 15:
+	                                                        case 18:
 	                                                        case 'end':
-	                                                          return _context9.stop();
+	                                                          return _context11.stop();
 	                                                      }
 	                                                    }
-	                                                  }, _callee9, _this2, [[1, 12]]);
+	                                                  }, _callee11, _this2, [[1, 15]]);
 	                                                }));
 
-	                                                return function (_x30) {
+	                                                return function (_x35) {
 	                                                  return ref.apply(this, arguments);
 	                                                };
 	                                              }());
@@ -24128,7 +23827,7 @@ var Kinvey =
 	                                          }));
 
 	                                        case 4:
-	                                          results = _context10.sent;
+	                                          results = _context12.sent;
 
 
 	                                          // Concat the results
@@ -24137,38 +23836,38 @@ var Kinvey =
 	                                          // Sync the remaining entities
 
 	                                          if (!(i < syncEntities.length)) {
-	                                            _context10.next = 8;
+	                                            _context12.next = 8;
 	                                            break;
 	                                          }
 
-	                                          return _context10.abrupt('return', resolve(batchSync(syncResults)));
+	                                          return _context12.abrupt('return', resolve(batchSync(syncResults)));
 
 	                                        case 8:
-	                                          return _context10.abrupt('return', resolve(syncResults));
+	                                          return _context12.abrupt('return', resolve(syncResults));
 
 	                                        case 9:
 	                                        case 'end':
-	                                          return _context10.stop();
+	                                          return _context12.stop();
 	                                      }
 	                                    }
-	                                  }, _callee10, _this2);
+	                                  }, _callee12, _this2);
 	                                }));
 
-	                                return function (_x27) {
+	                                return function (_x32) {
 	                                  return ref.apply(this, arguments);
 	                                };
 	                              }());
-	                              return _context11.abrupt('return', promise);
+	                              return _context13.abrupt('return', promise);
 
 	                            case 2:
 	                            case 'end':
-	                              return _context11.stop();
+	                              return _context13.stop();
 	                          }
 	                        }
-	                      }, _callee11, _this2);
+	                      }, _callee13, _this2);
 	                    }));
 
-	                    return function batchSync(_x26) {
+	                    return function batchSync(_x31) {
 	                      return ref.apply(this, arguments);
 	                    };
 	                  }();
@@ -24180,28 +23879,67 @@ var Kinvey =
 	                }();
 
 	                if (!((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object")) {
-	                  _context12.next = 11;
+	                  _context14.next = 9;
 	                  break;
 	                }
 
-	                return _context12.abrupt('return', _ret.v);
+	                return _context14.abrupt('return', _ret.v);
 
-	              case 11:
-	                return _context12.abrupt('return', []);
+	              case 9:
+	                return _context14.abrupt('return', []);
 
-	              case 12:
+	              case 10:
 	              case 'end':
-	                return _context12.stop();
+	                return _context14.stop();
 	            }
 	          }
-	        }, _callee12, this);
+	        }, _callee14, this);
 	      }));
 
-	      function push(_x23, _x24) {
+	      function push(_x28, _x29) {
 	        return ref.apply(this, arguments);
 	      }
 
 	      return push;
+	    }()
+	  }, {
+	    key: 'sync',
+	    value: function () {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee15(query) {
+	        var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	        var push, pull;
+	        return _regeneratorRuntime2.default.wrap(function _callee15$(_context15) {
+	          while (1) {
+	            switch (_context15.prev = _context15.next) {
+	              case 0:
+	                _context15.next = 2;
+	                return this.push(null, options);
+
+	              case 2:
+	                push = _context15.sent;
+	                _context15.next = 5;
+	                return this.pull(query, options);
+
+	              case 5:
+	                pull = _context15.sent;
+	                return _context15.abrupt('return', {
+	                  push: push,
+	                  pull: pull
+	                });
+
+	              case 7:
+	              case 'end':
+	                return _context15.stop();
+	            }
+	          }
+	        }, _callee15, this);
+	      }));
+
+	      function sync(_x36, _x37) {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return sync;
 	    }()
 
 	    /**
@@ -24212,22 +23950,20 @@ var Kinvey =
 	     * @param   {Object}        [options={}]                Options
 	     * @param   {Number}        [options.timeout]           Timeout for the request.
 	     * @return  {Promise}                                   Promise
-	     *
-	     * @example
-	     * var sync = new Sync();
-	     * var promise = sync.clear().then(function(response) {
-	     *   ...
-	     * }).catch(function(error) {
-	     *   ...
-	     * });
 	     */
 
 	  }, {
 	    key: 'clear',
-	    value: function clear(query) {
+	    value: function clear() {
+	      var query = arguments.length <= 0 || arguments[0] === undefined ? new _query.Query() : arguments[0];
 	      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
-	      var request = new _cache2.default({
+	      if (!(query instanceof _query.Query)) {
+	        query = new _query.Query((0, _result2.default)(query, 'toJSON', query));
+	      }
+
+	      query.equalTo('collection', this.collection);
+	      var request = new _cache.CacheRequest({
 	        method: _request2.RequestMethod.DELETE,
 	        url: _url2.default.format({
 	          protocol: this.client.protocol,
@@ -24245,20 +23981,30 @@ var Kinvey =
 	    get: function get() {
 	      return '/' + appdataNamespace + '/' + this.client.appKey + '/' + syncCollectionName;
 	    }
+
+	    /**
+	     * Pathname used to send backend requests.
+	     *
+	     * @return {String} sync pathname
+	     */
+
+	  }, {
+	    key: 'backendPathname',
+	    get: function get() {
+	      return '/' + appdataNamespace + '/' + this.client.appKey + '/' + this.collection;
+	    }
 	  }]);
 
-	  return Sync;
+	  return SyncManager;
 	}();
-
-	exports.default = Sync;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ },
-/* 271 */
+/* 247 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseOrderBy = __webpack_require__(272),
-	    isArray = __webpack_require__(31);
+	var baseOrderBy = __webpack_require__(248),
+	    isArray = __webpack_require__(33);
 
 	/**
 	 * This method is like `_.sortBy` except that it allows specifying the sort
@@ -24307,16 +24053,16 @@ var Kinvey =
 
 
 /***/ },
-/* 272 */
+/* 248 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var arrayMap = __webpack_require__(202),
-	    baseIteratee = __webpack_require__(36),
-	    baseMap = __webpack_require__(211),
-	    baseSortBy = __webpack_require__(273),
-	    baseUnary = __webpack_require__(274),
-	    compareMultiple = __webpack_require__(275),
-	    identity = __webpack_require__(114);
+	var arrayMap = __webpack_require__(176),
+	    baseIteratee = __webpack_require__(38),
+	    baseMap = __webpack_require__(177),
+	    baseSortBy = __webpack_require__(249),
+	    baseUnary = __webpack_require__(250),
+	    compareMultiple = __webpack_require__(251),
+	    identity = __webpack_require__(116);
 
 	/**
 	 * The base implementation of `_.orderBy` without param guards.
@@ -24347,7 +24093,7 @@ var Kinvey =
 
 
 /***/ },
-/* 273 */
+/* 249 */
 /***/ function(module, exports) {
 
 	/**
@@ -24374,7 +24120,7 @@ var Kinvey =
 
 
 /***/ },
-/* 274 */
+/* 250 */
 /***/ function(module, exports) {
 
 	/**
@@ -24394,10 +24140,10 @@ var Kinvey =
 
 
 /***/ },
-/* 275 */
+/* 251 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var compareAscending = __webpack_require__(276);
+	var compareAscending = __webpack_require__(252);
 
 	/**
 	 * Used by `_.orderBy` to compare multiple properties of a value to another
@@ -24444,10 +24190,10 @@ var Kinvey =
 
 
 /***/ },
-/* 276 */
+/* 252 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isSymbol = __webpack_require__(108);
+	var isSymbol = __webpack_require__(110);
 
 	/**
 	 * Compares values to sort them in ascending order.
@@ -24491,11 +24237,11 @@ var Kinvey =
 
 
 /***/ },
-/* 277 */
+/* 253 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseIteratee = __webpack_require__(36),
-	    baseSortedUniq = __webpack_require__(278);
+	var baseIteratee = __webpack_require__(38),
+	    baseSortedUniq = __webpack_require__(254);
 
 	/**
 	 * This method is like `_.uniqBy` except that it's designed and optimized
@@ -24523,10 +24269,10 @@ var Kinvey =
 
 
 /***/ },
-/* 278 */
+/* 254 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var eq = __webpack_require__(44);
+	var eq = __webpack_require__(46);
 
 	/**
 	 * The base implementation of `_.sortedUniq` and `_.sortedUniqBy` without
@@ -24559,15 +24305,15 @@ var Kinvey =
 
 
 /***/ },
-/* 279 */
+/* 255 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseDifference = __webpack_require__(280),
-	    baseFlatten = __webpack_require__(286),
-	    baseIteratee = __webpack_require__(36),
-	    isArrayLikeObject = __webpack_require__(23),
-	    last = __webpack_require__(288),
-	    rest = __webpack_require__(123);
+	var baseDifference = __webpack_require__(256),
+	    baseFlatten = __webpack_require__(262),
+	    baseIteratee = __webpack_require__(38),
+	    isArrayLikeObject = __webpack_require__(25),
+	    last = __webpack_require__(264),
+	    rest = __webpack_require__(125);
 
 	/**
 	 * This method is like `_.difference` except that it accepts `iteratee` which
@@ -24607,15 +24353,15 @@ var Kinvey =
 
 
 /***/ },
-/* 280 */
+/* 256 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var SetCache = __webpack_require__(81),
-	    arrayIncludes = __webpack_require__(281),
-	    arrayIncludesWith = __webpack_require__(284),
-	    arrayMap = __webpack_require__(202),
-	    baseUnary = __webpack_require__(274),
-	    cacheHas = __webpack_require__(285);
+	var SetCache = __webpack_require__(83),
+	    arrayIncludes = __webpack_require__(257),
+	    arrayIncludesWith = __webpack_require__(260),
+	    arrayMap = __webpack_require__(176),
+	    baseUnary = __webpack_require__(250),
+	    cacheHas = __webpack_require__(261);
 
 	/** Used as the size to enable large array optimizations. */
 	var LARGE_ARRAY_SIZE = 200;
@@ -24680,10 +24426,10 @@ var Kinvey =
 
 
 /***/ },
-/* 281 */
+/* 257 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseIndexOf = __webpack_require__(282);
+	var baseIndexOf = __webpack_require__(258);
 
 	/**
 	 * A specialized version of `_.includes` for arrays without support for
@@ -24703,10 +24449,10 @@ var Kinvey =
 
 
 /***/ },
-/* 282 */
+/* 258 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var indexOfNaN = __webpack_require__(283);
+	var indexOfNaN = __webpack_require__(259);
 
 	/**
 	 * The base implementation of `_.indexOf` without `fromIndex` bounds checks.
@@ -24736,7 +24482,7 @@ var Kinvey =
 
 
 /***/ },
-/* 283 */
+/* 259 */
 /***/ function(module, exports) {
 
 	/**
@@ -24765,7 +24511,7 @@ var Kinvey =
 
 
 /***/ },
-/* 284 */
+/* 260 */
 /***/ function(module, exports) {
 
 	/**
@@ -24793,7 +24539,7 @@ var Kinvey =
 
 
 /***/ },
-/* 285 */
+/* 261 */
 /***/ function(module, exports) {
 
 	/**
@@ -24812,11 +24558,11 @@ var Kinvey =
 
 
 /***/ },
-/* 286 */
+/* 262 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var arrayPush = __webpack_require__(179),
-	    isFlattenable = __webpack_require__(287);
+	var arrayPush = __webpack_require__(212),
+	    isFlattenable = __webpack_require__(263);
 
 	/**
 	 * The base implementation of `_.flatten` with support for restricting flattening.
@@ -24856,11 +24602,11 @@ var Kinvey =
 
 
 /***/ },
-/* 287 */
+/* 263 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isArguments = __webpack_require__(22),
-	    isArray = __webpack_require__(31);
+	var isArguments = __webpack_require__(24),
+	    isArray = __webpack_require__(33);
 
 	/**
 	 * Checks if `value` is a flattenable `arguments` object or array.
@@ -24877,7 +24623,7 @@ var Kinvey =
 
 
 /***/ },
-/* 288 */
+/* 264 */
 /***/ function(module, exports) {
 
 	/**
@@ -24903,13 +24649,13 @@ var Kinvey =
 
 
 /***/ },
-/* 289 */
+/* 265 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var arrayFilter = __webpack_require__(290),
-	    baseFilter = __webpack_require__(291),
-	    baseIteratee = __webpack_require__(36),
-	    isArray = __webpack_require__(31);
+	var arrayFilter = __webpack_require__(266),
+	    baseFilter = __webpack_require__(267),
+	    baseIteratee = __webpack_require__(38),
+	    isArray = __webpack_require__(33);
 
 	/**
 	 * Iterates over elements of `collection`, returning an array of all elements
@@ -24956,7 +24702,7 @@ var Kinvey =
 
 
 /***/ },
-/* 290 */
+/* 266 */
 /***/ function(module, exports) {
 
 	/**
@@ -24987,10 +24733,10 @@ var Kinvey =
 
 
 /***/ },
-/* 291 */
+/* 267 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseEach = __webpack_require__(12);
+	var baseEach = __webpack_require__(14);
 
 	/**
 	 * The base implementation of `_.filter` without support for iteratee shorthands.
@@ -25014,14 +24760,14 @@ var Kinvey =
 
 
 /***/ },
-/* 292 */
+/* 268 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var arrayFilter = __webpack_require__(290),
-	    baseXor = __webpack_require__(293),
-	    isArrayLikeObject = __webpack_require__(23),
-	    last = __webpack_require__(288),
-	    rest = __webpack_require__(123);
+	var arrayFilter = __webpack_require__(266),
+	    baseXor = __webpack_require__(269),
+	    isArrayLikeObject = __webpack_require__(25),
+	    last = __webpack_require__(264),
+	    rest = __webpack_require__(125);
 
 	/**
 	 * This method is like `_.xor` except that it accepts `comparator` which is
@@ -25055,12 +24801,12 @@ var Kinvey =
 
 
 /***/ },
-/* 293 */
+/* 269 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var arrayPush = __webpack_require__(179),
-	    baseDifference = __webpack_require__(280),
-	    baseUniq = __webpack_require__(294);
+	var arrayPush = __webpack_require__(212),
+	    baseDifference = __webpack_require__(256),
+	    baseUniq = __webpack_require__(270);
 
 	/**
 	 * The base implementation of methods like `_.xor`, without support for
@@ -25091,15 +24837,15 @@ var Kinvey =
 
 
 /***/ },
-/* 294 */
+/* 270 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var SetCache = __webpack_require__(81),
-	    arrayIncludes = __webpack_require__(281),
-	    arrayIncludesWith = __webpack_require__(284),
-	    cacheHas = __webpack_require__(285),
-	    createSet = __webpack_require__(295),
-	    setToArray = __webpack_require__(89);
+	var SetCache = __webpack_require__(83),
+	    arrayIncludes = __webpack_require__(257),
+	    arrayIncludesWith = __webpack_require__(260),
+	    cacheHas = __webpack_require__(261),
+	    createSet = __webpack_require__(271),
+	    setToArray = __webpack_require__(91);
 
 	/** Used as the size to enable large array optimizations. */
 	var LARGE_ARRAY_SIZE = 200;
@@ -25169,12 +24915,12 @@ var Kinvey =
 
 
 /***/ },
-/* 295 */
+/* 271 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Set = __webpack_require__(94),
-	    noop = __webpack_require__(296),
-	    setToArray = __webpack_require__(89);
+	var Set = __webpack_require__(96),
+	    noop = __webpack_require__(272),
+	    setToArray = __webpack_require__(91);
 
 	/** Used as references for various `Number` constants. */
 	var INFINITY = 1 / 0;
@@ -25194,7 +24940,7 @@ var Kinvey =
 
 
 /***/ },
-/* 296 */
+/* 272 */
 /***/ function(module, exports) {
 
 	/**
@@ -25217,7 +24963,7 @@ var Kinvey =
 
 
 /***/ },
-/* 297 */
+/* 273 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -25231,17 +24977,21 @@ var Kinvey =
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-	var _network = __webpack_require__(247);
+	var _network = __webpack_require__(198);
 
-	var _request = __webpack_require__(149);
+	var _request = __webpack_require__(151);
 
-	var _datastore = __webpack_require__(250);
+	var _datastore = __webpack_require__(226);
 
-	var _url = __webpack_require__(142);
+	var _regeneratorRuntime = __webpack_require__(2);
+
+	var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
+
+	var _url = __webpack_require__(144);
 
 	var _url2 = _interopRequireDefault(_url);
 
-	var _map = __webpack_require__(210);
+	var _map = __webpack_require__(175);
 
 	var _map2 = _interopRequireDefault(_map);
 
@@ -25254,6 +25004,7 @@ var Kinvey =
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /* eslint-disable no-underscore-dangle */
+	// eslint-disable-line no-unused-vars
 
 
 	var idAttribute = process.env.KINVEY_ID_ATTRIBUTE || '_id';
@@ -25263,52 +25014,16 @@ var Kinvey =
 	 * The FileStore class is used to find, save, update, remove, count and group files.
 	 */
 
-	var FileStore = exports.FileStore = function (_DataStore) {
-	  _inherits(FileStore, _DataStore);
+	var FileStore = exports.FileStore = function (_NetworkStore) {
+	  _inherits(FileStore, _NetworkStore);
 
 	  function FileStore() {
 	    _classCallCheck(this, FileStore);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(FileStore).call(this));
-
-	    _this.disableCache();
-	    return _this;
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(FileStore).apply(this, arguments));
 	  }
 
-	  /**
-	   * Enable cache.
-	   *
-	   * @return {DataStore}  DataStore instance.
-	   */
-
-
 	  _createClass(FileStore, [{
-	    key: 'enableCache',
-	    value: function enableCache() {}
-	    // Log a warning
-	    // throw new KinveyError('Unable to enable cache for the file store.');
-
-
-	    /**
-	     * Make the store offline.
-	     *
-	     * @return {DataStore}  DataStore instance.
-	     */
-
-	  }, {
-	    key: 'offline',
-	    value: function offline() {}
-	    // Log a warning
-	    // throw new KinveyError('Unable to go offline for the file store.');
-
-
-	    /**
-	     * The pathname for the store.
-	     *
-	     * @return  {string}  Pathname
-	     */
-
-	  }, {
 	    key: 'find',
 
 
@@ -25344,12 +25059,12 @@ var Kinvey =
 	     * });
 	     */
 	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(query) {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee(query) {
 	        var _this2 = this;
 
 	        var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 	        var stream, files;
-	        return regeneratorRuntime.wrap(function _callee$(_context) {
+	        return _regeneratorRuntime2.default.wrap(function _callee$(_context) {
 	          while (1) {
 	            switch (_context.prev = _context.next) {
 	              case 0:
@@ -25425,10 +25140,10 @@ var Kinvey =
 	  }, {
 	    key: 'download',
 	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(name) {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee2(name) {
 	        var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 	        var stream, file;
-	        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+	        return _regeneratorRuntime2.default.wrap(function _callee2$(_context2) {
 	          while (1) {
 	            switch (_context2.prev = _context2.next) {
 	              case 0:
@@ -25470,10 +25185,10 @@ var Kinvey =
 	  }, {
 	    key: 'downloadByUrl',
 	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee3(url) {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee3(url) {
 	        var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 	        var config, request, response;
-	        return regeneratorRuntime.wrap(function _callee3$(_context3) {
+	        return _regeneratorRuntime2.default.wrap(function _callee3$(_context3) {
 	          while (1) {
 	            switch (_context3.prev = _context3.next) {
 	              case 0:
@@ -25544,11 +25259,11 @@ var Kinvey =
 	  }, {
 	    key: 'upload',
 	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee4(file) {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee4(file) {
 	        var metadata = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 	        var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 	        var createConfig, createRequest, createResponse, data, uploadUrl, headers, uploadConfig, uploadRequest;
-	        return regeneratorRuntime.wrap(function _callee4$(_context4) {
+	        return _regeneratorRuntime2.default.wrap(function _callee4$(_context4) {
 	          while (1) {
 	            switch (_context4.prev = _context4.next) {
 	              case 0:
@@ -25649,17 +25364,23 @@ var Kinvey =
 	    }
 	  }, {
 	    key: 'pathname',
+
+	    /**
+	     * The pathname for the store.
+	     *
+	     * @return  {string}  Pathname
+	     */
 	    get: function get() {
 	      return '/' + filesNamespace + '/' + this.client.appKey;
 	    }
 	  }]);
 
 	  return FileStore;
-	}(_datastore.DataStore);
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+	}(_datastore.NetworkStore);
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ },
-/* 298 */
+/* 274 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -25667,70 +25388,73 @@ var Kinvey =
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.UserStore = exports.User = undefined;
+	exports.User = exports.UserStore = undefined;
 
 	var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /* eslint-disable no-underscore-dangle */
+	var _client = __webpack_require__(139);
 
+	var _query = __webpack_require__(10);
 
-	var _client = __webpack_require__(137);
+	var _acl = __webpack_require__(275);
 
-	var _client2 = _interopRequireDefault(_client);
+	var _metadata = __webpack_require__(201);
 
-	var _query = __webpack_require__(8);
+	var _errors = __webpack_require__(7);
 
-	var _acl = __webpack_require__(299);
+	var _mic = __webpack_require__(276);
 
-	var _metadata = __webpack_require__(248);
+	var _request = __webpack_require__(151);
 
-	var _errors = __webpack_require__(5);
+	var _datastore = __webpack_require__(226);
 
-	var _mic = __webpack_require__(300);
+	var _network = __webpack_require__(198);
 
-	var _request = __webpack_require__(149);
+	var _storage = __webpack_require__(140);
 
-	var _datastore = __webpack_require__(250);
+	var _regeneratorRuntime = __webpack_require__(2);
 
-	var _network = __webpack_require__(247);
+	var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
 
-	var _storage = __webpack_require__(138);
-
-	var _url = __webpack_require__(142);
+	var _url = __webpack_require__(144);
 
 	var _url2 = _interopRequireDefault(_url);
 
-	var _assign = __webpack_require__(118);
+	var _assign = __webpack_require__(120);
 
 	var _assign2 = _interopRequireDefault(_assign);
 
-	var _result = __webpack_require__(136);
+	var _result = __webpack_require__(138);
 
 	var _result2 = _interopRequireDefault(_result);
 
-	var _isObject = __webpack_require__(28);
+	var _isObject = __webpack_require__(30);
 
 	var _isObject2 = _interopRequireDefault(_isObject);
 
-	var _isArray = __webpack_require__(31);
+	var _isArray = __webpack_require__(33);
 
 	var _isArray2 = _interopRequireDefault(_isArray);
 
-	var _isString = __webpack_require__(32);
+	var _isString = __webpack_require__(34);
 
 	var _isString2 = _interopRequireDefault(_isString);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
 	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /* eslint-disable no-underscore-dangle */
+	// eslint-disable-line no-unused-vars
+
 
 	var appdataNamespace = process.env.KINVEY_DATASTORE_NAMESPACE || 'appdata';
 	var usersNamespace = process.env.KINVEY_USERS_NAMESPACE || 'user';
@@ -25744,13 +25468,267 @@ var Kinvey =
 	var hello = void 0;
 
 	if (typeof window !== 'undefined') {
-	  hello = __webpack_require__(302); // eslint-disable-line global-require
+	  hello = __webpack_require__(278); // eslint-disable-line global-require
 	}
+
+	/**
+	 * The UserStore class is used to find, save, update, remove, count and group users.
+	 */
+
+	var UserStore = exports.UserStore = function (_NetworkStore) {
+	  _inherits(UserStore, _NetworkStore);
+
+	  function UserStore() {
+	    _classCallCheck(this, UserStore);
+
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(UserStore).apply(this, arguments));
+	  }
+
+	  _createClass(UserStore, [{
+	    key: 'create',
+	    value: function () {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee() {
+	        return _regeneratorRuntime2.default.wrap(function _callee$(_context) {
+	          while (1) {
+	            switch (_context.prev = _context.next) {
+	              case 0:
+	                throw new _errors.KinveyError('Please use `User.signup()` to create a user.');
+
+	              case 1:
+	              case 'end':
+	                return _context.stop();
+	            }
+	          }
+	        }, _callee, this);
+	      }));
+
+	      function create() {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return create;
+	    }()
+	  }, {
+	    key: 'update',
+	    value: function () {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee2(user) {
+	        var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+	        var socialIdentity, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, _step$value, key;
+
+	        return _regeneratorRuntime2.default.wrap(function _callee2$(_context2) {
+	          while (1) {
+	            switch (_context2.prev = _context2.next) {
+	              case 0:
+	                if (user) {
+	                  _context2.next = 2;
+	                  break;
+	                }
+
+	                throw new _errors.KinveyError('No user was provided to be updated.');
+
+	              case 2:
+	                if (!(0, _isArray2.default)(user)) {
+	                  _context2.next = 4;
+	                  break;
+	                }
+
+	                throw new _errors.KinveyError('Only one user can be updated at one time.', user);
+
+	              case 4:
+	                if (user[idAttribute]) {
+	                  _context2.next = 6;
+	                  break;
+	                }
+
+	                throw new _errors.KinveyError('User must have an _id.');
+
+	              case 6:
+	                if (!options._identity) {
+	                  _context2.next = 28;
+	                  break;
+	                }
+
+	                socialIdentity = user[socialIdentityAttribute];
+
+	                if (!socialIdentity) {
+	                  _context2.next = 28;
+	                  break;
+	                }
+
+	                _iteratorNormalCompletion = true;
+	                _didIteratorError = false;
+	                _iteratorError = undefined;
+	                _context2.prev = 12;
+
+	                for (_iterator = socialIdentity[Symbol.iterator](); !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	                  _step$value = _slicedToArray(_step.value, 1);
+	                  key = _step$value[0];
+
+	                  if (socialIdentity[key] && options._identity !== key) {
+	                    delete socialIdentity[key];
+	                  }
+	                }
+	                _context2.next = 20;
+	                break;
+
+	              case 16:
+	                _context2.prev = 16;
+	                _context2.t0 = _context2['catch'](12);
+	                _didIteratorError = true;
+	                _iteratorError = _context2.t0;
+
+	              case 20:
+	                _context2.prev = 20;
+	                _context2.prev = 21;
+
+	                if (!_iteratorNormalCompletion && _iterator.return) {
+	                  _iterator.return();
+	                }
+
+	              case 23:
+	                _context2.prev = 23;
+
+	                if (!_didIteratorError) {
+	                  _context2.next = 26;
+	                  break;
+	                }
+
+	                throw _iteratorError;
+
+	              case 26:
+	                return _context2.finish(23);
+
+	              case 27:
+	                return _context2.finish(20);
+
+	              case 28:
+	                return _context2.abrupt('return', _get(Object.getPrototypeOf(UserStore.prototype), 'update', this).call(this, user, options));
+
+	              case 29:
+	              case 'end':
+	                return _context2.stop();
+	            }
+	          }
+	        }, _callee2, this, [[12, 16, 20, 28], [21,, 23, 27]]);
+	      }));
+
+	      function update(_x, _x2) {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return update;
+	    }()
+	  }, {
+	    key: 'exists',
+	    value: function () {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee3(username, options) {
+	        var config, request, response, data;
+	        return _regeneratorRuntime2.default.wrap(function _callee3$(_context3) {
+	          while (1) {
+	            switch (_context3.prev = _context3.next) {
+	              case 0:
+	                config = new _request.KinveyRequestConfig({
+	                  method: _request.RequestMethod.POST,
+	                  authType: _request.AuthType.App,
+	                  url: _url2.default.format({
+	                    protocol: this.client.protocol,
+	                    host: this.client.host,
+	                    pathname: '/' + rpcNamespace + '/' + this.client.appKey + '/check-username-exists'
+	                  }),
+	                  properties: options.properties,
+	                  data: { username: username },
+	                  timeout: options.timeout,
+	                  client: this.client
+	                });
+	                request = new _network.NetworkRequest(config);
+	                _context3.next = 4;
+	                return request.execute();
+
+	              case 4:
+	                response = _context3.sent;
+	                data = response.data || {};
+	                return _context3.abrupt('return', !!data.usernameExists);
+
+	              case 7:
+	              case 'end':
+	                return _context3.stop();
+	            }
+	          }
+	        }, _callee3, this);
+	      }));
+
+	      function exists(_x4, _x5) {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return exists;
+	    }()
+	  }, {
+	    key: 'restore',
+	    value: function () {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee4(id) {
+	        var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	        var config, request, response;
+	        return _regeneratorRuntime2.default.wrap(function _callee4$(_context4) {
+	          while (1) {
+	            switch (_context4.prev = _context4.next) {
+	              case 0:
+	                config = new _request.KinveyRequestConfig({
+	                  method: _request.RequestMethod.POST,
+	                  authType: _request.AuthType.Master,
+	                  url: _url2.default.format({
+	                    protocol: this.client.protocol,
+	                    host: this.client.host,
+	                    pathname: this.pathname + '/' + id
+	                  }),
+	                  properties: options.properties,
+	                  timeout: options.timeout,
+	                  client: this.client
+	                });
+	                request = new _network.NetworkRequest(config);
+	                _context4.next = 4;
+	                return request.execute();
+
+	              case 4:
+	                response = _context4.sent;
+	                return _context4.abrupt('return', response.data);
+
+	              case 6:
+	              case 'end':
+	                return _context4.stop();
+	            }
+	          }
+	        }, _callee4, this);
+	      }));
+
+	      function restore(_x6, _x7) {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return restore;
+	    }()
+	  }, {
+	    key: 'pathname',
+
+	    /**
+	     * The pathname for the store.
+	     *
+	     * @return  {string}   Pathname
+	     */
+	    get: function get() {
+	      return '/' + usersNamespace + '/' + this.client.appKey;
+	    }
+	  }]);
+
+	  return UserStore;
+	}(_datastore.NetworkStore);
 
 	/**
 	 * The User class is used to represent a single user on the Kinvey platform.
 	 * Use the user class to manage the active user lifecycle and perform user operations.
 	 */
+
 
 	var User = exports.User = function () {
 	  /**
@@ -25781,7 +25759,7 @@ var Kinvey =
 	     *
 	     * @type {Client}
 	     */
-	    this.client = _client2.default.sharedInstance();
+	    this.client = _client.Client.sharedInstance();
 	  }
 
 	  /**
@@ -25842,7 +25820,7 @@ var Kinvey =
 	     * });
 	     */
 	    value: function login(usernameOrData, password) {
-	      var _this = this;
+	      var _this2 = this;
 
 	      var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 
@@ -25892,9 +25870,9 @@ var Kinvey =
 	      var request = new _network.NetworkRequest(config);
 	      request.automaticallyRefreshAuthToken = false;
 	      var promise = request.execute().then(function (response) {
-	        _this.data = response.data;
-	        (0, _storage.setActiveUser)(_this.client, _this.data);
-	        return User.getActiveUser(_this.client);
+	        _this2.data = response.data;
+	        (0, _storage.setActiveUser)(_this2.client, _this2.data);
+	        return User.getActiveUser(_this2.client);
 	      });
 
 	      return promise;
@@ -25931,7 +25909,7 @@ var Kinvey =
 	     */
 	    /* eslint-enable max-len */
 	    value: function loginWithMIC(redirectUri, authorizationGrant) {
-	      var _this2 = this;
+	      var _this3 = this;
 
 	      var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 
@@ -25939,7 +25917,7 @@ var Kinvey =
 	      return mic.login(redirectUri, authorizationGrant, options).then(function (token) {
 	        options.redirectUri = redirectUri;
 	        options.micClient = (0, _result2.default)(mic.client, 'toJSON', mic.client);
-	        return _this2.connect(_mic.MobileIdentityConnect.identity, token, options);
+	        return _this3.connect(_mic.MobileIdentityConnect.identity, token, options);
 	      });
 	    }
 
@@ -25961,7 +25939,7 @@ var Kinvey =
 	  }, {
 	    key: 'logout',
 	    value: function logout() {
-	      var _this3 = this;
+	      var _this4 = this;
 
 	      var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
@@ -25987,16 +25965,16 @@ var Kinvey =
 	      var promise = request.execute().catch(function () {
 	        return null;
 	      }).then(function () {
-	        var isActive = _this3.isActive();
+	        var isActive = _this4.isActive();
 	        if (isActive) {
-	          (0, _storage.setActiveUser)(_this3.client, null);
+	          (0, _storage.setActiveUser)(_this4.client, null);
 	        }
 
 	        return null;
-	      }).then(function () {
-	        return _datastore.DataStore.clear({ client: _this3.client });
-	      }).then(function () {
-	        return _this3;
+	      })
+	      // .then(() => DataStore.clear({ client: this.client }))
+	      .then(function () {
+	        return _this4;
 	      });
 
 	      return promise;
@@ -26036,7 +26014,7 @@ var Kinvey =
 	     */
 	    /* eslint-enable max-len */
 	    value: function connectWithIdentity(identity) {
-	      var _this4 = this;
+	      var _this5 = this;
 
 	      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
@@ -26058,9 +26036,9 @@ var Kinvey =
 	          method: _request.RequestMethod.GET,
 	          authType: _request.AuthType.None,
 	          url: _url2.default.format({
-	            protocol: _this4.client.protocol,
-	            host: _this4.client.host,
-	            pathname: '/' + appdataNamespace + '/' + _this4.client.appKey + '/' + options.collectionName
+	            protocol: _this5.client.protocol,
+	            host: _this5.client.host,
+	            pathname: '/' + appdataNamespace + '/' + _this5.client.appKey + '/' + options.collectionName
 	          }),
 	          query: query,
 	          properties: options.properties,
@@ -26080,7 +26058,7 @@ var Kinvey =
 	        throw new _errors.KinveyError('Unsupported identity.');
 	      }).then(function () {
 	        var authResponse = hello(identity).getAuthResponse();
-	        return _this4.connect(identity, authResponse, options);
+	        return _this5.connect(identity, authResponse, options);
 	      });
 
 	      return promise;
@@ -26114,7 +26092,7 @@ var Kinvey =
 	  }, {
 	    key: 'connect',
 	    value: function connect(identity, token) {
-	      var _this5 = this;
+	      var _this6 = this;
 
 	      var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 
@@ -26125,30 +26103,30 @@ var Kinvey =
 	      this.data = data;
 
 	      var promise = Promise.resolve().then(function () {
-	        var isActive = _this5.isActive();
+	        var isActive = _this6.isActive();
 
 	        if (isActive) {
 	          options._identity = identity;
-	          return _this5.update(data, options);
+	          return _this6.update(data, options);
 	        }
 
-	        return _this5.login(data, null, options);
+	        return _this6.login(data, null, options);
 	      }).catch(function (err) {
 	        if (err instanceof _errors.NotFoundError) {
-	          return _this5.signup(data, options).then(function () {
-	            return _this5.connect(identity, token, options);
+	          return _this6.signup(data, options).then(function () {
+	            return _this6.connect(identity, token, options);
 	          });
 	        }
 
 	        throw err;
 	      }).then(function () {
-	        (0, _storage.setActiveSocialIdentity)(_this5.client, {
+	        (0, _storage.setActiveSocialIdentity)(_this6.client, {
 	          identity: identity,
-	          token: _this5[socialIdentityAttribute][identity],
+	          token: _this6[socialIdentityAttribute][identity],
 	          redirectUri: options.redirectUri,
 	          client: options.micClient
 	        });
-	        return _this5;
+	        return _this6;
 	      });
 
 	      return promise;
@@ -26156,7 +26134,7 @@ var Kinvey =
 	  }, {
 	    key: 'disconnect',
 	    value: function disconnect(identity) {
-	      var _this6 = this;
+	      var _this7 = this;
 
 	      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
@@ -26167,19 +26145,19 @@ var Kinvey =
 	      this.data = data;
 
 	      var promise = Promise.resolve().then(function () {
-	        if (!_this6[idAttribute]) {
-	          return _this6;
+	        if (!_this7[idAttribute]) {
+	          return _this7;
 	        }
 
-	        return _this6.update(data, options);
+	        return _this7.update(data, options);
 	      }).then(function () {
-	        var activeSocialIdentity = _this6.client.activeSocialIdentity;
+	        var activeSocialIdentity = _this7.client.activeSocialIdentity;
 
 	        if (activeSocialIdentity.identity === identity) {
-	          (0, _storage.setActiveSocialIdentity)(_this6.client, null);
+	          (0, _storage.setActiveSocialIdentity)(_this7.client, null);
 	        }
 
-	        return _this6;
+	        return _this7;
 	      });
 
 	      return promise;
@@ -26212,7 +26190,7 @@ var Kinvey =
 	     * });
 	     */
 	    value: function signup(data) {
-	      var _this7 = this;
+	      var _this8 = this;
 
 	      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
@@ -26222,7 +26200,7 @@ var Kinvey =
 
 	      var promise = Promise.resolve().then(function () {
 	        if (options.state === true) {
-	          var activeUser = User.getActiveUser(_this7.client);
+	          var activeUser = User.getActiveUser(_this8.client);
 	          if (activeUser) {
 	            throw new _errors.ActiveUserError('An active user already exists. ' + 'Please logout the active user before you login.');
 	          }
@@ -26232,9 +26210,9 @@ var Kinvey =
 	          method: _request.RequestMethod.POST,
 	          authType: _request.AuthType.App,
 	          url: _url2.default.format({
-	            protocol: _this7.client.protocol,
-	            host: _this7.client.host,
-	            pathname: '/' + usersNamespace + '/' + _this7.client.appKey
+	            protocol: _this8.client.protocol,
+	            host: _this8.client.host,
+	            pathname: '/' + usersNamespace + '/' + _this8.client.appKey
 	          }),
 	          data: (0, _result2.default)(data, 'toJSON', data),
 	          properties: options.properties,
@@ -26242,13 +26220,13 @@ var Kinvey =
 	        });
 	        return request.execute();
 	      }).then(function (response) {
-	        _this7.data = response.data;
+	        _this8.data = response.data;
 
 	        if (options.state === true) {
-	          (0, _storage.setActiveUser)(_this7.client, _this7.data);
+	          (0, _storage.setActiveUser)(_this8.client, _this8.data);
 	        }
 
-	        return _this7;
+	        return _this8;
 	      });
 
 	      return promise;
@@ -26264,23 +26242,23 @@ var Kinvey =
 	  }, {
 	    key: 'update',
 	    value: function update(data, options) {
-	      var _this8 = this;
+	      var _this9 = this;
 
-	      var userStore = _datastore.DataStore.getInstance(null, _datastore.DataStoreType.User);
+	      var userStore = new UserStore();
 	      return userStore.save(data, options).then(function (data) {
-	        _this8.data = data;
+	        _this9.data = data;
 
-	        if (_this8.isActive()) {
-	          (0, _storage.setActiveUser)(_this8.client, _this8.data);
+	        if (_this9.isActive()) {
+	          (0, _storage.setActiveUser)(_this9.client, _this9.data);
 	        }
 
-	        return _this8;
+	        return _this9;
 	      });
 	    }
 	  }, {
 	    key: 'me',
 	    value: function me() {
-	      var _this9 = this;
+	      var _this10 = this;
 
 	      var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
@@ -26297,18 +26275,18 @@ var Kinvey =
 	      });
 
 	      var promise = request.execute().then(function (response) {
-	        _this9.data = response.data;
+	        _this10.data = response.data;
 
-	        if (!_this9.authtoken) {
-	          var activeUser = User.getActiveUser(_this9.client);
+	        if (!_this10.authtoken) {
+	          var activeUser = User.getActiveUser(_this10.client);
 
 	          if (activeUser) {
-	            _this9.authtoken = activeUser.authtoken;
+	            _this10.authtoken = activeUser.authtoken;
 	          }
 	        }
 
-	        (0, _storage.setActiveUser)(_this9.client, _this9.data);
-	        return _this9;
+	        (0, _storage.setActiveUser)(_this10.client, _this10.data);
+	        return _this10;
 	      });
 
 	      return promise;
@@ -26536,7 +26514,7 @@ var Kinvey =
 	  }], [{
 	    key: 'getActiveUser',
 	    value: function getActiveUser() {
-	      var client = arguments.length <= 0 || arguments[0] === undefined ? _client2.default.sharedInstance() : arguments[0];
+	      var client = arguments.length <= 0 || arguments[0] === undefined ? _client.Client.sharedInstance() : arguments[0];
 
 	      var data = client.activeUser;
 	      var user = null;
@@ -26565,7 +26543,7 @@ var Kinvey =
 	    value: function loginWithMIC(redirectUri, authorizationGrant) {
 	      var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 
-	      var client = options.client || _client2.default.sharedInstance();
+	      var client = options.client || _client.Client.sharedInstance();
 	      var user = new User();
 	      user.client = client;
 	      return user.loginWithMIC(redirectUri, authorizationGrant, options);
@@ -26665,15 +26643,15 @@ var Kinvey =
 	  }, {
 	    key: 'resetPassword',
 	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(username) {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee5(username) {
 	        var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 	        var client, request, response;
-	        return regeneratorRuntime.wrap(function _callee$(_context) {
+	        return _regeneratorRuntime2.default.wrap(function _callee5$(_context5) {
 	          while (1) {
-	            switch (_context.prev = _context.next) {
+	            switch (_context5.prev = _context5.next) {
 	              case 0:
 	                if (username) {
-	                  _context.next = 2;
+	                  _context5.next = 2;
 	                  break;
 	                }
 
@@ -26681,14 +26659,14 @@ var Kinvey =
 
 	              case 2:
 	                if ((0, _isString2.default)(username)) {
-	                  _context.next = 4;
+	                  _context5.next = 4;
 	                  break;
 	                }
 
 	                throw new _errors.KinveyError('The provided username is not a string.');
 
 	              case 4:
-	                client = options.client || _client2.default.sharedInstance();
+	                client = options.client || _client.Client.sharedInstance();
 	                request = new _network.NetworkRequest({
 	                  method: _request.RequestMethod.POST,
 	                  authType: _request.AuthType.App,
@@ -26701,22 +26679,22 @@ var Kinvey =
 	                  timeout: options.timeout,
 	                  client: client
 	                });
-	                _context.next = 8;
+	                _context5.next = 8;
 	                return request.execute();
 
 	              case 8:
-	                response = _context.sent;
-	                return _context.abrupt('return', response.data);
+	                response = _context5.sent;
+	                return _context5.abrupt('return', response.data);
 
 	              case 10:
 	              case 'end':
-	                return _context.stop();
+	                return _context5.stop();
 	            }
 	          }
-	        }, _callee, this);
+	        }, _callee5, this);
 	      }));
 
-	      function resetPassword(_x17, _x18) {
+	      function resetPassword(_x25, _x26) {
 	        return ref.apply(this, arguments);
 	      }
 
@@ -26726,294 +26704,10 @@ var Kinvey =
 
 	  return User;
 	}();
-
-	/**
-	 * The UserStore class is used to find, save, update, remove, count and group users.
-	 */
-
-
-	var UserStore = exports.UserStore = function (_DataStore) {
-	  _inherits(UserStore, _DataStore);
-
-	  function UserStore() {
-	    _classCallCheck(this, UserStore);
-
-	    var _this10 = _possibleConstructorReturn(this, Object.getPrototypeOf(UserStore).call(this));
-
-	    _this10.disableCache();
-	    return _this10;
-	  }
-
-	  /**
-	   * Enable cache.
-	   *
-	   * @return {DataStore}  DataStore instance.
-	   */
-
-
-	  _createClass(UserStore, [{
-	    key: 'enableCache',
-	    value: function enableCache() {}
-	    // Log a warning
-	    // throw new KinveyError('Unable to enable cache for the file store.');
-
-
-	    /**
-	     * Make the store offline.
-	     *
-	     * @return {DataStore}  DataStore instance.
-	     */
-
-	  }, {
-	    key: 'offline',
-	    value: function offline() {}
-	    // Log a warning
-	    // throw new KinveyError('Unable to go offline for the file store.');
-
-
-	    /**
-	     * The pathname for the store.
-	     *
-	     * @return  {string}   Pathname
-	     */
-
-	  }, {
-	    key: 'create',
-	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee2() {
-	        return regeneratorRuntime.wrap(function _callee2$(_context2) {
-	          while (1) {
-	            switch (_context2.prev = _context2.next) {
-	              case 0:
-	                throw new _errors.KinveyError('Please use `User.signup()` to create a user.');
-
-	              case 1:
-	              case 'end':
-	                return _context2.stop();
-	            }
-	          }
-	        }, _callee2, this);
-	      }));
-
-	      function create() {
-	        return ref.apply(this, arguments);
-	      }
-
-	      return create;
-	    }()
-	  }, {
-	    key: 'update',
-	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee3(user) {
-	        var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-	        var socialIdentity, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, _step$value, key;
-
-	        return regeneratorRuntime.wrap(function _callee3$(_context3) {
-	          while (1) {
-	            switch (_context3.prev = _context3.next) {
-	              case 0:
-	                if (user) {
-	                  _context3.next = 2;
-	                  break;
-	                }
-
-	                throw new _errors.KinveyError('No user was provided to be updated.');
-
-	              case 2:
-	                if (!(0, _isArray2.default)(user)) {
-	                  _context3.next = 4;
-	                  break;
-	                }
-
-	                throw new _errors.KinveyError('Only one user can be updated at one time.', user);
-
-	              case 4:
-	                if (user[idAttribute]) {
-	                  _context3.next = 6;
-	                  break;
-	                }
-
-	                throw new _errors.KinveyError('User must have an _id.');
-
-	              case 6:
-	                if (!options._identity) {
-	                  _context3.next = 28;
-	                  break;
-	                }
-
-	                socialIdentity = user[socialIdentityAttribute];
-
-	                if (!socialIdentity) {
-	                  _context3.next = 28;
-	                  break;
-	                }
-
-	                _iteratorNormalCompletion = true;
-	                _didIteratorError = false;
-	                _iteratorError = undefined;
-	                _context3.prev = 12;
-
-	                for (_iterator = socialIdentity[Symbol.iterator](); !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-	                  _step$value = _slicedToArray(_step.value, 1);
-	                  key = _step$value[0];
-
-	                  if (socialIdentity[key] && options._identity !== key) {
-	                    delete socialIdentity[key];
-	                  }
-	                }
-	                _context3.next = 20;
-	                break;
-
-	              case 16:
-	                _context3.prev = 16;
-	                _context3.t0 = _context3['catch'](12);
-	                _didIteratorError = true;
-	                _iteratorError = _context3.t0;
-
-	              case 20:
-	                _context3.prev = 20;
-	                _context3.prev = 21;
-
-	                if (!_iteratorNormalCompletion && _iterator.return) {
-	                  _iterator.return();
-	                }
-
-	              case 23:
-	                _context3.prev = 23;
-
-	                if (!_didIteratorError) {
-	                  _context3.next = 26;
-	                  break;
-	                }
-
-	                throw _iteratorError;
-
-	              case 26:
-	                return _context3.finish(23);
-
-	              case 27:
-	                return _context3.finish(20);
-
-	              case 28:
-	                return _context3.abrupt('return', _get(Object.getPrototypeOf(UserStore.prototype), 'update', this).call(this, user, options));
-
-	              case 29:
-	              case 'end':
-	                return _context3.stop();
-	            }
-	          }
-	        }, _callee3, this, [[12, 16, 20, 28], [21,, 23, 27]]);
-	      }));
-
-	      function update(_x20, _x21) {
-	        return ref.apply(this, arguments);
-	      }
-
-	      return update;
-	    }()
-	  }, {
-	    key: 'exists',
-	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee4(username, options) {
-	        var config, request, response, data;
-	        return regeneratorRuntime.wrap(function _callee4$(_context4) {
-	          while (1) {
-	            switch (_context4.prev = _context4.next) {
-	              case 0:
-	                config = new _request.KinveyRequestConfig({
-	                  method: _request.RequestMethod.POST,
-	                  authType: _request.AuthType.App,
-	                  url: _url2.default.format({
-	                    protocol: this.client.protocol,
-	                    host: this.client.host,
-	                    pathname: '/' + rpcNamespace + '/' + this.client.appKey + '/check-username-exists'
-	                  }),
-	                  properties: options.properties,
-	                  data: { username: username },
-	                  timeout: options.timeout,
-	                  client: this.client
-	                });
-	                request = new _network.NetworkRequest(config);
-	                _context4.next = 4;
-	                return request.execute();
-
-	              case 4:
-	                response = _context4.sent;
-	                data = response.data || {};
-	                return _context4.abrupt('return', !!data.usernameExists);
-
-	              case 7:
-	              case 'end':
-	                return _context4.stop();
-	            }
-	          }
-	        }, _callee4, this);
-	      }));
-
-	      function exists(_x23, _x24) {
-	        return ref.apply(this, arguments);
-	      }
-
-	      return exists;
-	    }()
-	  }, {
-	    key: 'restore',
-	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee5(id) {
-	        var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-	        var config, request, response;
-	        return regeneratorRuntime.wrap(function _callee5$(_context5) {
-	          while (1) {
-	            switch (_context5.prev = _context5.next) {
-	              case 0:
-	                config = new _request.KinveyRequestConfig({
-	                  method: _request.RequestMethod.POST,
-	                  authType: _request.AuthType.Master,
-	                  url: _url2.default.format({
-	                    protocol: this.client.protocol,
-	                    host: this.client.host,
-	                    pathname: this.pathname + '/' + id
-	                  }),
-	                  properties: options.properties,
-	                  timeout: options.timeout,
-	                  client: this.client
-	                });
-	                request = new _network.NetworkRequest(config);
-	                _context5.next = 4;
-	                return request.execute();
-
-	              case 4:
-	                response = _context5.sent;
-	                return _context5.abrupt('return', response.data);
-
-	              case 6:
-	              case 'end':
-	                return _context5.stop();
-	            }
-	          }
-	        }, _callee5, this);
-	      }));
-
-	      function restore(_x25, _x26) {
-	        return ref.apply(this, arguments);
-	      }
-
-	      return restore;
-	    }()
-	  }, {
-	    key: 'pathname',
-	    get: function get() {
-	      return '/' + usersNamespace + '/' + this.client.appKey;
-	    }
-	  }]);
-
-	  return UserStore;
-	}(_datastore.DataStore);
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ },
-/* 299 */
+/* 275 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -27025,13 +26719,13 @@ var Kinvey =
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _errors = __webpack_require__(5);
+	var _errors = __webpack_require__(7);
 
-	var _clone = __webpack_require__(249);
+	var _clone = __webpack_require__(202);
 
 	var _clone2 = _interopRequireDefault(_clone);
 
-	var _isPlainObject = __webpack_require__(194);
+	var _isPlainObject = __webpack_require__(197);
 
 	var _isPlainObject2 = _interopRequireDefault(_isPlainObject);
 
@@ -27230,10 +26924,10 @@ var Kinvey =
 
 	  return Acl;
 	}();
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ },
-/* 300 */
+/* 276 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process, global) {'use strict';
@@ -27245,25 +26939,23 @@ var Kinvey =
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _errors = __webpack_require__(5);
+	var _errors = __webpack_require__(7);
 
-	var _network = __webpack_require__(247);
+	var _network = __webpack_require__(198);
 
-	var _request = __webpack_require__(149);
+	var _request = __webpack_require__(151);
 
-	var _client = __webpack_require__(137);
+	var _client = __webpack_require__(139);
 
-	var _client2 = _interopRequireDefault(_client);
-
-	var _path = __webpack_require__(301);
+	var _path = __webpack_require__(277);
 
 	var _path2 = _interopRequireDefault(_path);
 
-	var _url = __webpack_require__(142);
+	var _url = __webpack_require__(144);
 
 	var _url2 = _interopRequireDefault(_url);
 
-	var _isString = __webpack_require__(32);
+	var _isString = __webpack_require__(34);
 
 	var _isString2 = _interopRequireDefault(_isString);
 
@@ -27302,7 +26994,7 @@ var Kinvey =
 
 	var MobileIdentityConnect = exports.MobileIdentityConnect = function () {
 	  function MobileIdentityConnect() {
-	    var client = arguments.length <= 0 || arguments[0] === undefined ? _client2.default.sharedInstance() : arguments[0];
+	    var client = arguments.length <= 0 || arguments[0] === undefined ? _client.Client.sharedInstance() : arguments[0];
 
 	    _classCallCheck(this, MobileIdentityConnect);
 
@@ -27408,7 +27100,7 @@ var Kinvey =
 	          }));
 	        }
 
-	        throw new _errors.KinveyError('KinveyPopup is undefined.' + (' Unable to login authorization grant ' + AuthorizationGrant.AuthorizationCodeLoginPage + '.'));
+	        throw new _errors.KinveyError('KinveyPopup is undefined.' + (' Unable to login using authorization grant ' + AuthorizationGrant.AuthorizationCodeLoginPage + '.'));
 	      }).then(function (popup) {
 	        var promise = new Promise(function (resolve, reject) {
 	          var redirected = false;
@@ -27532,10 +27224,10 @@ var Kinvey =
 
 	  return MobileIdentityConnect;
 	}();
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), (function() { return this; }())))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), (function() { return this; }())))
 
 /***/ },
-/* 301 */
+/* 277 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {// Copyright Joyent, Inc. and other Node contributors.
@@ -27763,10 +27455,10 @@ var Kinvey =
 	    }
 	;
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ },
-/* 302 */
+/* 278 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(process, setImmediate) {/*! hellojs v1.13.1 | (c) 2012-2016 Andrew Dodson | MIT https://adodson.com/hello.js/LICENSE */
@@ -33587,13 +33279,13 @@ var Kinvey =
 		module.exports = hello;
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(303).setImmediate))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), __webpack_require__(279).setImmediate))
 
 /***/ },
-/* 303 */
+/* 279 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(setImmediate, clearImmediate) {var nextTick = __webpack_require__(2).nextTick;
+	/* WEBPACK VAR INJECTION */(function(setImmediate, clearImmediate) {var nextTick = __webpack_require__(4).nextTick;
 	var apply = Function.prototype.apply;
 	var slice = Array.prototype.slice;
 	var immediateIds = {};
@@ -33669,259 +33361,10 @@ var Kinvey =
 	exports.clearImmediate = typeof clearImmediate === "function" ? clearImmediate : function(id) {
 	  delete immediateIds[id];
 	};
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(303).setImmediate, __webpack_require__(303).clearImmediate))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(279).setImmediate, __webpack_require__(279).clearImmediate))
 
 /***/ },
-/* 304 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.PhoneGapHttpMiddleware = undefined;
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-	var _middleware = __webpack_require__(155);
-
-	var _parseHeaders = __webpack_require__(305);
-
-	var _parseHeaders2 = _interopRequireDefault(_parseHeaders);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var PhoneGapHttpMiddleware = exports.PhoneGapHttpMiddleware = function (_KinveyMiddleware) {
-	  _inherits(PhoneGapHttpMiddleware, _KinveyMiddleware);
-
-	  function PhoneGapHttpMiddleware() {
-	    var name = arguments.length <= 0 || arguments[0] === undefined ? 'Kinvey PhoneGap Http Middleware' : arguments[0];
-
-	    _classCallCheck(this, PhoneGapHttpMiddleware);
-
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(PhoneGapHttpMiddleware).call(this, name));
-	  }
-
-	  _createClass(PhoneGapHttpMiddleware, [{
-	    key: 'handle',
-	    value: function handle(request) {
-	      return _get(Object.getPrototypeOf(PhoneGapHttpMiddleware.prototype), 'handle', this).call(this, request).then(function () {
-	        var promise = new Promise(function (resolve, reject) {
-	          var url = request.url;
-	          var method = request.method;
-	          var headers = request.headers;
-	          var body = request.body;
-
-	          // Create request
-
-	          var xhr = new XMLHttpRequest();
-	          xhr.open(method, url);
-	          // xhr.responseType = request.responseType;
-
-	          // Append request headers
-	          var names = Object.keys(headers.toJSON());
-	          var _iteratorNormalCompletion = true;
-	          var _didIteratorError = false;
-	          var _iteratorError = undefined;
-
-	          try {
-	            for (var _iterator = names[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-	              var name = _step.value;
-
-	              xhr.setRequestHeader(name, headers.get(name));
-	            }
-	          } catch (err) {
-	            _didIteratorError = true;
-	            _iteratorError = err;
-	          } finally {
-	            try {
-	              if (!_iteratorNormalCompletion && _iterator.return) {
-	                _iterator.return();
-	              }
-	            } finally {
-	              if (_didIteratorError) {
-	                throw _iteratorError;
-	              }
-	            }
-	          }
-
-	          xhr.onload = xhr.ontimeout = xhr.onabort = xhr.onerror = function () {
-	            // Extract status code
-	            var statusCode = xhr.status;
-
-	            // Extract the response
-	            var responseData = xhr.response || null;
-	            if (xhr.response) {
-	              responseData = xhr.responseText || null;
-	            }
-
-	            // Set the response for the request
-	            request.response = {
-	              statusCode: statusCode,
-	              headers: (0, _parseHeaders2.default)(xhr.getAllResponseHeaders()),
-	              data: responseData
-	            };
-
-	            // Success
-	            if (statusCode >= 200 && statusCode < 300 || statusCode === 304) {
-	              return resolve(request);
-	            }
-
-	            // Error
-	            return reject(request);
-	          };
-
-	          // Send xhr
-	          xhr.send(body);
-	        });
-	        return promise;
-	      });
-	    }
-	  }]);
-
-	  return PhoneGapHttpMiddleware;
-	}(_middleware.KinveyMiddleware);
-
-/***/ },
-/* 305 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var trim = __webpack_require__(306)
-	  , forEach = __webpack_require__(307)
-	  , isArray = function(arg) {
-	      return Object.prototype.toString.call(arg) === '[object Array]';
-	    }
-
-	module.exports = function (headers) {
-	  if (!headers)
-	    return {}
-
-	  var result = {}
-
-	  forEach(
-	      trim(headers).split('\n')
-	    , function (row) {
-	        var index = row.indexOf(':')
-	          , key = trim(row.slice(0, index)).toLowerCase()
-	          , value = trim(row.slice(index + 1))
-
-	        if (typeof(result[key]) === 'undefined') {
-	          result[key] = value
-	        } else if (isArray(result[key])) {
-	          result[key].push(value)
-	        } else {
-	          result[key] = [ result[key], value ]
-	        }
-	      }
-	  )
-
-	  return result
-	}
-
-/***/ },
-/* 306 */
-/***/ function(module, exports) {
-
-	
-	exports = module.exports = trim;
-
-	function trim(str){
-	  return str.replace(/^\s*|\s*$/g, '');
-	}
-
-	exports.left = function(str){
-	  return str.replace(/^\s*/, '');
-	};
-
-	exports.right = function(str){
-	  return str.replace(/\s*$/, '');
-	};
-
-
-/***/ },
-/* 307 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var isFunction = __webpack_require__(308)
-
-	module.exports = forEach
-
-	var toString = Object.prototype.toString
-	var hasOwnProperty = Object.prototype.hasOwnProperty
-
-	function forEach(list, iterator, context) {
-	    if (!isFunction(iterator)) {
-	        throw new TypeError('iterator must be a function')
-	    }
-
-	    if (arguments.length < 3) {
-	        context = this
-	    }
-	    
-	    if (toString.call(list) === '[object Array]')
-	        forEachArray(list, iterator, context)
-	    else if (typeof list === 'string')
-	        forEachString(list, iterator, context)
-	    else
-	        forEachObject(list, iterator, context)
-	}
-
-	function forEachArray(array, iterator, context) {
-	    for (var i = 0, len = array.length; i < len; i++) {
-	        if (hasOwnProperty.call(array, i)) {
-	            iterator.call(context, array[i], i, array)
-	        }
-	    }
-	}
-
-	function forEachString(string, iterator, context) {
-	    for (var i = 0, len = string.length; i < len; i++) {
-	        // no such thing as a sparse string.
-	        iterator.call(context, string.charAt(i), i, string)
-	    }
-	}
-
-	function forEachObject(object, iterator, context) {
-	    for (var k in object) {
-	        if (hasOwnProperty.call(object, k)) {
-	            iterator.call(context, object[k], k, object)
-	        }
-	    }
-	}
-
-
-/***/ },
-/* 308 */
-/***/ function(module, exports) {
-
-	module.exports = isFunction
-
-	var toString = Object.prototype.toString
-
-	function isFunction (fn) {
-	  var string = toString.call(fn)
-	  return string === '[object Function]' ||
-	    (typeof fn === 'function' && string !== '[object RegExp]') ||
-	    (typeof window !== 'undefined' &&
-	     // IE8 and below
-	     (fn === window.setTimeout ||
-	      fn === window.alert ||
-	      fn === window.confirm ||
-	      fn === window.prompt))
-	};
-
-
-/***/ },
-/* 309 */
+/* 280 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process, global) {'use strict';
@@ -33929,31 +33372,29 @@ var Kinvey =
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.PhoneGapPush = undefined;
+	exports.Push = undefined;
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _device = __webpack_require__(310);
+	var _device = __webpack_require__(281);
 
-	var _errors = __webpack_require__(5);
+	var _errors = __webpack_require__(7);
 
-	var _events = __webpack_require__(312);
+	var _events = __webpack_require__(283);
 
-	var _request = __webpack_require__(149);
+	var _request = __webpack_require__(151);
 
-	var _user = __webpack_require__(298);
+	var _user = __webpack_require__(274);
 
-	var _network = __webpack_require__(247);
+	var _network = __webpack_require__(198);
 
-	var _client = __webpack_require__(137);
+	var _client = __webpack_require__(139);
 
-	var _client2 = _interopRequireDefault(_client);
-
-	var _url = __webpack_require__(142);
+	var _url = __webpack_require__(144);
 
 	var _url2 = _interopRequireDefault(_url);
 
-	var _bind = __webpack_require__(313);
+	var _bind = __webpack_require__(284);
 
 	var _bind2 = _interopRequireDefault(_bind);
 
@@ -33972,31 +33413,18 @@ var Kinvey =
 	var storage = global.localStorage;
 	var notificationEventListener = void 0;
 
-	var PhoneGapPush = exports.PhoneGapPush = function (_EventEmitter) {
-	  _inherits(PhoneGapPush, _EventEmitter);
+	var Push = exports.Push = function (_EventEmitter) {
+	  _inherits(Push, _EventEmitter);
 
-	  function PhoneGapPush() {
-	    _classCallCheck(this, PhoneGapPush);
+	  function Push() {
+	    _classCallCheck(this, Push);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(PhoneGapPush).call(this));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Push).call(this));
 
-	    _this.client = _client2.default.sharedInstance();
+	    _this.client = _client.Client.sharedInstance();
 	    notificationEventListener = (0, _bind2.default)(_this.notificationListener, _this);
 
-	    if (_device.PhoneGapDevice.isPhoneGap()) {
-	      _this.deviceReady = new Promise(function (resolve) {
-	        var onDeviceReady = (0, _bind2.default)(function () {
-	          document.removeEventListener('deviceready', onDeviceReady);
-	          resolve();
-	        }, _this);
-
-	        document.addEventListener('deviceready', onDeviceReady, false);
-	      });
-	    } else {
-	      _this.deviceReady = Promise.resolve();
-	    }
-
-	    _this.deviceReady = _this.deviceReady.then(function () {
+	    _device.Device.ready().then(function () {
 	      try {
 	        if (_this.isSupported()) {
 	          var pushOptions = JSON.parse(storage.getItem(pushSettingsCollectionName));
@@ -34012,10 +33440,10 @@ var Kinvey =
 	    return _this;
 	  }
 
-	  _createClass(PhoneGapPush, [{
+	  _createClass(Push, [{
 	    key: 'isSupported',
 	    value: function isSupported() {
-	      return _device.PhoneGapDevice.isiOS() || _device.PhoneGapDevice.isAndroid();
+	      return _device.Device.isiOS() || _device.Device.isAndroid();
 	    }
 	  }, {
 	    key: 'onNotification',
@@ -34039,7 +33467,7 @@ var Kinvey =
 
 	      var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
-	      return this.deviceReady.then(function () {
+	      return _device.Device.ready().then(function () {
 	        if (!_this2.isSupported()) {
 	          return Promise.reject(new _errors.KinveyError('Kinvey currently only supports ' + 'push notifications on iOS and Android platforms.'));
 	        }
@@ -34048,9 +33476,9 @@ var Kinvey =
 	          throw new _errors.KinveyError('PhoneGap Push Notification Plugin is not installed.', 'Please refer to http://devcenter.kinvey.com/phonegap-v3.0/guides/push#ProjectSetUp for help with ' + 'setting up your project.');
 	        }
 
-	        return _this2.unregister();
-	      }).catch(function () {
-	        return null;
+	        return _this2.unregister().catch(function () {
+	          return null;
+	        });
 	      }).then(function () {
 	        var promise = new Promise(function (resolve, reject) {
 	          _this2.phonegapPush = global.PushNotification.init(options);
@@ -34089,6 +33517,7 @@ var Kinvey =
 	            timeout: options.timeout,
 	            client: _this2.client
 	          });
+
 	          return request.execute().then(function (response) {
 	            storage.setItem(deviceIdCollectionName, deviceId);
 	            storage.setItem(pushSettingsCollectionName, JSON.stringify(options));
@@ -34106,7 +33535,7 @@ var Kinvey =
 
 	      var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
-	      return this.deviceReady.then(function () {
+	      return _device.Device.ready().then(function () {
 	        if (!_this3.isSupported()) {
 	          return Promise.reject(new _errors.KinveyError('Kinvey currently only supports ' + 'push notifications on iOS and Android platforms.'));
 	        }
@@ -34168,12 +33597,12 @@ var Kinvey =
 	    }
 	  }]);
 
-	  return PhoneGapPush;
+	  return Push;
 	}(_events.EventEmitter);
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), (function() { return this; }())))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), (function() { return this; }())))
 
 /***/ },
-/* 310 */
+/* 281 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {'use strict';
@@ -34181,11 +33610,13 @@ var Kinvey =
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.PhoneGapDevice = undefined;
+	exports.Device = undefined;
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _package = __webpack_require__(311);
+	var _es6Promise = __webpack_require__(168);
+
+	var _package = __webpack_require__(282);
 
 	var _package2 = _interopRequireDefault(_package);
 
@@ -34193,12 +33624,34 @@ var Kinvey =
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var PhoneGapDevice = exports.PhoneGapDevice = function () {
-	  function PhoneGapDevice() {
-	    _classCallCheck(this, PhoneGapDevice);
+	var deviceReady = void 0;
+
+	var Device = exports.Device = function () {
+	  function Device() {
+	    _classCallCheck(this, Device);
 	  }
 
-	  _createClass(PhoneGapDevice, null, [{
+	  _createClass(Device, null, [{
+	    key: 'ready',
+	    value: function ready() {
+	      if (!deviceReady) {
+	        if (Device.isPhoneGap()) {
+	          deviceReady = new _es6Promise.Promise(function (resolve) {
+	            var onDeviceReady = function onDeviceReady() {
+	              document.removeEventListener('deviceready', onDeviceReady);
+	              resolve();
+	            };
+
+	            document.addEventListener('deviceready', onDeviceReady, false);
+	          });
+	        } else {
+	          deviceReady = _es6Promise.Promise.resolve();
+	        }
+	      }
+
+	      return deviceReady;
+	    }
+	  }, {
 	    key: 'isPhoneGap',
 	    value: function isPhoneGap() {
 	      return document.URL.indexOf('http://') === -1 && document.URL.indexOf('https://') === -1;
@@ -34233,20 +33686,7 @@ var Kinvey =
 	        }
 	      };
 
-	      if (PhoneGapDevice.isBrowser()) {
-	        var userAgent = global.navigator.userAgent.toLowerCase();
-	        var rChrome = /(chrome)\/([\w]+)/;
-	        var rFirefox = /(firefox)\/([\w.]+)/;
-	        var rIE = /(msie) ([\w.]+)/i;
-	        var rOpera = /(opera)(?:.*version)?[ \/]([\w.]+)/;
-	        var rSafari = /(safari)\/([\w.]+)/;
-	        var rAppleWebkit = /(applewebkit)\/([\w.]+)/;
-	        var browser = rChrome.exec(userAgent) || rFirefox.exec(userAgent) || rIE.exec(userAgent) || rOpera.exec(userAgent) || rSafari.exec(userAgent) || rAppleWebkit.exec(userAgent) || [];
-
-	        json.device.model = global.navigator.userAgent;
-	        json.os.name = browser[1];
-	        json.os.version = browser[2];
-	      } else if (typeof global.device !== 'undefined') {
+	      if (typeof global.device !== 'undefined') {
 	        json.device.model = global.device.model;
 	        json.platform.version = global.device.cordova;
 	        json.os.name = global.device.platform;
@@ -34257,12 +33697,12 @@ var Kinvey =
 	    }
 	  }]);
 
-	  return PhoneGapDevice;
+	  return Device;
 	}();
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 311 */
+/* 282 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -34278,7 +33718,7 @@ var Kinvey =
 		"contributors": [
 			"Thomas Conner <thomas@kinvey.com>"
 		],
-		"main": "./es5/index.js",
+		"main": "./dist/index.js",
 		"repository": {
 			"type": "git",
 			"url": "git@github.com:Kinvey/phonegap-sdk"
@@ -34289,13 +33729,20 @@ var Kinvey =
 			"test:jenkins": "istanbul cover _mocha -- --reporter tap --compilers js:babel-core/register -r babel-polyfill -s 100 --recursive test > test.tap && istanbul report clover"
 		},
 		"dependencies": {
-			"babel-regenerator-runtime": "^6.5.0",
-			"kinvey-javascript-sdk-core": "*",
+			"es6-promise": "^3.2.1",
+			"kinvey-html5-sdk": "../../HTML5/SDK",
+			"kinvey-javascript-sdk-core": "../../Core/SDK",
 			"lodash": "^4.0.0",
-			"parse-headers": "^2.0.0"
+			"parse-headers": "^2.0.0",
+			"regenerator-runtime": "^0.9.5"
 		},
 		"peerDependencies": {
-			"kinvey-javascript-sdk-core": "*"
+			"es6-promise": "^3.2.1",
+			"kinvey-html5-sdk": "../../HTML5/SDK",
+			"kinvey-javascript-sdk-core": "../../Core/SDK",
+			"lodash": "^4.0.0",
+			"parse-headers": "^2.0.0",
+			"regenerator-runtime": "^0.9.5"
 		},
 		"devDependencies": {
 			"babel-core": "^6.9.0",
@@ -34353,7 +33800,7 @@ var Kinvey =
 	};
 
 /***/ },
-/* 312 */
+/* 283 */
 /***/ function(module, exports) {
 
 	// Copyright Joyent, Inc. and other Node contributors.
@@ -34415,8 +33862,12 @@ var Kinvey =
 	      er = arguments[1];
 	      if (er instanceof Error) {
 	        throw er; // Unhandled 'error' event
+	      } else {
+	        // At least give some kind of context to the user
+	        var err = new Error('Uncaught, unspecified "error" event. (' + er + ')');
+	        err.context = er;
+	        throw err;
 	      }
-	      throw TypeError('Uncaught, unspecified "error" event.');
 	    }
 	  }
 
@@ -34657,13 +34108,13 @@ var Kinvey =
 
 
 /***/ },
-/* 313 */
+/* 284 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var createWrapper = __webpack_require__(314),
-	    getHolder = __webpack_require__(336),
-	    replaceHolders = __webpack_require__(338),
-	    rest = __webpack_require__(123);
+	var createWrapper = __webpack_require__(285),
+	    getHolder = __webpack_require__(307),
+	    replaceHolders = __webpack_require__(309),
+	    rest = __webpack_require__(125);
 
 	/** Used to compose bitmasks for wrapper metadata. */
 	var BIND_FLAG = 1,
@@ -34720,18 +34171,18 @@ var Kinvey =
 
 
 /***/ },
-/* 314 */
+/* 285 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseSetData = __webpack_require__(315),
-	    createBaseWrapper = __webpack_require__(317),
-	    createCurryWrapper = __webpack_require__(319),
-	    createHybridWrapper = __webpack_require__(320),
-	    createPartialWrapper = __webpack_require__(339),
-	    getData = __webpack_require__(328),
-	    mergeData = __webpack_require__(340),
-	    setData = __webpack_require__(334),
-	    toInteger = __webpack_require__(125);
+	var baseSetData = __webpack_require__(286),
+	    createBaseWrapper = __webpack_require__(288),
+	    createCurryWrapper = __webpack_require__(290),
+	    createHybridWrapper = __webpack_require__(291),
+	    createPartialWrapper = __webpack_require__(310),
+	    getData = __webpack_require__(299),
+	    mergeData = __webpack_require__(311),
+	    setData = __webpack_require__(305),
+	    toInteger = __webpack_require__(127);
 
 	/** Used as the `TypeError` message for "Functions" methods. */
 	var FUNC_ERROR_TEXT = 'Expected a function';
@@ -34832,11 +34283,11 @@ var Kinvey =
 
 
 /***/ },
-/* 315 */
+/* 286 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var identity = __webpack_require__(114),
-	    metaMap = __webpack_require__(316);
+	var identity = __webpack_require__(116),
+	    metaMap = __webpack_require__(287);
 
 	/**
 	 * The base implementation of `setData` without support for hot loop detection.
@@ -34855,10 +34306,10 @@ var Kinvey =
 
 
 /***/ },
-/* 316 */
+/* 287 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var WeakMap = __webpack_require__(95);
+	var WeakMap = __webpack_require__(97);
 
 	/** Used to store function metadata. */
 	var metaMap = WeakMap && new WeakMap;
@@ -34867,11 +34318,11 @@ var Kinvey =
 
 
 /***/ },
-/* 317 */
+/* 288 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var createCtorWrapper = __webpack_require__(318),
-	    root = __webpack_require__(63);
+	var createCtorWrapper = __webpack_require__(289),
+	    root = __webpack_require__(65);
 
 	/** Used to compose bitmasks for wrapper metadata. */
 	var BIND_FLAG = 1;
@@ -34902,11 +34353,11 @@ var Kinvey =
 
 
 /***/ },
-/* 318 */
+/* 289 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseCreate = __webpack_require__(193),
-	    isObject = __webpack_require__(28);
+	var baseCreate = __webpack_require__(225),
+	    isObject = __webpack_require__(30);
 
 	/**
 	 * Creates a function that produces an instance of `Ctor` regardless of
@@ -34945,16 +34396,16 @@ var Kinvey =
 
 
 /***/ },
-/* 319 */
+/* 290 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var apply = __webpack_require__(124),
-	    createCtorWrapper = __webpack_require__(318),
-	    createHybridWrapper = __webpack_require__(320),
-	    createRecurryWrapper = __webpack_require__(324),
-	    getHolder = __webpack_require__(336),
-	    replaceHolders = __webpack_require__(338),
-	    root = __webpack_require__(63);
+	var apply = __webpack_require__(126),
+	    createCtorWrapper = __webpack_require__(289),
+	    createHybridWrapper = __webpack_require__(291),
+	    createRecurryWrapper = __webpack_require__(295),
+	    getHolder = __webpack_require__(307),
+	    replaceHolders = __webpack_require__(309),
+	    root = __webpack_require__(65);
 
 	/**
 	 * Creates a function that wraps `func` to enable currying.
@@ -34998,18 +34449,18 @@ var Kinvey =
 
 
 /***/ },
-/* 320 */
+/* 291 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var composeArgs = __webpack_require__(321),
-	    composeArgsRight = __webpack_require__(322),
-	    countHolders = __webpack_require__(323),
-	    createCtorWrapper = __webpack_require__(318),
-	    createRecurryWrapper = __webpack_require__(324),
-	    getHolder = __webpack_require__(336),
-	    reorder = __webpack_require__(337),
-	    replaceHolders = __webpack_require__(338),
-	    root = __webpack_require__(63);
+	var composeArgs = __webpack_require__(292),
+	    composeArgsRight = __webpack_require__(293),
+	    countHolders = __webpack_require__(294),
+	    createCtorWrapper = __webpack_require__(289),
+	    createRecurryWrapper = __webpack_require__(295),
+	    getHolder = __webpack_require__(307),
+	    reorder = __webpack_require__(308),
+	    replaceHolders = __webpack_require__(309),
+	    root = __webpack_require__(65);
 
 	/** Used to compose bitmasks for wrapper metadata. */
 	var BIND_FLAG = 1,
@@ -35097,7 +34548,7 @@ var Kinvey =
 
 
 /***/ },
-/* 321 */
+/* 292 */
 /***/ function(module, exports) {
 
 	/* Built-in method references for those with the same name as other `lodash` methods. */
@@ -35142,7 +34593,7 @@ var Kinvey =
 
 
 /***/ },
-/* 322 */
+/* 293 */
 /***/ function(module, exports) {
 
 	/* Built-in method references for those with the same name as other `lodash` methods. */
@@ -35189,7 +34640,7 @@ var Kinvey =
 
 
 /***/ },
-/* 323 */
+/* 294 */
 /***/ function(module, exports) {
 
 	/**
@@ -35216,11 +34667,11 @@ var Kinvey =
 
 
 /***/ },
-/* 324 */
+/* 295 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isLaziable = __webpack_require__(325),
-	    setData = __webpack_require__(334);
+	var isLaziable = __webpack_require__(296),
+	    setData = __webpack_require__(305);
 
 	/** Used to compose bitmasks for wrapper metadata. */
 	var BIND_FLAG = 1,
@@ -35278,13 +34729,13 @@ var Kinvey =
 
 
 /***/ },
-/* 325 */
+/* 296 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var LazyWrapper = __webpack_require__(326),
-	    getData = __webpack_require__(328),
-	    getFuncName = __webpack_require__(329),
-	    lodash = __webpack_require__(331);
+	var LazyWrapper = __webpack_require__(297),
+	    getData = __webpack_require__(299),
+	    getFuncName = __webpack_require__(300),
+	    lodash = __webpack_require__(302);
 
 	/**
 	 * Checks if `func` has a lazy counterpart.
@@ -35312,11 +34763,11 @@ var Kinvey =
 
 
 /***/ },
-/* 326 */
+/* 297 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseCreate = __webpack_require__(193),
-	    baseLodash = __webpack_require__(327);
+	var baseCreate = __webpack_require__(225),
+	    baseLodash = __webpack_require__(298);
 
 	/** Used as references for the maximum length and index of an array. */
 	var MAX_ARRAY_LENGTH = 4294967295;
@@ -35346,7 +34797,7 @@ var Kinvey =
 
 
 /***/ },
-/* 327 */
+/* 298 */
 /***/ function(module, exports) {
 
 	/**
@@ -35362,11 +34813,11 @@ var Kinvey =
 
 
 /***/ },
-/* 328 */
+/* 299 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var metaMap = __webpack_require__(316),
-	    noop = __webpack_require__(296);
+	var metaMap = __webpack_require__(287),
+	    noop = __webpack_require__(272);
 
 	/**
 	 * Gets metadata for `func`.
@@ -35383,10 +34834,10 @@ var Kinvey =
 
 
 /***/ },
-/* 329 */
+/* 300 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var realNames = __webpack_require__(330);
+	var realNames = __webpack_require__(301);
 
 	/** Used for built-in method references. */
 	var objectProto = Object.prototype;
@@ -35420,7 +34871,7 @@ var Kinvey =
 
 
 /***/ },
-/* 330 */
+/* 301 */
 /***/ function(module, exports) {
 
 	/** Used to lookup unminified function names. */
@@ -35430,15 +34881,15 @@ var Kinvey =
 
 
 /***/ },
-/* 331 */
+/* 302 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var LazyWrapper = __webpack_require__(326),
-	    LodashWrapper = __webpack_require__(332),
-	    baseLodash = __webpack_require__(327),
-	    isArray = __webpack_require__(31),
-	    isObjectLike = __webpack_require__(30),
-	    wrapperClone = __webpack_require__(333);
+	var LazyWrapper = __webpack_require__(297),
+	    LodashWrapper = __webpack_require__(303),
+	    baseLodash = __webpack_require__(298),
+	    isArray = __webpack_require__(33),
+	    isObjectLike = __webpack_require__(32),
+	    wrapperClone = __webpack_require__(304);
 
 	/** Used for built-in method references. */
 	var objectProto = Object.prototype;
@@ -35583,11 +35034,11 @@ var Kinvey =
 
 
 /***/ },
-/* 332 */
+/* 303 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseCreate = __webpack_require__(193),
-	    baseLodash = __webpack_require__(327);
+	var baseCreate = __webpack_require__(225),
+	    baseLodash = __webpack_require__(298);
 
 	/**
 	 * The base constructor for creating `lodash` wrapper objects.
@@ -35611,12 +35062,12 @@ var Kinvey =
 
 
 /***/ },
-/* 333 */
+/* 304 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var LazyWrapper = __webpack_require__(326),
-	    LodashWrapper = __webpack_require__(332),
-	    copyArray = __webpack_require__(173);
+	var LazyWrapper = __webpack_require__(297),
+	    LodashWrapper = __webpack_require__(303),
+	    copyArray = __webpack_require__(206);
 
 	/**
 	 * Creates a clone of `wrapper`.
@@ -35640,11 +35091,11 @@ var Kinvey =
 
 
 /***/ },
-/* 334 */
+/* 305 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseSetData = __webpack_require__(315),
-	    now = __webpack_require__(335);
+	var baseSetData = __webpack_require__(286),
+	    now = __webpack_require__(306);
 
 	/** Used to detect hot functions by number of calls within a span of milliseconds. */
 	var HOT_COUNT = 150,
@@ -35688,7 +35139,7 @@ var Kinvey =
 
 
 /***/ },
-/* 335 */
+/* 306 */
 /***/ function(module, exports) {
 
 	/**
@@ -35715,7 +35166,7 @@ var Kinvey =
 
 
 /***/ },
-/* 336 */
+/* 307 */
 /***/ function(module, exports) {
 
 	/**
@@ -35734,11 +35185,11 @@ var Kinvey =
 
 
 /***/ },
-/* 337 */
+/* 308 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var copyArray = __webpack_require__(173),
-	    isIndex = __webpack_require__(33);
+	var copyArray = __webpack_require__(206),
+	    isIndex = __webpack_require__(35);
 
 	/* Built-in method references for those with the same name as other `lodash` methods. */
 	var nativeMin = Math.min;
@@ -35769,7 +35220,7 @@ var Kinvey =
 
 
 /***/ },
-/* 338 */
+/* 309 */
 /***/ function(module, exports) {
 
 	/** Used as the internal argument placeholder. */
@@ -35804,12 +35255,12 @@ var Kinvey =
 
 
 /***/ },
-/* 339 */
+/* 310 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var apply = __webpack_require__(124),
-	    createCtorWrapper = __webpack_require__(318),
-	    root = __webpack_require__(63);
+	var apply = __webpack_require__(126),
+	    createCtorWrapper = __webpack_require__(289),
+	    root = __webpack_require__(65);
 
 	/** Used to compose bitmasks for wrapper metadata. */
 	var BIND_FLAG = 1;
@@ -35854,12 +35305,12 @@ var Kinvey =
 
 
 /***/ },
-/* 340 */
+/* 311 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var composeArgs = __webpack_require__(321),
-	    composeArgsRight = __webpack_require__(322),
-	    replaceHolders = __webpack_require__(338);
+	var composeArgs = __webpack_require__(292),
+	    composeArgsRight = __webpack_require__(293),
+	    replaceHolders = __webpack_require__(309);
 
 	/** Used as the internal argument placeholder. */
 	var PLACEHOLDER = '__lodash_placeholder__';
@@ -35950,7 +35401,2398 @@ var Kinvey =
 
 
 /***/ },
-/* 341 */
+/* 312 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.CacheMiddleware = exports.DB = undefined;
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	var _cache = __webpack_require__(313);
+
+	var _errors = __webpack_require__(7);
+
+	var _log = __webpack_require__(199);
+
+	var _webstorage = __webpack_require__(314);
+
+	var _indexeddb = __webpack_require__(324);
+
+	var _websql = __webpack_require__(325);
+
+	var _device = __webpack_require__(281);
+
+	var _forEach = __webpack_require__(12);
+
+	var _forEach2 = _interopRequireDefault(_forEach);
+
+	var _isArray = __webpack_require__(33);
+
+	var _isArray2 = _interopRequireDefault(_isArray);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var dbCache = {};
+
+	var DB = exports.DB = function (_Html5DB) {
+	  _inherits(DB, _Html5DB);
+
+	  function DB() {
+	    var name = arguments.length <= 0 || arguments[0] === undefined ? 'kinvey' : arguments[0];
+	    var adapters = arguments.length <= 1 || arguments[1] === undefined ? [_cache.DBAdapter.WebSQL, _cache.DBAdapter.IndexedDB, _cache.DBAdapter.LocalStorage, _cache.DBAdapter.SessionStorage] : arguments[1];
+
+	    _classCallCheck(this, DB);
+
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(DB).call(this, name));
+
+	    if (!(0, _isArray2.default)(adapters)) {
+	      adapters = [adapters];
+	    }
+
+	    (0, _forEach2.default)(adapters, function (adapter) {
+	      switch (adapter) {
+	        case _cache.DBAdapter.IndexedDB:
+	          if (_indexeddb.IndexedDB.isSupported()) {
+	            _this.adapter = new _indexeddb.IndexedDB(name);
+	            return false;
+	          }
+
+	          break;
+	        case _cache.DBAdapter.LocalStorage:
+	          if (_webstorage.LocalStorage.isSupported()) {
+	            _this.adapter = new _webstorage.LocalStorage(name);
+	            return false;
+	          }
+
+	          break;
+	        case _cache.DBAdapter.SessionStorage:
+	          if (_webstorage.SessionStorage.isSupported()) {
+	            _this.adapter = new _webstorage.SessionStorage(name);
+	            return false;
+	          }
+
+	          break;
+	        case _cache.DBAdapter.WebSQL:
+	          if (_websql.WebSQL.isSupported()) {
+	            _this.adapter = new _websql.WebSQL(name);
+	            return false;
+	          }
+
+	          break;
+	        default:
+	          _log.Log.warn('The ' + adapter + ' adapter is is not recognized.');
+	      }
+
+	      return true;
+	    });
+	    return _this;
+	  }
+
+	  return DB;
+	}(_cache.DB);
+
+	var CacheMiddleware = exports.CacheMiddleware = function (_Html5CacheMiddelware) {
+	  _inherits(CacheMiddleware, _Html5CacheMiddelware);
+
+	  function CacheMiddleware() {
+	    var name = arguments.length <= 0 || arguments[0] === undefined ? 'PhoneGap Cache Middleware' : arguments[0];
+
+	    _classCallCheck(this, CacheMiddleware);
+
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(CacheMiddleware).call(this, name));
+	  }
+
+	  _createClass(CacheMiddleware, [{
+	    key: 'openDatabase',
+	    value: function openDatabase(name) {
+	      var adapters = arguments.length <= 1 || arguments[1] === undefined ? [_cache.DBAdapter.WebSQL, _cache.DBAdapter.IndexedDB, _cache.DBAdapter.LocalStorage, _cache.DBAdapter.SessionStorage] : arguments[1];
+
+	      if (!name) {
+	        throw new _errors.KinveyError('A name is required to open a database.');
+	      }
+
+	      var db = dbCache[name];
+
+	      if (!db) {
+	        db = new DB(name, adapters);
+	      }
+
+	      return db;
+	    }
+	  }, {
+	    key: 'handle',
+	    value: function handle(request) {
+	      var _this3 = this;
+
+	      return _device.Device.ready().then(function () {
+	        return _get(Object.getPrototypeOf(CacheMiddleware.prototype), 'handle', _this3).call(_this3, request);
+	      });
+	    }
+	  }]);
+
+	  return CacheMiddleware;
+	}(_cache.CacheMiddleware);
+
+/***/ },
+/* 313 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.CacheMiddleware = exports.DB = exports.DBAdapter = undefined;
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _cache = __webpack_require__(165);
+
+	var _errors = __webpack_require__(7);
+
+	var _log = __webpack_require__(199);
+
+	var _webstorage = __webpack_require__(314);
+
+	var _indexeddb = __webpack_require__(324);
+
+	var _websql = __webpack_require__(325);
+
+	var _forEach = __webpack_require__(12);
+
+	var _forEach2 = _interopRequireDefault(_forEach);
+
+	var _isArray = __webpack_require__(33);
+
+	var _isArray2 = _interopRequireDefault(_isArray);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var dbCache = {};
+
+	/**
+	 * Enum for DB Adapters.
+	 */
+	var DBAdapter = {
+	  IndexedDB: 'IndexedDB',
+	  LocalStorage: 'LocalStorage',
+	  SessionStorage: 'SessionStorage',
+	  WebSQL: 'WebSQL'
+	};
+	Object.freeze(DBAdapter);
+	exports.DBAdapter = DBAdapter;
+
+	var DB = exports.DB = function (_CoreDB) {
+	  _inherits(DB, _CoreDB);
+
+	  function DB() {
+	    var name = arguments.length <= 0 || arguments[0] === undefined ? 'kinvey' : arguments[0];
+	    var adapters = arguments.length <= 1 || arguments[1] === undefined ? [DBAdapter.IndexedDB, DBAdapter.WebSQL, DBAdapter.LocalStorage, DBAdapter.SessionStorage] : arguments[1];
+
+	    _classCallCheck(this, DB);
+
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(DB).call(this, name));
+
+	    if (!(0, _isArray2.default)(adapters)) {
+	      adapters = [adapters];
+	    }
+
+	    (0, _forEach2.default)(adapters, function (adapter) {
+	      switch (adapter) {
+	        case DBAdapter.IndexedDB:
+	          if (_indexeddb.IndexedDB.isSupported()) {
+	            _this.adapter = new _indexeddb.IndexedDB(name);
+	            return false;
+	          }
+
+	          break;
+	        case DBAdapter.LocalStorage:
+	          if (_webstorage.LocalStorage.isSupported()) {
+	            _this.adapter = new _webstorage.LocalStorage(name);
+	            return false;
+	          }
+
+	          break;
+	        case DBAdapter.SessionStorage:
+	          if (_webstorage.SessionStorage.isSupported()) {
+	            _this.adapter = new _webstorage.SessionStorage(name);
+	            return false;
+	          }
+
+	          break;
+	        case DBAdapter.WebSQL:
+	          if (_websql.WebSQL.isSupported()) {
+	            _this.adapter = new _websql.WebSQL(name);
+	            return false;
+	          }
+
+	          break;
+	        default:
+	          _log.Log.warn('The ' + adapter + ' adapter is is not recognized.');
+	      }
+
+	      return true;
+	    });
+	    return _this;
+	  }
+
+	  return DB;
+	}(_cache.DB);
+
+	var CacheMiddleware = exports.CacheMiddleware = function (_CoreCacheMiddelware) {
+	  _inherits(CacheMiddleware, _CoreCacheMiddelware);
+
+	  function CacheMiddleware() {
+	    _classCallCheck(this, CacheMiddleware);
+
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(CacheMiddleware).apply(this, arguments));
+	  }
+
+	  _createClass(CacheMiddleware, [{
+	    key: 'openDatabase',
+	    value: function openDatabase(name) {
+	      var adapters = arguments.length <= 1 || arguments[1] === undefined ? [DBAdapter.IndexedDB, DBAdapter.WebSQL, DBAdapter.LocalStorage, DBAdapter.SessionStorage] : arguments[1];
+
+	      if (!name) {
+	        throw new _errors.KinveyError('A name is required to open a database.');
+	      }
+
+	      var db = dbCache[name];
+
+	      if (!db) {
+	        db = new DB(name, adapters);
+	      }
+
+	      return db;
+	    }
+	  }]);
+
+	  return CacheMiddleware;
+	}(_cache.CacheMiddleware);
+
+/***/ },
+/* 314 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(process, global) {'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.SessionStorage = exports.LocalStorage = undefined;
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); // eslint-disable-line no-unused-vars
+
+
+	var _errors = __webpack_require__(7);
+
+	var _regeneratorRuntime = __webpack_require__(2);
+
+	var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
+
+	var _keyBy = __webpack_require__(178);
+
+	var _keyBy2 = _interopRequireDefault(_keyBy);
+
+	var _merge = __webpack_require__(315);
+
+	var _merge2 = _interopRequireDefault(_merge);
+
+	var _values = __webpack_require__(182);
+
+	var _values2 = _interopRequireDefault(_values);
+
+	var _forEach = __webpack_require__(12);
+
+	var _forEach2 = _interopRequireDefault(_forEach);
+
+	var _findIndex = __webpack_require__(160);
+
+	var _findIndex2 = _interopRequireDefault(_findIndex);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var idAttribute = process.env.KINVEY_ID_ATTRIBUTE || '_id';
+	var masterCollectionName = 'master';
+
+	var Storage = function () {
+	  function Storage() {
+	    var name = arguments.length <= 0 || arguments[0] === undefined ? 'kinvey' : arguments[0];
+
+	    _classCallCheck(this, Storage);
+
+	    this.name = name;
+	  }
+
+	  _createClass(Storage, [{
+	    key: 'masterCollectionName',
+	    get: function get() {
+	      return this.name + '_' + masterCollectionName;
+	    }
+	  }]);
+
+	  return Storage;
+	}();
+
+	var LocalStorage = exports.LocalStorage = function (_Storage) {
+	  _inherits(LocalStorage, _Storage);
+
+	  function LocalStorage(name) {
+	    _classCallCheck(this, LocalStorage);
+
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(LocalStorage).call(this, name));
+
+	    global.localStorage.setItem(_this.masterCollectionName, JSON.stringify([]));
+	    return _this;
+	  }
+
+	  _createClass(LocalStorage, [{
+	    key: 'find',
+	    value: function () {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee(collection) {
+	        var entities;
+	        return _regeneratorRuntime2.default.wrap(function _callee$(_context) {
+	          while (1) {
+	            switch (_context.prev = _context.next) {
+	              case 0:
+	                entities = global.localStorage.getItem('' + this.name + collection);
+
+	                if (!entities) {
+	                  _context.next = 3;
+	                  break;
+	                }
+
+	                return _context.abrupt('return', JSON.parse(entities));
+
+	              case 3:
+	                return _context.abrupt('return', entities);
+
+	              case 4:
+	              case 'end':
+	                return _context.stop();
+	            }
+	          }
+	        }, _callee, this);
+	      }));
+
+	      function find(_x2) {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return find;
+	    }()
+	  }, {
+	    key: 'findById',
+	    value: function () {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee2(collection, id) {
+	        var entities, entity;
+	        return _regeneratorRuntime2.default.wrap(function _callee2$(_context2) {
+	          while (1) {
+	            switch (_context2.prev = _context2.next) {
+	              case 0:
+	                _context2.next = 2;
+	                return this.find(collection);
+
+	              case 2:
+	                entities = _context2.sent;
+	                entity = find(entities, function (entity) {
+	                  return entity[idAttribute] === id;
+	                });
+
+	                if (entity) {
+	                  _context2.next = 6;
+	                  break;
+	                }
+
+	                throw new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + (' collection on the ' + this.name + ' localstorage database.'));
+
+	              case 6:
+	                return _context2.abrupt('return', entity);
+
+	              case 7:
+	              case 'end':
+	                return _context2.stop();
+	            }
+	          }
+	        }, _callee2, this);
+	      }));
+
+	      function findById(_x3, _x4) {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return findById;
+	    }()
+	  }, {
+	    key: 'save',
+	    value: function () {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee3(collection, entities) {
+	        var collections, existingEntities, existingEntitiesById, entitiesById, existingEntityIds;
+	        return _regeneratorRuntime2.default.wrap(function _callee3$(_context3) {
+	          while (1) {
+	            switch (_context3.prev = _context3.next) {
+	              case 0:
+	                _context3.next = 2;
+	                return this.find(this.masterCollectionName);
+
+	              case 2:
+	                collections = _context3.sent;
+
+
+	                if ((0, _findIndex2.default)(collections, collection) === -1) {
+	                  collections.push(collection);
+	                  global.localStorage.setItem(this.masterCollectionName, JSON.stringify(collections));
+	                }
+
+	                _context3.next = 6;
+	                return this.find(collection);
+
+	              case 6:
+	                existingEntities = _context3.sent;
+	                existingEntitiesById = (0, _keyBy2.default)(existingEntities, idAttribute);
+	                entitiesById = (0, _keyBy2.default)(entities, idAttribute);
+	                existingEntityIds = Object.keys(existingEntitiesById);
+
+
+	                (0, _forEach2.default)(existingEntityIds, function (id) {
+	                  var existingEntity = existingEntitiesById[id];
+	                  var entity = entitiesById[id];
+
+	                  if (entity) {
+	                    entitiesById[id] = (0, _merge2.default)(existingEntity, entity);
+	                  }
+	                });
+
+	                global.localStorage.setItem('' + this.name + collection, JSON.stringify((0, _values2.default)(entitiesById)));
+	                return _context3.abrupt('return', entities);
+
+	              case 13:
+	              case 'end':
+	                return _context3.stop();
+	            }
+	          }
+	        }, _callee3, this);
+	      }));
+
+	      function save(_x5, _x6) {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return save;
+	    }()
+	  }, {
+	    key: 'removeById',
+	    value: function () {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee4(collection, id) {
+	        var entities, entitiesById, entity;
+	        return _regeneratorRuntime2.default.wrap(function _callee4$(_context4) {
+	          while (1) {
+	            switch (_context4.prev = _context4.next) {
+	              case 0:
+	                _context4.next = 2;
+	                return this.find(collection);
+
+	              case 2:
+	                entities = _context4.sent;
+	                entitiesById = (0, _keyBy2.default)(entities, idAttribute);
+	                entity = entitiesById[id];
+
+	                if (entity) {
+	                  _context4.next = 7;
+	                  break;
+	                }
+
+	                throw new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + ' ' + ('collection on the ' + this.name + ' memory database.'));
+
+	              case 7:
+
+	                delete entitiesById[id];
+	                global.localStorage.setItem('' + this.name + collection, JSON.stringify((0, _values2.default)(entitiesById)));
+
+	                return _context4.abrupt('return', entity);
+
+	              case 10:
+	              case 'end':
+	                return _context4.stop();
+	            }
+	          }
+	        }, _callee4, this);
+	      }));
+
+	      function removeById(_x7, _x8) {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return removeById;
+	    }()
+	  }, {
+	    key: 'clear',
+	    value: function () {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee5() {
+	        var _this2 = this;
+
+	        var collections;
+	        return _regeneratorRuntime2.default.wrap(function _callee5$(_context5) {
+	          while (1) {
+	            switch (_context5.prev = _context5.next) {
+	              case 0:
+	                _context5.next = 2;
+	                return this.find(this.masterCollectionName);
+
+	              case 2:
+	                collections = _context5.sent;
+
+
+	                (0, _forEach2.default)(collections, function (collection) {
+	                  global.localStorage.removeItem('' + _this2.name + collection);
+	                });
+
+	                global.localStorage.setItem(this.masterCollectionName, JSON.stringify([]));
+
+	              case 5:
+	              case 'end':
+	                return _context5.stop();
+	            }
+	          }
+	        }, _callee5, this);
+	      }));
+
+	      function clear() {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return clear;
+	    }()
+	  }], [{
+	    key: 'isSupported',
+	    value: function isSupported() {
+	      if (global.localStorage) {
+	        var item = 'testLocalStorageSupport';
+	        try {
+	          global.localStorage.setItem(item, item);
+	          global.localStorage.removeItem(item);
+	          return true;
+	        } catch (e) {
+	          return false;
+	        }
+	      }
+
+	      return false;
+	    }
+	  }]);
+
+	  return LocalStorage;
+	}(Storage);
+
+	var SessionStorage = exports.SessionStorage = function (_Storage2) {
+	  _inherits(SessionStorage, _Storage2);
+
+	  function SessionStorage(name) {
+	    _classCallCheck(this, SessionStorage);
+
+	    var _this3 = _possibleConstructorReturn(this, Object.getPrototypeOf(SessionStorage).call(this, name));
+
+	    global.sessionStorage.setItem(_this3.masterCollectionName, JSON.stringify([]));
+	    return _this3;
+	  }
+
+	  _createClass(SessionStorage, [{
+	    key: 'find',
+	    value: function () {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee6(collection) {
+	        var entities;
+	        return _regeneratorRuntime2.default.wrap(function _callee6$(_context6) {
+	          while (1) {
+	            switch (_context6.prev = _context6.next) {
+	              case 0:
+	                entities = global.sessionStorage.getItem('' + this.name + collection);
+
+	                if (!entities) {
+	                  _context6.next = 3;
+	                  break;
+	                }
+
+	                return _context6.abrupt('return', JSON.parse(entities));
+
+	              case 3:
+	                return _context6.abrupt('return', entities);
+
+	              case 4:
+	              case 'end':
+	                return _context6.stop();
+	            }
+	          }
+	        }, _callee6, this);
+	      }));
+
+	      function find(_x9) {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return find;
+	    }()
+	  }, {
+	    key: 'findById',
+	    value: function () {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee7(collection, id) {
+	        var entities, entity;
+	        return _regeneratorRuntime2.default.wrap(function _callee7$(_context7) {
+	          while (1) {
+	            switch (_context7.prev = _context7.next) {
+	              case 0:
+	                _context7.next = 2;
+	                return this.find(collection);
+
+	              case 2:
+	                entities = _context7.sent;
+	                entity = find(entities, function (entity) {
+	                  return entity[idAttribute] === id;
+	                });
+
+	                if (entity) {
+	                  _context7.next = 6;
+	                  break;
+	                }
+
+	                throw new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + (' collection on the ' + this.name + ' localstorage database.'));
+
+	              case 6:
+	                return _context7.abrupt('return', entity);
+
+	              case 7:
+	              case 'end':
+	                return _context7.stop();
+	            }
+	          }
+	        }, _callee7, this);
+	      }));
+
+	      function findById(_x10, _x11) {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return findById;
+	    }()
+	  }, {
+	    key: 'save',
+	    value: function () {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee8(collection, entities) {
+	        var collections, existingEntities, existingEntitiesById, entitiesById, existingEntityIds;
+	        return _regeneratorRuntime2.default.wrap(function _callee8$(_context8) {
+	          while (1) {
+	            switch (_context8.prev = _context8.next) {
+	              case 0:
+	                _context8.next = 2;
+	                return this.find(this.masterCollectionName);
+
+	              case 2:
+	                collections = _context8.sent;
+
+
+	                if ((0, _findIndex2.default)(collections, collection) === -1) {
+	                  collections.push(collection);
+	                  global.sessionStorage.setItem(this.masterCollectionName, JSON.stringify(collections));
+	                }
+
+	                _context8.next = 6;
+	                return this.find(collection);
+
+	              case 6:
+	                existingEntities = _context8.sent;
+	                existingEntitiesById = (0, _keyBy2.default)(existingEntities, idAttribute);
+	                entitiesById = (0, _keyBy2.default)(entities, idAttribute);
+	                existingEntityIds = Object.keys(existingEntitiesById);
+
+
+	                (0, _forEach2.default)(existingEntityIds, function (id) {
+	                  var existingEntity = existingEntitiesById[id];
+	                  var entity = entitiesById[id];
+
+	                  if (entity) {
+	                    entitiesById[id] = (0, _merge2.default)(existingEntity, entity);
+	                  }
+	                });
+
+	                global.sessionStorage.setItem('' + this.name + collection, JSON.stringify((0, _values2.default)(entitiesById)));
+	                return _context8.abrupt('return', entities);
+
+	              case 13:
+	              case 'end':
+	                return _context8.stop();
+	            }
+	          }
+	        }, _callee8, this);
+	      }));
+
+	      function save(_x12, _x13) {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return save;
+	    }()
+	  }, {
+	    key: 'removeById',
+	    value: function () {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee9(collection, id) {
+	        var entities, entitiesById, entity;
+	        return _regeneratorRuntime2.default.wrap(function _callee9$(_context9) {
+	          while (1) {
+	            switch (_context9.prev = _context9.next) {
+	              case 0:
+	                _context9.next = 2;
+	                return this.find(collection);
+
+	              case 2:
+	                entities = _context9.sent;
+	                entitiesById = (0, _keyBy2.default)(entities, idAttribute);
+	                entity = entitiesById[id];
+
+	                if (entity) {
+	                  _context9.next = 7;
+	                  break;
+	                }
+
+	                throw new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + ' ' + ('collection on the ' + this.name + ' memory database.'));
+
+	              case 7:
+
+	                delete entitiesById[id];
+	                global.sessionStorage.setItem('' + this.name + collection, JSON.stringify((0, _values2.default)(entitiesById)));
+
+	                return _context9.abrupt('return', entity);
+
+	              case 10:
+	              case 'end':
+	                return _context9.stop();
+	            }
+	          }
+	        }, _callee9, this);
+	      }));
+
+	      function removeById(_x14, _x15) {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return removeById;
+	    }()
+	  }, {
+	    key: 'clear',
+	    value: function () {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee10() {
+	        var _this4 = this;
+
+	        var collections;
+	        return _regeneratorRuntime2.default.wrap(function _callee10$(_context10) {
+	          while (1) {
+	            switch (_context10.prev = _context10.next) {
+	              case 0:
+	                _context10.next = 2;
+	                return this.find(this.masterCollectionName);
+
+	              case 2:
+	                collections = _context10.sent;
+
+
+	                (0, _forEach2.default)(collections, function (collection) {
+	                  global.sessionStorage.removeItem('' + _this4.name + collection);
+	                });
+
+	                global.sessionStorage.setItem(this.masterCollectionName, JSON.stringify([]));
+
+	              case 5:
+	              case 'end':
+	                return _context10.stop();
+	            }
+	          }
+	        }, _callee10, this);
+	      }));
+
+	      function clear() {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return clear;
+	    }()
+	  }, {
+	    key: 'masterCollectionName',
+	    get: function get() {
+	      return this.name + '_' + masterCollectionName;
+	    }
+	  }], [{
+	    key: 'isSupported',
+	    value: function isSupported() {
+	      if (global.sessionStorage) {
+	        var item = 'testSessionStorageSupport';
+	        try {
+	          global.sessionStorage.setItem(item, item);
+	          global.sessionStorage.removeItem(item);
+	          return true;
+	        } catch (e) {
+	          return false;
+	        }
+	      }
+
+	      return false;
+	    }
+	  }]);
+
+	  return SessionStorage;
+	}(Storage);
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), (function() { return this; }())))
+
+/***/ },
+/* 315 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var baseMerge = __webpack_require__(316),
+	    createAssigner = __webpack_require__(123);
+
+	/**
+	 * This method is like `_.assign` except that it recursively merges own and
+	 * inherited enumerable string keyed properties of source objects into the
+	 * destination object. Source properties that resolve to `undefined` are
+	 * skipped if a destination value exists. Array and plain object properties
+	 * are merged recursively. Other objects and value types are overridden by
+	 * assignment. Source objects are applied from left to right. Subsequent
+	 * sources overwrite property assignments of previous sources.
+	 *
+	 * **Note:** This method mutates `object`.
+	 *
+	 * @static
+	 * @memberOf _
+	 * @since 0.5.0
+	 * @category Object
+	 * @param {Object} object The destination object.
+	 * @param {...Object} [sources] The source objects.
+	 * @returns {Object} Returns `object`.
+	 * @example
+	 *
+	 * var users = {
+	 *   'data': [{ 'user': 'barney' }, { 'user': 'fred' }]
+	 * };
+	 *
+	 * var ages = {
+	 *   'data': [{ 'age': 36 }, { 'age': 40 }]
+	 * };
+	 *
+	 * _.merge(users, ages);
+	 * // => { 'data': [{ 'user': 'barney', 'age': 36 }, { 'user': 'fred', 'age': 40 }] }
+	 */
+	var merge = createAssigner(function(object, source, srcIndex) {
+	  baseMerge(object, source, srcIndex);
+	});
+
+	module.exports = merge;
+
+
+/***/ },
+/* 316 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Stack = __webpack_require__(41),
+	    arrayEach = __webpack_require__(13),
+	    assignMergeValue = __webpack_require__(317),
+	    baseMergeDeep = __webpack_require__(318),
+	    isArray = __webpack_require__(33),
+	    isObject = __webpack_require__(30),
+	    isTypedArray = __webpack_require__(98),
+	    keysIn = __webpack_require__(320);
+
+	/**
+	 * The base implementation of `_.merge` without support for multiple sources.
+	 *
+	 * @private
+	 * @param {Object} object The destination object.
+	 * @param {Object} source The source object.
+	 * @param {number} srcIndex The index of `source`.
+	 * @param {Function} [customizer] The function to customize merged values.
+	 * @param {Object} [stack] Tracks traversed source values and their merged
+	 *  counterparts.
+	 */
+	function baseMerge(object, source, srcIndex, customizer, stack) {
+	  if (object === source) {
+	    return;
+	  }
+	  if (!(isArray(source) || isTypedArray(source))) {
+	    var props = keysIn(source);
+	  }
+	  arrayEach(props || source, function(srcValue, key) {
+	    if (props) {
+	      key = srcValue;
+	      srcValue = source[key];
+	    }
+	    if (isObject(srcValue)) {
+	      stack || (stack = new Stack);
+	      baseMergeDeep(object, source, key, srcIndex, baseMerge, customizer, stack);
+	    }
+	    else {
+	      var newValue = customizer
+	        ? customizer(object[key], srcValue, (key + ''), object, source, stack)
+	        : undefined;
+
+	      if (newValue === undefined) {
+	        newValue = srcValue;
+	      }
+	      assignMergeValue(object, key, newValue);
+	    }
+	  });
+	}
+
+	module.exports = baseMerge;
+
+
+/***/ },
+/* 317 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var eq = __webpack_require__(46);
+
+	/**
+	 * This function is like `assignValue` except that it doesn't assign
+	 * `undefined` values.
+	 *
+	 * @private
+	 * @param {Object} object The object to modify.
+	 * @param {string} key The key of the property to assign.
+	 * @param {*} value The value to assign.
+	 */
+	function assignMergeValue(object, key, value) {
+	  if ((value !== undefined && !eq(object[key], value)) ||
+	      (typeof key == 'number' && value === undefined && !(key in object))) {
+	    object[key] = value;
+	  }
+	}
+
+	module.exports = assignMergeValue;
+
+
+/***/ },
+/* 318 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var assignMergeValue = __webpack_require__(317),
+	    baseClone = __webpack_require__(203),
+	    copyArray = __webpack_require__(206),
+	    isArguments = __webpack_require__(24),
+	    isArray = __webpack_require__(33),
+	    isArrayLikeObject = __webpack_require__(25),
+	    isFunction = __webpack_require__(29),
+	    isObject = __webpack_require__(30),
+	    isPlainObject = __webpack_require__(197),
+	    isTypedArray = __webpack_require__(98),
+	    toPlainObject = __webpack_require__(319);
+
+	/**
+	 * A specialized version of `baseMerge` for arrays and objects which performs
+	 * deep merges and tracks traversed objects enabling objects with circular
+	 * references to be merged.
+	 *
+	 * @private
+	 * @param {Object} object The destination object.
+	 * @param {Object} source The source object.
+	 * @param {string} key The key of the value to merge.
+	 * @param {number} srcIndex The index of `source`.
+	 * @param {Function} mergeFunc The function to merge values.
+	 * @param {Function} [customizer] The function to customize assigned values.
+	 * @param {Object} [stack] Tracks traversed source values and their merged
+	 *  counterparts.
+	 */
+	function baseMergeDeep(object, source, key, srcIndex, mergeFunc, customizer, stack) {
+	  var objValue = object[key],
+	      srcValue = source[key],
+	      stacked = stack.get(srcValue);
+
+	  if (stacked) {
+	    assignMergeValue(object, key, stacked);
+	    return;
+	  }
+	  var newValue = customizer
+	    ? customizer(objValue, srcValue, (key + ''), object, source, stack)
+	    : undefined;
+
+	  var isCommon = newValue === undefined;
+
+	  if (isCommon) {
+	    newValue = srcValue;
+	    if (isArray(srcValue) || isTypedArray(srcValue)) {
+	      if (isArray(objValue)) {
+	        newValue = objValue;
+	      }
+	      else if (isArrayLikeObject(objValue)) {
+	        newValue = copyArray(objValue);
+	      }
+	      else {
+	        isCommon = false;
+	        newValue = baseClone(srcValue, true);
+	      }
+	    }
+	    else if (isPlainObject(srcValue) || isArguments(srcValue)) {
+	      if (isArguments(objValue)) {
+	        newValue = toPlainObject(objValue);
+	      }
+	      else if (!isObject(objValue) || (srcIndex && isFunction(objValue))) {
+	        isCommon = false;
+	        newValue = baseClone(srcValue, true);
+	      }
+	      else {
+	        newValue = objValue;
+	      }
+	    }
+	    else {
+	      isCommon = false;
+	    }
+	  }
+	  stack.set(srcValue, newValue);
+
+	  if (isCommon) {
+	    // Recursively merge objects and arrays (susceptible to call stack limits).
+	    mergeFunc(newValue, srcValue, srcIndex, customizer, stack);
+	  }
+	  stack['delete'](srcValue);
+	  assignMergeValue(object, key, newValue);
+	}
+
+	module.exports = baseMergeDeep;
+
+
+/***/ },
+/* 319 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var copyObject = __webpack_require__(122),
+	    keysIn = __webpack_require__(320);
+
+	/**
+	 * Converts `value` to a plain object flattening inherited enumerable string
+	 * keyed properties of `value` to own properties of the plain object.
+	 *
+	 * @static
+	 * @memberOf _
+	 * @since 3.0.0
+	 * @category Lang
+	 * @param {*} value The value to convert.
+	 * @returns {Object} Returns the converted plain object.
+	 * @example
+	 *
+	 * function Foo() {
+	 *   this.b = 2;
+	 * }
+	 *
+	 * Foo.prototype.c = 3;
+	 *
+	 * _.assign({ 'a': 1 }, new Foo);
+	 * // => { 'a': 1, 'b': 2 }
+	 *
+	 * _.assign({ 'a': 1 }, _.toPlainObject(new Foo));
+	 * // => { 'a': 1, 'b': 2, 'c': 3 }
+	 */
+	function toPlainObject(value) {
+	  return copyObject(value, keysIn(value));
+	}
+
+	module.exports = toPlainObject;
+
+
+/***/ },
+/* 320 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var baseKeysIn = __webpack_require__(321),
+	    indexKeys = __webpack_require__(22),
+	    isIndex = __webpack_require__(35),
+	    isPrototype = __webpack_require__(36);
+
+	/** Used for built-in method references. */
+	var objectProto = Object.prototype;
+
+	/** Used to check objects for own properties. */
+	var hasOwnProperty = objectProto.hasOwnProperty;
+
+	/**
+	 * Creates an array of the own and inherited enumerable property names of `object`.
+	 *
+	 * **Note:** Non-object values are coerced to objects.
+	 *
+	 * @static
+	 * @memberOf _
+	 * @since 3.0.0
+	 * @category Object
+	 * @param {Object} object The object to query.
+	 * @returns {Array} Returns the array of property names.
+	 * @example
+	 *
+	 * function Foo() {
+	 *   this.a = 1;
+	 *   this.b = 2;
+	 * }
+	 *
+	 * Foo.prototype.c = 3;
+	 *
+	 * _.keysIn(new Foo);
+	 * // => ['a', 'b', 'c'] (iteration order is not guaranteed)
+	 */
+	function keysIn(object) {
+	  var index = -1,
+	      isProto = isPrototype(object),
+	      props = baseKeysIn(object),
+	      propsLength = props.length,
+	      indexes = indexKeys(object),
+	      skipIndexes = !!indexes,
+	      result = indexes || [],
+	      length = result.length;
+
+	  while (++index < propsLength) {
+	    var key = props[index];
+	    if (!(skipIndexes && (key == 'length' || isIndex(key, length))) &&
+	        !(key == 'constructor' && (isProto || !hasOwnProperty.call(object, key)))) {
+	      result.push(key);
+	    }
+	  }
+	  return result;
+	}
+
+	module.exports = keysIn;
+
+
+/***/ },
+/* 321 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Reflect = __webpack_require__(322),
+	    iteratorToArray = __webpack_require__(323);
+
+	/** Used for built-in method references. */
+	var objectProto = Object.prototype;
+
+	/** Built-in value references. */
+	var enumerate = Reflect ? Reflect.enumerate : undefined,
+	    propertyIsEnumerable = objectProto.propertyIsEnumerable;
+
+	/**
+	 * The base implementation of `_.keysIn` which doesn't skip the constructor
+	 * property of prototypes or treat sparse arrays as dense.
+	 *
+	 * @private
+	 * @param {Object} object The object to query.
+	 * @returns {Array} Returns the array of property names.
+	 */
+	function baseKeysIn(object) {
+	  object = object == null ? object : Object(object);
+
+	  var result = [];
+	  for (var key in object) {
+	    result.push(key);
+	  }
+	  return result;
+	}
+
+	// Fallback for IE < 9 with es6-shim.
+	if (enumerate && !propertyIsEnumerable.call({ 'valueOf': 1 }, 'valueOf')) {
+	  baseKeysIn = function(object) {
+	    return iteratorToArray(enumerate(object));
+	  };
+	}
+
+	module.exports = baseKeysIn;
+
+
+/***/ },
+/* 322 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var root = __webpack_require__(65);
+
+	/** Built-in value references. */
+	var Reflect = root.Reflect;
+
+	module.exports = Reflect;
+
+
+/***/ },
+/* 323 */
+/***/ function(module, exports) {
+
+	/**
+	 * Converts `iterator` to an array.
+	 *
+	 * @private
+	 * @param {Object} iterator The iterator to convert.
+	 * @returns {Array} Returns the converted array.
+	 */
+	function iteratorToArray(iterator) {
+	  var data,
+	      result = [];
+
+	  while (!(data = iterator.next()).done) {
+	    result.push(data.value);
+	  }
+	  return result;
+	}
+
+	module.exports = iteratorToArray;
+
+
+/***/ },
+/* 324 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(global) {'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.IndexedDB = undefined;
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); // eslint-disable-line no-unused-vars
+
+
+	var _errors = __webpack_require__(7);
+
+	var _es6Promise = __webpack_require__(168);
+
+	var _regeneratorRuntime = __webpack_require__(2);
+
+	var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
+
+	var _forEach = __webpack_require__(12);
+
+	var _forEach2 = _interopRequireDefault(_forEach);
+
+	var _isString = __webpack_require__(34);
+
+	var _isString2 = _interopRequireDefault(_isString);
+
+	var _isArray = __webpack_require__(33);
+
+	var _isArray2 = _interopRequireDefault(_isArray);
+
+	var _isFunction = __webpack_require__(29);
+
+	var _isFunction2 = _interopRequireDefault(_isFunction);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new _es6Promise.Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return _es6Promise.Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var dbCache = {};
+
+	var TransactionMode = {
+	  ReadWrite: 'readwrite',
+	  ReadOnly: 'readonly'
+	};
+	Object.freeze(TransactionMode);
+
+	var IndexedDB = exports.IndexedDB = function () {
+	  function IndexedDB(name) {
+	    _classCallCheck(this, IndexedDB);
+
+	    if (!name) {
+	      throw new _errors.KinveyError('A name is required to use the IndexedDB adapter.', name);
+	    }
+
+	    if (!(0, _isString2.default)(name)) {
+	      throw new _errors.KinveyError('The name must be a string to use the IndexedDB adapter', name);
+	    }
+
+	    this.name = name;
+	    this.inTransaction = false;
+	    this.queue = [];
+	  }
+
+	  _createClass(IndexedDB, [{
+	    key: 'openTransaction',
+	    value: function openTransaction(collection) {
+	      var write = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	      var success = arguments[2];
+
+	      var _this = this;
+
+	      var error = arguments[3];
+	      var force = arguments.length <= 4 || arguments[4] === undefined ? false : arguments[4];
+
+	      var indexedDB = global.indexedDB || global.webkitIndexedDB || global.mozIndexedDB || global.msIndexedDB;
+	      var db = dbCache[this.name];
+
+	      if (db) {
+	        var containsCollection = (0, _isFunction2.default)(db.objectStoreNames.contains) ? db.objectStoreNames.contains(collection) : db.objectStoreNames.indexOf(collection) !== -1;
+
+	        if (containsCollection) {
+	          try {
+	            var mode = write ? TransactionMode.ReadWrite : TransactionMode.ReadOnly;
+	            var txn = db.transaction(collection, mode);
+
+	            if (txn) {
+	              return success(txn);
+	            }
+
+	            throw new _errors.KinveyError('Unable to open a transaction for ' + collection + (' collection on the ' + this.name + ' IndexedDB database.'));
+	          } catch (err) {
+	            return error(err);
+	          }
+	        } else if (!write) {
+	          return error(new _errors.NotFoundError('The ' + collection + ' collection was not found on' + (' the ' + this.name + ' IndexedDB database.')));
+	        }
+	      }
+
+	      if (!force && this.inTransaction) {
+	        return this.queue.push(function () {
+	          _this.openTransaction(collection, write, success, error);
+	        });
+	      }
+
+	      // Switch flag
+	      this.inTransaction = true;
+	      var request = void 0;
+
+	      if (db) {
+	        var version = db.version + 1;
+	        db.close();
+	        request = indexedDB.open(this.name, version);
+	      } else {
+	        request = indexedDB.open(this.name);
+	      }
+
+	      // If the database is opened with an higher version than its current, the
+	      // `upgradeneeded` event is fired. Save the handle to the database, and
+	      // create the collection.
+	      request.onupgradeneeded = function (e) {
+	        db = e.target.result;
+	        dbCache[_this.name] = db;
+
+	        if (write) {
+	          db.createObjectStore(collection, { keyPath: '_id' });
+	        }
+	      };
+
+	      // The `success` event is fired after `upgradeneeded` terminates.
+	      // Save the handle to the database.
+	      request.onsuccess = function (e) {
+	        db = e.target.result;
+	        dbCache[_this.name] = db;
+
+	        // If a second instance of the same IndexedDB database performs an
+	        // upgrade operation, the `versionchange` event is fired. Then, close the
+	        // database to allow the external upgrade to proceed.
+	        db.onversionchange = function () {
+	          if (db) {
+	            db.close();
+	            db = null;
+	            dbCache[_this.name] = null;
+	          }
+	        };
+
+	        // Try to obtain the collection handle by recursing. Append the handlers
+	        // to empty the queue upon success and failure. Set the `force` flag so
+	        // all but the current transaction remain queued.
+	        var wrap = function wrap(done) {
+	          var callbackFn = function callbackFn(arg) {
+	            done(arg);
+
+	            // Switch flag
+	            _this.inTransaction = false;
+
+	            // The database handle has been established, we can now safely empty
+	            // the queue. The queue must be emptied before invoking the concurrent
+	            // operations to avoid infinite recursion.
+	            if (_this.queue.length > 0) {
+	              var pending = _this.queue;
+	              _this.queue = [];
+	              (0, _forEach2.default)(pending, function (fn) {
+	                fn.call(_this);
+	              });
+	            }
+	          };
+	          return callbackFn;
+	        };
+
+	        return _this.openTransaction(collection, write, wrap(success), wrap(error), true);
+	      };
+
+	      request.onblocked = function () {
+	        error(new _errors.KinveyError('The ' + _this.name + ' IndexedDB database version can\'t be upgraded' + ' because the database is already open.'));
+	      };
+
+	      request.onerror = function (e) {
+	        error(new _errors.KinveyError('Unable to open the ' + _this.name + ' IndexedDB database.' + (' ' + e.target.error.message + '.')));
+	      };
+
+	      return request;
+	    }
+	  }, {
+	    key: 'find',
+	    value: function () {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee2(collection) {
+	        var _this2 = this;
+
+	        return _regeneratorRuntime2.default.wrap(function _callee2$(_context2) {
+	          while (1) {
+	            switch (_context2.prev = _context2.next) {
+	              case 0:
+	                return _context2.abrupt('return', new _es6Promise.Promise(function (resolve, reject) {
+	                  _this2.openTransaction(collection, false, function () {
+	                    var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee(txn) {
+	                      var store, request, entities;
+	                      return _regeneratorRuntime2.default.wrap(function _callee$(_context) {
+	                        while (1) {
+	                          switch (_context.prev = _context.next) {
+	                            case 0:
+	                              store = txn.objectStore(collection);
+	                              request = store.openCursor();
+	                              entities = [];
+
+
+	                              request.onsuccess = function (e) {
+	                                var cursor = e.target.result;
+
+	                                if (cursor) {
+	                                  entities.push(cursor.value);
+	                                  return cursor.continue();
+	                                }
+
+	                                return resolve(entities);
+	                              };
+
+	                              request.onerror = function (e) {
+	                                reject(e);
+	                              };
+
+	                            case 5:
+	                            case 'end':
+	                              return _context.stop();
+	                          }
+	                        }
+	                      }, _callee, _this2);
+	                    }));
+
+	                    return function (_x4) {
+	                      return ref.apply(this, arguments);
+	                    };
+	                  }(), reject);
+	                }));
+
+	              case 1:
+	              case 'end':
+	                return _context2.stop();
+	            }
+	          }
+	        }, _callee2, this);
+	      }));
+
+	      function find(_x3) {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return find;
+	    }()
+	  }, {
+	    key: 'findById',
+	    value: function () {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee4(collection, id) {
+	        var _this3 = this;
+
+	        return _regeneratorRuntime2.default.wrap(function _callee4$(_context4) {
+	          while (1) {
+	            switch (_context4.prev = _context4.next) {
+	              case 0:
+	                return _context4.abrupt('return', new _es6Promise.Promise(function (resolve, reject) {
+	                  _this3.openTransaction(collection, false, function () {
+	                    var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee3(txn) {
+	                      var store, request;
+	                      return _regeneratorRuntime2.default.wrap(function _callee3$(_context3) {
+	                        while (1) {
+	                          switch (_context3.prev = _context3.next) {
+	                            case 0:
+	                              store = txn.objectStore(collection);
+	                              request = store.get(id);
+
+
+	                              request.onsuccess = function (e) {
+	                                var entity = e.target.result;
+
+	                                if (entity) {
+	                                  resolve(entity);
+	                                } else {
+	                                  reject(new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + (' collection on the ' + _this3.name + ' IndexedDB database.')));
+	                                }
+	                              };
+
+	                              request.onerror = function () {
+	                                reject(new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + (' collection on the ' + _this3.name + ' IndexedDB database.')));
+	                              };
+
+	                            case 4:
+	                            case 'end':
+	                              return _context3.stop();
+	                          }
+	                        }
+	                      }, _callee3, _this3);
+	                    }));
+
+	                    return function (_x7) {
+	                      return ref.apply(this, arguments);
+	                    };
+	                  }(), reject);
+	                }));
+
+	              case 1:
+	              case 'end':
+	                return _context4.stop();
+	            }
+	          }
+	        }, _callee4, this);
+	      }));
+
+	      function findById(_x5, _x6) {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return findById;
+	    }()
+	  }, {
+	    key: 'save',
+	    value: function () {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee6(collection, entities) {
+	        var _this4 = this;
+
+	        var singular;
+	        return _regeneratorRuntime2.default.wrap(function _callee6$(_context6) {
+	          while (1) {
+	            switch (_context6.prev = _context6.next) {
+	              case 0:
+	                singular = false;
+
+
+	                if (!(0, _isArray2.default)(entities)) {
+	                  singular = true;
+	                  entities = [entities];
+	                }
+
+	                if (!(entities.length === 0)) {
+	                  _context6.next = 4;
+	                  break;
+	                }
+
+	                return _context6.abrupt('return', null);
+
+	              case 4:
+	                return _context6.abrupt('return', new _es6Promise.Promise(function (resolve, reject) {
+	                  _this4.openTransaction(collection, true, function () {
+	                    var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee5(txn) {
+	                      var store;
+	                      return _regeneratorRuntime2.default.wrap(function _callee5$(_context5) {
+	                        while (1) {
+	                          switch (_context5.prev = _context5.next) {
+	                            case 0:
+	                              store = txn.objectStore(collection);
+
+
+	                              (0, _forEach2.default)(entities, function (entity) {
+	                                store.put(entity);
+	                              });
+
+	                              txn.oncomplete = function () {
+	                                resolve(singular ? entities[0] : entities);
+	                              };
+
+	                              txn.onerror = function (e) {
+	                                reject(new _errors.KinveyError('An error occurred while saving the entities to the ' + collection + (' collection on the ' + _this4.name + ' IndexedDB database. ' + e.target.error.message + '.')));
+	                              };
+
+	                            case 4:
+	                            case 'end':
+	                              return _context5.stop();
+	                          }
+	                        }
+	                      }, _callee5, _this4);
+	                    }));
+
+	                    return function (_x10) {
+	                      return ref.apply(this, arguments);
+	                    };
+	                  }(), reject);
+	                }));
+
+	              case 5:
+	              case 'end':
+	                return _context6.stop();
+	            }
+	          }
+	        }, _callee6, this);
+	      }));
+
+	      function save(_x8, _x9) {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return save;
+	    }()
+	  }, {
+	    key: 'removeById',
+	    value: function () {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee8(collection, id) {
+	        var _this5 = this;
+
+	        return _regeneratorRuntime2.default.wrap(function _callee8$(_context8) {
+	          while (1) {
+	            switch (_context8.prev = _context8.next) {
+	              case 0:
+	                return _context8.abrupt('return', new _es6Promise.Promise(function (resolve, reject) {
+	                  _this5.openTransaction(collection, true, function () {
+	                    var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee7(txn) {
+	                      var store, request;
+	                      return _regeneratorRuntime2.default.wrap(function _callee7$(_context7) {
+	                        while (1) {
+	                          switch (_context7.prev = _context7.next) {
+	                            case 0:
+	                              store = txn.objectStore(collection);
+	                              request = store.get(id);
+
+	                              store.delete(id);
+
+	                              txn.oncomplete = function () {
+	                                var entity = request.result;
+
+	                                if (entity) {
+	                                  resolve(entity);
+	                                } else {
+	                                  reject(new _errors.NotFoundError('An entity with id = ' + id + ' was not found in the ' + collection + (' collection on the ' + _this5.name + ' IndexedDB database.')));
+	                                }
+	                              };
+
+	                              txn.onerror = function () {
+	                                reject(new _errors.NotFoundError('An entity with id = ' + id + ' was not found in the ' + collection + (' collection on the ' + _this5.name + ' IndexedDB database.')));
+	                              };
+
+	                            case 5:
+	                            case 'end':
+	                              return _context7.stop();
+	                          }
+	                        }
+	                      }, _callee7, _this5);
+	                    }));
+
+	                    return function (_x13) {
+	                      return ref.apply(this, arguments);
+	                    };
+	                  }(), reject);
+	                }));
+
+	              case 1:
+	              case 'end':
+	                return _context8.stop();
+	            }
+	          }
+	        }, _callee8, this);
+	      }));
+
+	      function removeById(_x11, _x12) {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return removeById;
+	    }()
+	  }, {
+	    key: 'clear',
+	    value: function () {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee9() {
+	        var _this6 = this;
+
+	        return _regeneratorRuntime2.default.wrap(function _callee9$(_context9) {
+	          while (1) {
+	            switch (_context9.prev = _context9.next) {
+	              case 0:
+	                return _context9.abrupt('return', new _es6Promise.Promise(function (resolve, reject) {
+	                  var indexedDB = global.indexedDB || global.webkitIndexedDB || global.mozIndexedDB || global.msIndexedDB;
+	                  var request = indexedDB.deleteDatabase(_this6.name);
+
+	                  request.onsuccess = function () {
+	                    dbCache = {};
+	                    resolve();
+	                  };
+
+	                  request.onerror = function (e) {
+	                    reject(new _errors.KinveyError('An error occurred while clearing the ' + _this6.name + ' IndexedDB database.' + (' ' + e.target.error.message + '.')));
+	                  };
+	                }));
+
+	              case 1:
+	              case 'end':
+	                return _context9.stop();
+	            }
+	          }
+	        }, _callee9, this);
+	      }));
+
+	      function clear() {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return clear;
+	    }()
+	  }], [{
+	    key: 'isSupported',
+	    value: function isSupported() {
+	      var indexedDB = global.indexedDB || global.webkitIndexedDB || global.mozIndexedDB || global.msIndexedDB;
+	      return !!indexedDB;
+	    }
+	  }]);
+
+	  return IndexedDB;
+	}();
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
+
+/***/ },
+/* 325 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(process, global) {'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.WebSQL = undefined;
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); // eslint-disable-line no-unused-vars
+
+
+	var _errors = __webpack_require__(7);
+
+	var _es6Promise = __webpack_require__(168);
+
+	var _regeneratorRuntime = __webpack_require__(2);
+
+	var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
+
+	var _map = __webpack_require__(175);
+
+	var _map2 = _interopRequireDefault(_map);
+
+	var _forEach = __webpack_require__(12);
+
+	var _forEach2 = _interopRequireDefault(_forEach);
+
+	var _isArray = __webpack_require__(33);
+
+	var _isArray2 = _interopRequireDefault(_isArray);
+
+	var _isFunction = __webpack_require__(29);
+
+	var _isFunction2 = _interopRequireDefault(_isFunction);
+
+	var _isString = __webpack_require__(34);
+
+	var _isString2 = _interopRequireDefault(_isString);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new _es6Promise.Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return _es6Promise.Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var idAttribute = process.env.KINVEY_ID_ATTRIBUTE || '_id';
+	var masterCollectionName = 'sqlite_master';
+	var size = 5 * 1000 * 1000; // Database size in bytes
+	var dbCache = {};
+
+	var WebSQL = exports.WebSQL = function () {
+	  function WebSQL() {
+	    var name = arguments.length <= 0 || arguments[0] === undefined ? 'kinvey' : arguments[0];
+
+	    _classCallCheck(this, WebSQL);
+
+	    this.name = name;
+	  }
+
+	  _createClass(WebSQL, [{
+	    key: 'openDatabase',
+	    value: function openDatabase() {
+	      var db = dbCache[this.name];
+
+	      if (!db) {
+	        db = global.openDatabase(this.name, 1, '', size);
+	        dbCache[this.name] = db;
+	      }
+
+	      return db;
+	    }
+	  }, {
+	    key: 'openTransaction',
+	    value: function openTransaction(collection, query, parameters) {
+	      var _this = this;
+
+	      var write = arguments.length <= 3 || arguments[3] === undefined ? false : arguments[3];
+
+	      var db = this.openDatabase();
+	      var escapedCollection = '"' + collection + '"';
+	      var isMaster = collection === masterCollectionName;
+	      var isMulti = (0, _isArray2.default)(query);
+	      query = isMulti ? query : [[query, parameters]];
+
+	      var promise = new _es6Promise.Promise(function (resolve, reject) {
+	        var writeTxn = write || !(0, _isFunction2.default)(db.readTransaction);
+	        db[writeTxn ? 'transaction' : 'readTransaction'](function (tx) {
+	          if (write && !isMaster) {
+	            tx.executeSql('CREATE TABLE IF NOT EXISTS ' + escapedCollection + ' ' + '(key BLOB PRIMARY KEY NOT NULL, value BLOB NOT NULL)');
+	          }
+
+	          var pending = query.length;
+	          var responses = [];
+
+	          (0, _forEach2.default)(query, function (parts) {
+	            var sql = parts[0].replace('#{collection}', escapedCollection);
+
+	            tx.executeSql(sql, parts[1], function (_, resultSet) {
+	              var response = {
+	                rowCount: resultSet.rowsAffected,
+	                result: []
+	              };
+
+	              if (resultSet.rows.length) {
+	                for (var i = 0, len = resultSet.rows.length; i < len; i++) {
+	                  try {
+	                    var value = resultSet.rows.item(i).value;
+	                    var entity = isMaster ? value : JSON.parse(value);
+	                    response.result.push(entity);
+	                  } catch (error) {
+	                    // Catch the error
+	                  }
+	                }
+	              }
+
+	              responses.push(response);
+	              pending = pending - 1;
+
+	              if (pending === 0) {
+	                resolve(isMulti ? responses : responses.shift());
+	              }
+	            });
+	          });
+	        }, function (error) {
+	          error = (0, _isString2.default)(error) ? error : error.message;
+
+	          if (error && error.indexOf('no such table') === -1) {
+	            return reject(new _errors.NotFoundError('The ' + collection + ' collection was not found on' + (' the ' + _this.name + ' WebSQL database.')));
+	          }
+
+	          var query = 'SELECT name AS value from #{collection} WHERE type = ? AND name = ?';
+	          var parameters = ['table', collection];
+
+	          return _this.openTransaction(masterCollectionName, query, parameters).then(function (response) {
+	            if (response.result.length === 0) {
+	              return reject(new _errors.NotFoundError('The ' + collection + ' collection was not found on' + (' the ' + _this.name + ' WebSQL database.')));
+	            }
+
+	            return reject(new _errors.KinveyError('Unable to open a transaction for the ' + collection + (' collection on the ' + _this.name + ' WebSQL database.')));
+	          }).catch(function (error) {
+	            reject(new _errors.KinveyError('Unable to open a transaction for the ' + collection + (' collection on the ' + _this.name + ' WebSQL database.'), error));
+	          });
+	        });
+	      });
+
+	      return promise;
+	    }
+	  }, {
+	    key: 'find',
+	    value: function () {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee(collection) {
+	        var sql, response;
+	        return _regeneratorRuntime2.default.wrap(function _callee$(_context) {
+	          while (1) {
+	            switch (_context.prev = _context.next) {
+	              case 0:
+	                sql = 'SELECT value FROM #{collection}';
+	                _context.next = 3;
+	                return this.openTransaction(collection, sql, []);
+
+	              case 3:
+	                response = _context.sent;
+	                return _context.abrupt('return', response.result);
+
+	              case 5:
+	              case 'end':
+	                return _context.stop();
+	            }
+	          }
+	        }, _callee, this);
+	      }));
+
+	      function find(_x3) {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return find;
+	    }()
+	  }, {
+	    key: 'findById',
+	    value: function () {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee2(collection, id) {
+	        var sql, response, entities;
+	        return _regeneratorRuntime2.default.wrap(function _callee2$(_context2) {
+	          while (1) {
+	            switch (_context2.prev = _context2.next) {
+	              case 0:
+	                sql = 'SELECT value FROM #{collection} WHERE key = ?';
+	                _context2.next = 3;
+	                return this.openTransaction(collection, sql, [id]);
+
+	              case 3:
+	                response = _context2.sent;
+	                entities = response.result;
+
+	                if (!(entities.length === 0)) {
+	                  _context2.next = 7;
+	                  break;
+	                }
+
+	                throw new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + (' collection on the ' + this.name + ' WebSQL database.'));
+
+	              case 7:
+	                return _context2.abrupt('return', entities[0]);
+
+	              case 8:
+	              case 'end':
+	                return _context2.stop();
+	            }
+	          }
+	        }, _callee2, this);
+	      }));
+
+	      function findById(_x4, _x5) {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return findById;
+	    }()
+	  }, {
+	    key: 'save',
+	    value: function () {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee3(collection, entities) {
+	        var queries;
+	        return _regeneratorRuntime2.default.wrap(function _callee3$(_context3) {
+	          while (1) {
+	            switch (_context3.prev = _context3.next) {
+	              case 0:
+	                queries = [];
+
+	                entities = (0, _map2.default)(entities, function (entity) {
+	                  queries.push(['REPLACE INTO #{collection} (key, value) VALUES (?, ?)', [entity[idAttribute], JSON.stringify(entity)]]);
+
+	                  return entity;
+	                });
+
+	                _context3.next = 4;
+	                return this.openTransaction(collection, queries, null, true);
+
+	              case 4:
+	                return _context3.abrupt('return', entities);
+
+	              case 5:
+	              case 'end':
+	                return _context3.stop();
+	            }
+	          }
+	        }, _callee3, this);
+	      }));
+
+	      function save(_x6, _x7) {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return save;
+	    }()
+	  }, {
+	    key: 'removeById',
+	    value: function () {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee4(collection, id) {
+	        var queries, response, entities, count;
+	        return _regeneratorRuntime2.default.wrap(function _callee4$(_context4) {
+	          while (1) {
+	            switch (_context4.prev = _context4.next) {
+	              case 0:
+	                queries = [['SELECT value FROM #{collection} WHERE key = ?', [id]], ['DELETE FROM #{collection} WHERE key = ?', [id]]];
+	                _context4.next = 3;
+	                return this.openTransaction(collection, queries, null, true);
+
+	              case 3:
+	                response = _context4.sent;
+	                entities = response[0].result;
+	                count = response[1].rowCount;
+
+	                count = !!count ? count : entities.length;
+
+	                if (!(count === 0)) {
+	                  _context4.next = 9;
+	                  break;
+	                }
+
+	                throw new _errors.NotFoundError('An entity with _id = ' + id + ' was not found in the ' + collection + (' collection on the ' + this.name + ' WebSQL database.'));
+
+	              case 9:
+	                return _context4.abrupt('return', entities[0]);
+
+	              case 10:
+	              case 'end':
+	                return _context4.stop();
+	            }
+	          }
+	        }, _callee4, this);
+	      }));
+
+	      function removeById(_x8, _x9) {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return removeById;
+	    }()
+	  }, {
+	    key: 'clear',
+	    value: function () {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee5() {
+	        var response, tables, queries;
+	        return _regeneratorRuntime2.default.wrap(function _callee5$(_context5) {
+	          while (1) {
+	            switch (_context5.prev = _context5.next) {
+	              case 0:
+	                _context5.next = 2;
+	                return this.openTransaction(masterCollectionName, 'SELECT name AS value FROM #{collection} WHERE type = ?', ['table'], false);
+
+	              case 2:
+	                response = _context5.sent;
+	                tables = response.result;
+
+	                // If there are no tables, return.
+
+	                if (!(tables.length === 0)) {
+	                  _context5.next = 6;
+	                  break;
+	                }
+
+	                return _context5.abrupt('return', null);
+
+	              case 6:
+
+	                // Drop all tables. Filter tables first to avoid attempting to delete
+	                // system tables (which will fail).
+	                queries = tables.filter(function (table) {
+	                  return (/^[a-zA-Z0-9\-]{1,128}/.test(table)
+	                  );
+	                }).map(function (table) {
+	                  return ['DROP TABLE IF EXISTS \'' + table + '\''];
+	                });
+	                _context5.next = 9;
+	                return this.openTransaction(masterCollectionName, queries, null, true);
+
+	              case 9:
+	                dbCache = {};
+	                return _context5.abrupt('return', null);
+
+	              case 11:
+	              case 'end':
+	                return _context5.stop();
+	            }
+	          }
+	        }, _callee5, this);
+	      }));
+
+	      function clear() {
+	        return ref.apply(this, arguments);
+	      }
+
+	      return clear;
+	    }()
+	  }], [{
+	    key: 'isSupported',
+	    value: function isSupported() {
+	      return !!global.openDatabase;
+	    }
+	  }]);
+
+	  return WebSQL;
+	}();
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), (function() { return this; }())))
+
+/***/ },
+/* 326 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.HttpMiddleware = undefined;
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	var _middleware = __webpack_require__(166);
+
+	var _es6Promise = __webpack_require__(168);
+
+	var _parseHeaders = __webpack_require__(327);
+
+	var _parseHeaders2 = _interopRequireDefault(_parseHeaders);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var HttpMiddleware = exports.HttpMiddleware = function (_KinveyMiddleware) {
+	  _inherits(HttpMiddleware, _KinveyMiddleware);
+
+	  function HttpMiddleware() {
+	    var name = arguments.length <= 0 || arguments[0] === undefined ? 'Kinvey HTML5 Http Middleware' : arguments[0];
+
+	    _classCallCheck(this, HttpMiddleware);
+
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(HttpMiddleware).call(this, name));
+	  }
+
+	  _createClass(HttpMiddleware, [{
+	    key: 'handle',
+	    value: function handle(request) {
+	      return _get(Object.getPrototypeOf(HttpMiddleware.prototype), 'handle', this).call(this, request).then(function () {
+	        var promise = new _es6Promise.Promise(function (resolve, reject) {
+	          var url = request.url;
+	          var method = request.method;
+	          var headers = request.headers;
+	          var body = request.body;
+
+	          // Create request
+
+	          var xhr = new XMLHttpRequest();
+	          xhr.open(method, url);
+	          // xhr.responseType = request.responseType;
+
+	          // Append request headers
+	          var names = Object.keys(headers.toJSON());
+	          var _iteratorNormalCompletion = true;
+	          var _didIteratorError = false;
+	          var _iteratorError = undefined;
+
+	          try {
+	            for (var _iterator = names[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	              var name = _step.value;
+
+	              xhr.setRequestHeader(name, headers.get(name));
+	            }
+	          } catch (err) {
+	            _didIteratorError = true;
+	            _iteratorError = err;
+	          } finally {
+	            try {
+	              if (!_iteratorNormalCompletion && _iterator.return) {
+	                _iterator.return();
+	              }
+	            } finally {
+	              if (_didIteratorError) {
+	                throw _iteratorError;
+	              }
+	            }
+	          }
+
+	          xhr.onload = xhr.ontimeout = xhr.onabort = xhr.onerror = function () {
+	            // Extract status code
+	            var statusCode = xhr.status;
+
+	            // Extract the response
+	            var responseData = xhr.response || null;
+	            if (xhr.response) {
+	              responseData = xhr.responseText || null;
+	            }
+
+	            // Set the response for the request
+	            request.response = {
+	              statusCode: statusCode,
+	              headers: (0, _parseHeaders2.default)(xhr.getAllResponseHeaders()),
+	              data: responseData
+	            };
+
+	            // Success
+	            if (statusCode >= 200 && statusCode < 300 || statusCode === 304) {
+	              return resolve(request);
+	            }
+
+	            // Error
+	            return reject(request);
+	          };
+
+	          // Send xhr
+	          xhr.send(body);
+	        });
+	        return promise;
+	      });
+	    }
+	  }]);
+
+	  return HttpMiddleware;
+	}(_middleware.KinveyMiddleware);
+
+/***/ },
+/* 327 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var trim = __webpack_require__(328)
+	  , forEach = __webpack_require__(329)
+	  , isArray = function(arg) {
+	      return Object.prototype.toString.call(arg) === '[object Array]';
+	    }
+
+	module.exports = function (headers) {
+	  if (!headers)
+	    return {}
+
+	  var result = {}
+
+	  forEach(
+	      trim(headers).split('\n')
+	    , function (row) {
+	        var index = row.indexOf(':')
+	          , key = trim(row.slice(0, index)).toLowerCase()
+	          , value = trim(row.slice(index + 1))
+
+	        if (typeof(result[key]) === 'undefined') {
+	          result[key] = value
+	        } else if (isArray(result[key])) {
+	          result[key].push(value)
+	        } else {
+	          result[key] = [ result[key], value ]
+	        }
+	      }
+	  )
+
+	  return result
+	}
+
+/***/ },
+/* 328 */
+/***/ function(module, exports) {
+
+	
+	exports = module.exports = trim;
+
+	function trim(str){
+	  return str.replace(/^\s*|\s*$/g, '');
+	}
+
+	exports.left = function(str){
+	  return str.replace(/^\s*/, '');
+	};
+
+	exports.right = function(str){
+	  return str.replace(/\s*$/, '');
+	};
+
+
+/***/ },
+/* 329 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var isFunction = __webpack_require__(330)
+
+	module.exports = forEach
+
+	var toString = Object.prototype.toString
+	var hasOwnProperty = Object.prototype.hasOwnProperty
+
+	function forEach(list, iterator, context) {
+	    if (!isFunction(iterator)) {
+	        throw new TypeError('iterator must be a function')
+	    }
+
+	    if (arguments.length < 3) {
+	        context = this
+	    }
+	    
+	    if (toString.call(list) === '[object Array]')
+	        forEachArray(list, iterator, context)
+	    else if (typeof list === 'string')
+	        forEachString(list, iterator, context)
+	    else
+	        forEachObject(list, iterator, context)
+	}
+
+	function forEachArray(array, iterator, context) {
+	    for (var i = 0, len = array.length; i < len; i++) {
+	        if (hasOwnProperty.call(array, i)) {
+	            iterator.call(context, array[i], i, array)
+	        }
+	    }
+	}
+
+	function forEachString(string, iterator, context) {
+	    for (var i = 0, len = string.length; i < len; i++) {
+	        // no such thing as a sparse string.
+	        iterator.call(context, string.charAt(i), i, string)
+	    }
+	}
+
+	function forEachObject(object, iterator, context) {
+	    for (var k in object) {
+	        if (hasOwnProperty.call(object, k)) {
+	            iterator.call(context, object[k], k, object)
+	        }
+	    }
+	}
+
+
+/***/ },
+/* 330 */
+/***/ function(module, exports) {
+
+	module.exports = isFunction
+
+	var toString = Object.prototype.toString
+
+	function isFunction (fn) {
+	  var string = toString.call(fn)
+	  return string === '[object Function]' ||
+	    (typeof fn === 'function' && string !== '[object RegExp]') ||
+	    (typeof window !== 'undefined' &&
+	     // IE8 and below
+	     (fn === window.setTimeout ||
+	      fn === window.alert ||
+	      fn === window.confirm ||
+	      fn === window.prompt))
+	};
+
+
+/***/ },
+/* 331 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {'use strict';
@@ -35962,11 +37804,15 @@ var Kinvey =
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _events = __webpack_require__(312);
+	var _events = __webpack_require__(283);
 
-	var _device = __webpack_require__(310);
+	var _device = __webpack_require__(281);
 
-	var _bind = __webpack_require__(313);
+	var _regeneratorRuntime = __webpack_require__(2);
+
+	var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
+
+	var _bind = __webpack_require__(284);
 
 	var _bind2 = _interopRequireDefault(_bind);
 
@@ -35978,7 +37824,8 @@ var Kinvey =
 
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } // eslint-disable-line no-unused-vars
+
 
 	var PhoneGapPopup = exports.PhoneGapPopup = function (_EventEmitter) {
 	  _inherits(PhoneGapPopup, _EventEmitter);
@@ -35996,34 +37843,20 @@ var Kinvey =
 	      loadErrorCallback: (0, _bind2.default)(_this.loadErrorCallback, _this),
 	      exitCallback: (0, _bind2.default)(_this.exitCallback, _this)
 	    };
-
-	    // Listen fro the deviceready event
-	    if (_device.PhoneGapDevice.isPhoneGap()) {
-	      _this.deviceReady = new Promise(function (resolve) {
-	        var onDeviceReady = (0, _bind2.default)(function () {
-	          document.removeEventListener('deviceready', onDeviceReady);
-	          resolve();
-	        }, _this);
-
-	        document.addEventListener('deviceready', onDeviceReady, false);
-	      });
-	    } else {
-	      _this.deviceReady = Promise.resolve();
-	    }
 	    return _this;
 	  }
 
 	  _createClass(PhoneGapPopup, [{
 	    key: 'open',
 	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee() {
 	        var url = arguments.length <= 0 || arguments[0] === undefined ? '/' : arguments[0];
-	        return regeneratorRuntime.wrap(function _callee$(_context) {
+	        return _regeneratorRuntime2.default.wrap(function _callee$(_context) {
 	          while (1) {
 	            switch (_context.prev = _context.next) {
 	              case 0:
 	                _context.next = 2;
-	                return this.deviceReady;
+	                return _device.Device.ready();
 
 	              case 2:
 	                if (!(global.cordova && !global.cordova.InAppBrowser)) {
@@ -36075,8 +37908,8 @@ var Kinvey =
 	  }, {
 	    key: 'close',
 	    value: function () {
-	      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee2() {
-	        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+	      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee2() {
+	        return _regeneratorRuntime2.default.wrap(function _callee2$(_context2) {
 	          while (1) {
 	            switch (_context2.prev = _context2.next) {
 	              case 0:
@@ -36120,7 +37953,7 @@ var Kinvey =
 	    value: function exitCallback() {
 	      clearInterval(this.interval);
 
-	      if (_device.PhoneGapDevice.isPhoneGap()) {
+	      if (_device.Device.isPhoneGap()) {
 	        this.popup.removeEventListener('loadstart', this.eventListeners.loadStopCallback);
 	        this.popup.removeEventListener('loadstop', this.eventListeners.loadStopCallback);
 	        this.popup.removeEventListener('loaderror', this.eventListeners.loadErrorCallback);

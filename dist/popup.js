@@ -11,6 +11,10 @@ var _events = require('events');
 
 var _device = require('./device');
 
+var _regeneratorRuntime = require('regenerator-runtime');
+
+var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
+
 var _bind = require('lodash/bind');
 
 var _bind2 = _interopRequireDefault(_bind);
@@ -23,7 +27,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } // eslint-disable-line no-unused-vars
+
 
 var PhoneGapPopup = exports.PhoneGapPopup = function (_EventEmitter) {
   _inherits(PhoneGapPopup, _EventEmitter);
@@ -41,34 +46,20 @@ var PhoneGapPopup = exports.PhoneGapPopup = function (_EventEmitter) {
       loadErrorCallback: (0, _bind2.default)(_this.loadErrorCallback, _this),
       exitCallback: (0, _bind2.default)(_this.exitCallback, _this)
     };
-
-    // Listen fro the deviceready event
-    if (_device.PhoneGapDevice.isPhoneGap()) {
-      _this.deviceReady = new Promise(function (resolve) {
-        var onDeviceReady = (0, _bind2.default)(function () {
-          document.removeEventListener('deviceready', onDeviceReady);
-          resolve();
-        }, _this);
-
-        document.addEventListener('deviceready', onDeviceReady, false);
-      });
-    } else {
-      _this.deviceReady = Promise.resolve();
-    }
     return _this;
   }
 
   _createClass(PhoneGapPopup, [{
     key: 'open',
     value: function () {
-      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
+      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee() {
         var url = arguments.length <= 0 || arguments[0] === undefined ? '/' : arguments[0];
-        return regeneratorRuntime.wrap(function _callee$(_context) {
+        return _regeneratorRuntime2.default.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
                 _context.next = 2;
-                return this.deviceReady;
+                return _device.Device.ready();
 
               case 2:
                 if (!(global.cordova && !global.cordova.InAppBrowser)) {
@@ -120,8 +111,8 @@ var PhoneGapPopup = exports.PhoneGapPopup = function (_EventEmitter) {
   }, {
     key: 'close',
     value: function () {
-      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee2() {
-        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee2() {
+        return _regeneratorRuntime2.default.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
@@ -165,7 +156,7 @@ var PhoneGapPopup = exports.PhoneGapPopup = function (_EventEmitter) {
     value: function exitCallback() {
       clearInterval(this.interval);
 
-      if (_device.PhoneGapDevice.isPhoneGap()) {
+      if (_device.Device.isPhoneGap()) {
         this.popup.removeEventListener('loadstart', this.eventListeners.loadStopCallback);
         this.popup.removeEventListener('loadstop', this.eventListeners.loadStopCallback);
         this.popup.removeEventListener('loaderror', this.eventListeners.loadErrorCallback);

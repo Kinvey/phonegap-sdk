@@ -11,7 +11,7 @@
   "contributors": [
     "Thomas Conner <thomas@kinvey.com>"
   ],
-  "main": "./es5/index.js",
+  "main": "./dist/index.js",
   "repository": {
     "type": "git",
     "url": "git@github.com:Kinvey/phonegap-sdk"
@@ -22,13 +22,20 @@
     "test:jenkins": "istanbul cover _mocha -- --reporter tap --compilers js:babel-core/register -r babel-polyfill -s 100 --recursive test > test.tap && istanbul report clover"
   },
   "dependencies": {
-    "babel-regenerator-runtime": "^6.5.0",
-    "kinvey-javascript-sdk-core": "*",
+    "es6-promise": "^3.2.1",
+    "kinvey-html5-sdk": "../../HTML5/SDK",
+    "kinvey-javascript-sdk-core": "../../Core/SDK",
     "lodash": "^4.0.0",
-    "parse-headers": "^2.0.0"
+    "parse-headers": "^2.0.0",
+    "regenerator-runtime": "^0.9.5"
   },
   "peerDependencies": {
-    "kinvey-javascript-sdk-core": "*"
+    "es6-promise": "^3.2.1",
+    "kinvey-html5-sdk": "../../HTML5/SDK",
+    "kinvey-javascript-sdk-core": "../../Core/SDK",
+    "lodash": "^4.0.0",
+    "parse-headers": "^2.0.0",
+    "regenerator-runtime": "^0.9.5"
   },
   "devDependencies": {
     "babel-core": "^6.9.0",
