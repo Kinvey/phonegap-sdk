@@ -21,6 +21,8 @@ var _network = require('kinvey-javascript-sdk-core/dist/requests/network');
 
 var _client = require('kinvey-javascript-sdk-core/dist/client');
 
+var _es6Promise = require('es6-promise');
+
 var _url = require('url');
 
 var _url2 = _interopRequireDefault(_url);
@@ -100,7 +102,7 @@ var Push = exports.Push = function (_EventEmitter) {
 
       return _device.Device.ready().then(function () {
         if (!_this2.isSupported()) {
-          return Promise.reject(new _errors.KinveyError('Kinvey currently only supports ' + 'push notifications on iOS and Android platforms.'));
+          return _es6Promise.Promise.reject(new _errors.KinveyError('Kinvey currently only supports ' + 'push notifications on iOS and Android platforms.'));
         }
 
         if (typeof global.PushNotification === 'undefined') {
@@ -111,7 +113,7 @@ var Push = exports.Push = function (_EventEmitter) {
           return null;
         });
       }).then(function () {
-        var promise = new Promise(function (resolve, reject) {
+        var promise = new _es6Promise.Promise(function (resolve, reject) {
           _this2.phonegapPush = global.PushNotification.init(options);
           _this2.phonegapPush.on(notificationEvent, notificationEventListener);
 
@@ -168,10 +170,10 @@ var Push = exports.Push = function (_EventEmitter) {
 
       return _device.Device.ready().then(function () {
         if (!_this3.isSupported()) {
-          return Promise.reject(new _errors.KinveyError('Kinvey currently only supports ' + 'push notifications on iOS and Android platforms.'));
+          return _es6Promise.Promise.reject(new _errors.KinveyError('Kinvey currently only supports ' + 'push notifications on iOS and Android platforms.'));
         }
 
-        var promise = new Promise(function (resolve, reject) {
+        var promise = new _es6Promise.Promise(function (resolve, reject) {
           if (_this3.phonegapPush) {
             _this3.phonegapPush.off(notificationEvent, notificationEventListener);
             _this3.phonegapPush.unregister(function () {
@@ -186,7 +188,7 @@ var Push = exports.Push = function (_EventEmitter) {
         });
 
         promise = promise.then(function () {
-          return Promise.resolve(storage.getItem(deviceIdCollectionName));
+          return _es6Promise.Promise.resolve(storage.getItem(deviceIdCollectionName));
         }).then(function (deviceId) {
           if (!deviceId) {
             throw new _errors.KinveyError('This device has not been registered for push notifications.');
