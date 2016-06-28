@@ -1,4 +1,4 @@
-import { PhoneGapDevice } from '../src/device';
+import { Device } from '../src/device';
 import packageJSON from '../package.json';
 import jsdom from 'mocha-jsdom';
 import chai from 'chai';
@@ -11,7 +11,7 @@ describe('Device', function () {
     });
 
     it('should return true if the document.URL property does not contain http:// or https://', function() {
-      expect(PhoneGapDevice.isPhoneGap()).to.be.true;
+      expect(Device.isPhoneGap()).to.be.true;
     });
   });
 
@@ -21,13 +21,13 @@ describe('Device', function () {
     });
 
     it('should return an object with platform information', function() {
-      const json = PhoneGapDevice.toJSON();
+      const json = Device.toJSON();
       const platform = json.platform;
       expect(platform).to.deep.equal({ name: 'phonegap' });
     });
 
     it('should return an object with kinveySDK information', function() {
-      const json = PhoneGapDevice.toJSON();
+      const json = Device.toJSON();
       const kinveySDK = json.kinveySDK;
       expect(kinveySDK).to.deep.equal({
         name: packageJSON.name,
@@ -55,13 +55,13 @@ describe('Device', function () {
     });
 
     it('should return an object with device information', function() {
-      const json = PhoneGapDevice.toJSON();
+      const json = Device.toJSON();
       const device = json.device;
       expect(device).to.deep.equal({ model: global.device.model });
     });
 
     it('should return an object with platform information', function() {
-      const json = PhoneGapDevice.toJSON();
+      const json = Device.toJSON();
       const platform = json.platform;
       expect(platform).to.deep.equal({
         name: 'phonegap',
@@ -70,46 +70,11 @@ describe('Device', function () {
     });
 
     it('should return an object with os information', function() {
-      const json = PhoneGapDevice.toJSON();
+      const json = Device.toJSON();
       const os = json.os;
       expect(os).to.deep.equal({
         name: global.device.platform,
         version: global.device.version
-      });
-    });
-  });
-
-  describe('toJSON() in a web browser', function() {
-    jsdom({
-      url: 'http://test/src/index.html'
-    });
-
-    it('should return an object with device information', function() {
-      const json = PhoneGapDevice.toJSON();
-      const device = json.device;
-      expect(device).to.deep.equal({ model: global.navigator.userAgent });
-    });
-
-    it('should return an object with os information', function() {
-      const userAgent = global.navigator.userAgent.toLowerCase();
-      const rChrome = /(chrome)\/([\w]+)/;
-      const rFirefox = /(firefox)\/([\w.]+)/;
-      const rIE = /(msie) ([\w.]+)/i;
-      const rOpera = /(opera)(?:.*version)?[ \/]([\w.]+)/;
-      const rSafari = /(safari)\/([\w.]+)/;
-      const rAppleWebkit = /(applewebkit)\/([\w.]+)/;
-      const browser = rChrome.exec(userAgent) ||
-                      rFirefox.exec(userAgent) ||
-                      rIE.exec(userAgent) ||
-                      rOpera.exec(userAgent) ||
-                      rSafari.exec(userAgent) ||
-                      rAppleWebkit.exec(userAgent) ||
-                      [];
-      const json = PhoneGapDevice.toJSON();
-      const os = json.os;
-      expect(os).to.deep.equal({
-        name: browser[1],
-        version: browser[2]
       });
     });
   });
