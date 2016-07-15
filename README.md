@@ -3,6 +3,62 @@
 
 This node and bower module makes it very easy to connect your Cordova/Phonegap app with Kinvey.
 
+## How to use
+
+### 1. Sign up for Kinvey
+To use the sdk, sign up for Kinvey if you have not already done so. Go to the [sign up](https://console.kinvey.com/#signup) page, and follow the steps provided.
+
+### 2. Install the SDK
+You can install the module using npm:
+
+```bash
+npm install kinvey-phonegap-sdk --save
+```
+
+or
+
+```bash
+bower install kinvey-phonegap-sdk --save
+```
+
+### 3. Configure the SDK
+Now, the sdk is available for use in your project.
+
+If you installed the sdk with npm, import the sdk in your code using `require`.
+
+```javascript
+var Kinvey = require('kinvey-phonegap-sdk');
+```
+
+If you installed the sdk with bower, add a script tag to your main html file.
+
+```html
+<script src="bower_components/kinvey-phonegap-sdk/dist/kinvey-phonegap-sdk.min.js"></script>
+```
+
+Next, use `Kinvey.init` to configure your app:
+
+```javascript
+Kinvey.init({
+  appKey: '<appKey>',
+  appSecret: '<appSecret>'
+});
+```
+
+### 4. Verify Set Up
+You can use the following snippet to verify the app credentials were entered correctly. This function will contact the backend and verify that the sdk can communicate with your app.
+
+```javascript
+Kinvey.ping().then(function(response) {
+  console.log('Kinvey Ping Success. Kinvey Service is alive, version: ' + response.version + ', response: ' + response.kinvey);
+}).catch(function(error) {
+  console.log('Kinvey Ping Failed. Response: ' + error.description);
+});
+```
+
+## What’s next?
+You are now ready to start building your awesome apps! Next we recommend diving into the [User guide](http://devcenter.kinvey.com/phonegap-v3.0/guides/users) or [Data store guide](http://devcenter.kinvey.com/phonegap-v3.0/guides/datastore) to learn more about our service, or explore the [sample apps](http://devcenter.kinvey.com/phonegap-v3.0/samples) to go straight to working projects.
+
 ## Building
 The simplest way to build the sdk is by running `gulp`. More advanced tasks are available.
 
@@ -35,63 +91,6 @@ The workflow for releasing a new version of the sdk is as follows:
 7. Make sure all changes are committed on the master branch and push.
 8. Checkout the develop branch and merge the master branch.
 9. __Optional:__ Update Dev Center and Sample apps.
-
-## How to use
-
-### 1. Sign up for Kinvey
-To use the library, sign up for Kinvey if you have not already done so. Go to the [sign up](https://console.kinvey.com/#signup) page, and follow the steps provided.
-
-### 2. Install the library
-You can install the module using npm:
-
-```bash
-npm install kinvey-phonegap-sdk --save
-```
-
-or
-
-```bash
-bower install kinvey-phonegap-sdk --save
-```
-
-### 3. Configure the library
-Now, the library is available for use in your project.
-
-If you installed the library with npm, import the library in your code using `require`.
-
-```javascript
-var Kinvey = require('kinvey-phonegap-sdk');
-```
-
-If you installed the library with bower, add a script tag to your main html file.
-
-```html
-<script src="bower_components/kinvey-phonegap-sdk/dist/kinvey-phonegap-sdk.min.js"></script>
-```
-
-Next, use `Kinvey.init` to configure your app:
-
-```javascript
-Kinvey.init({
-    appKey: '<appKey>',
-    appSecret: '<appSecret>'
-});
-```
-
-
-### 4. Verify Set Up
-You can use the following snippet to verify the app credentials were entered correctly. This function will contact the backend and verify that the library can communicate with your app.
-
-```javascript
-Kinvey.ping().then(function(response) {
-  console.log('Kinvey Ping Success. Kinvey Service is alive, version: ' + response.version + ', response: ' + response.kinvey);
-}).catch(function(error) {
-  console.log('Kinvey Ping Failed. Response: ' + error.description);
-});
-```
-
-## What’s next?
-You are now ready to start building your awesome apps! Next we recommend diving into the [User guide](http://devcenter.kinvey.com/phonegap-v3.0/guides/users) or [Data store guide](http://devcenter.kinvey.com/phonegap-v3.0/guides/datastore) to learn more about our service, or explore the [sample apps](http://devcenter.kinvey.com/phonegap-v3.0/samples) to go straight to working projects.
 
 ## License
 
