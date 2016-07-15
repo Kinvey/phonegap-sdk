@@ -1,6 +1,6 @@
 {
   "name": "kinvey-phonegap-sdk",
-  "version": "3.0.0-beta.32",
+  "version": "3.0.0",
   "description": "Kinvey JavaScript SDK for PhoneGap/Cordova applications.",
   "homepage": "http://www.kinvey.com",
   "bugs": {
@@ -23,14 +23,14 @@
   },
   "dependencies": {
     "es6-promise": "^3.2.1",
-    "kinvey-html5-sdk": "3.0.0-beta.22",
+    "kinvey-html5-sdk": "^3.0.0",
     "kinvey-javascript-sdk-core": "3.0.0-beta.30",
     "lodash": "^4.0.0",
     "parse-headers": "^2.0.0",
     "regenerator-runtime": "^0.9.5"
   },
   "peerDependencies": {
-    "kinvey-html5-sdk": "3.0.0-beta.22",
+    "kinvey-html5-sdk": "^3.0.0",
     "kinvey-javascript-sdk-core": "3.0.0-beta.30"
   },
   "devDependencies": {
@@ -85,5 +85,45 @@
     "JavaScript",
     "PhoneGap",
     "Cordova"
-  ]
+  ],
+  "babel": {
+    "presets": [
+      "es2015",
+      "stage-2"
+    ]
+  },
+  "eslintConfig": {
+    "extends": "airbnb",
+    "parser": "babel-eslint",
+    "rules": {
+      "comma-dangle": "off",
+      "func-names": "off",
+      "id-length": "off",
+      "max-len": [
+        "warn",
+        {
+          "code": 120,
+          "tabWidth": 2,
+          "ignoreComments": true,
+          "ignoreTrailingComments": true
+        }
+      ],
+      "no-console": "error",
+      "no-loop-func": "warn",
+      "no-param-reassign": "off",
+      "no-shadow": "off",
+      "no-underscore-dangle": "off",
+      "object-shorthand": [
+        "error",
+        "methods"
+      ],
+      "space-before-function-paren": "off"
+    },
+    "env": {
+      "browser": true,
+      "es6": true,
+      "mocha": true,
+      "node": true
+    }
+  }
 }
