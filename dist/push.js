@@ -228,6 +228,18 @@ var Push = exports.Push = function (_EventEmitter) {
     get: function get() {
       return '/' + pushNamespace + '/' + this.client.appKey;
     }
+  }, {
+    key: 'client',
+    get: function get() {
+      return this.pushClient;
+    },
+    set: function set(client) {
+      if (!client) {
+        throw new _errors.KinveyError('Kinvey.Push much have a client defined.');
+      }
+
+      this.pushClient = client;
+    }
   }]);
 
   return Push;

@@ -52,7 +52,7 @@ var Popup = exports.Popup = function (_EventEmitter) {
   _createClass(Popup, [{
     key: 'open',
     value: function () {
-      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee() {
+      var _ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee() {
         var url = arguments.length <= 0 || arguments[0] === undefined ? '/' : arguments[0];
         return _regeneratorRuntime2.default.wrap(function _callee$(_context) {
           while (1) {
@@ -103,7 +103,7 @@ var Popup = exports.Popup = function (_EventEmitter) {
       }));
 
       function open(_x) {
-        return ref.apply(this, arguments);
+        return _ref.apply(this, arguments);
       }
 
       return open;
@@ -111,7 +111,7 @@ var Popup = exports.Popup = function (_EventEmitter) {
   }, {
     key: 'close',
     value: function () {
-      var ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee2() {
+      var _ref2 = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee2() {
         return _regeneratorRuntime2.default.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
@@ -131,7 +131,7 @@ var Popup = exports.Popup = function (_EventEmitter) {
       }));
 
       function close() {
-        return ref.apply(this, arguments);
+        return _ref2.apply(this, arguments);
       }
 
       return close;
