@@ -56,7 +56,7 @@ gulp.task('bundle', ['build'], () => {
       entry: ['./index.js'],
       output: {
         filename: 'kinvey-phonegap-sdk.js',
-        libraryTarget: 'var',
+        libraryTarget: 'umd',
         library: 'Kinvey'
       },
       module: {
