@@ -15,7 +15,7 @@ var _errors = require('kinvey-javascript-sdk-core/dist/errors');
 
 var _log = require('kinvey-javascript-sdk-core/dist/log');
 
-var _webstorage = require('kinvey-html5-sdk/dist/webstorage');
+var _storage = require('kinvey-html5-sdk/dist/storage');
 
 var _indexeddb = require('kinvey-html5-sdk/dist/indexeddb');
 
@@ -66,15 +66,15 @@ var DB = exports.DB = function (_Html5DB) {
 
           break;
         case _cache.DBAdapter.LocalStorage:
-          if (_webstorage.LocalStorage.isSupported()) {
-            _this.adapter = new _webstorage.LocalStorage(name);
+          if (_storage.LocalStorage.isSupported()) {
+            _this.adapter = new _storage.LocalStorage(name);
             return false;
           }
 
           break;
         case _cache.DBAdapter.SessionStorage:
-          if (_webstorage.SessionStorage.isSupported()) {
-            _this.adapter = new _webstorage.SessionStorage(name);
+          if (_storage.SessionStorage.isSupported()) {
+            _this.adapter = new _storage.SessionStorage(name);
             return false;
           }
 
