@@ -1,5 +1,5 @@
 /**
- * kinvey-phonegap-sdk v3.0.2
+ * kinvey-phonegap-sdk v3.0.3
  * Kinvey JavaScript SDK for PhoneGap/Cordova applications.
  * http://www.kinvey.com
  *
@@ -36102,7 +36102,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = {
 		"name": "kinvey-phonegap-sdk",
-		"version": "3.0.2",
+		"version": "3.0.3",
 		"description": "Kinvey JavaScript SDK for PhoneGap/Cordova applications.",
 		"homepage": "http://www.kinvey.com",
 		"bugs": {
