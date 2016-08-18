@@ -13,7 +13,7 @@ var _cache = require('kinvey-html5-sdk/dist/cache');
 
 var _errors = require('kinvey-javascript-sdk-core/dist/errors');
 
-var _log = require('kinvey-javascript-sdk-core/dist/log');
+var _utils = require('kinvey-javascript-sdk-core/dist/utils');
 
 var _storage = require('kinvey-html5-sdk/dist/storage');
 
@@ -87,7 +87,7 @@ var DB = exports.DB = function (_Html5DB) {
 
           break;
         default:
-          _log.Log.warn('The ' + adapter + ' adapter is is not recognized.');
+          _utils.Log.warn('The ' + adapter + ' adapter is is not recognized.');
       }
 
       return true;

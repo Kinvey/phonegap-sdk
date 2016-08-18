@@ -47,12 +47,20 @@ var Device = exports.Device = function () {
   }, {
     key: 'isPhoneGap',
     value: function isPhoneGap() {
-      return document.URL.indexOf('http://') === -1 && document.URL.indexOf('https://') === -1;
+      if (typeof document !== 'undefined') {
+        return document.URL.indexOf('http://') === -1 && document.URL.indexOf('https://') === -1;
+      }
+
+      return false;
     }
   }, {
     key: 'isBrowser',
     value: function isBrowser() {
-      return document.URL.indexOf('http://') !== -1 || document.URL.indexOf('https://') !== -1;
+      if (typeof document !== 'undefined') {
+        return document.URL.indexOf('http://') !== -1 || document.URL.indexOf('https://') !== -1;
+      }
+
+      return false;
     }
   }, {
     key: 'isiOS',

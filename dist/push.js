@@ -13,11 +13,9 @@ var _errors = require('kinvey-javascript-sdk-core/dist/errors');
 
 var _events = require('events');
 
-var _request = require('kinvey-javascript-sdk-core/dist/requests/request');
+var _request = require('kinvey-javascript-sdk-core/dist/request');
 
-var _user = require('kinvey-javascript-sdk-core/dist/user');
-
-var _network = require('kinvey-javascript-sdk-core/dist/requests/network');
+var _entity = require('kinvey-javascript-sdk-core/dist/entity');
 
 var _client = require('kinvey-javascript-sdk-core/dist/client');
 
@@ -131,8 +129,8 @@ var Push = exports.Push = function (_EventEmitter) {
             throw new _errors.KinveyError('Unable to retrieve the device id to register this device for push notifications.');
           }
 
-          var user = _user.User.getActiveUser(_this2.client);
-          var request = new _network.NetworkRequest({
+          var user = _entity.User.getActiveUser(_this2.client);
+          var request = new _request.NetworkRequest({
             method: _request.RequestMethod.POST,
             url: _url2.default.format({
               protocol: _this2.client.protocol,
@@ -194,8 +192,8 @@ var Push = exports.Push = function (_EventEmitter) {
             throw new _errors.KinveyError('This device has not been registered for push notifications.');
           }
 
-          var user = _user.User.getActiveUser(_this3.client);
-          var request = new _network.NetworkRequest({
+          var user = _entity.User.getActiveUser(_this3.client);
+          var request = new _request.NetworkRequest({
             method: _request.RequestMethod.POST,
             url: _url2.default.format({
               protocol: _this3.client.protocol,
