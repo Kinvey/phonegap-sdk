@@ -1,5 +1,20 @@
-exports.config = {
+var path = require('path');
+var app = path.resolve(__dirname, '../app/platforms/ios/build/emulator/Kinvey PhoneGap SDK Test App.app');
 
+exports.config = {
+  // =====================
+  // Server Configurations
+  // =====================
+  // Host address of the running Selenium server. This information is usually obsolete as
+  // WebdriverIO automatically connects to localhost. Also if you are using one of the
+  // supported cloud services like Sauce Labs, Browserstack or Testing Bot you also don't
+  // need to define host and port information because WebdriverIO can figure that our
+  // according to your user and key information. However if you are using a private Selenium
+  // backend you should define the host address, port, and path here.
+  //
+  host: '127.0.0.1',
+  port: 4723,
+  path: '/wd/hub',
   //
   // ==================
   // Specify Test Files
@@ -10,6 +25,7 @@ exports.config = {
   // directory is where your package.json resides, so `wdio` will be called from there.
   //
   specs: [
+    // './test/e2e/test/setup.js',
     './test/e2e/test/**/*.test.js'
   ],
   // Patterns to exclude.
@@ -42,9 +58,15 @@ exports.config = {
     // maxInstances can get overwritten per capability. So if you have an in-house Selenium
     // grid with only 5 firefox instance available you can make sure that not more than
     // 5 instance gets started at a time.
-    maxInstances: 5,
+    // maxInstances: 5,
     //
-    browserName: 'chrome'
+    launchTimeout: 30000,
+    deviceName: 'iPhone 6s Plus',
+    platformName: 'iOS',
+    platformVersion: '9.3',
+    app: app,
+    nativeInstrumentsLib: true,
+    noReset: true
   }],
   //
   // ===================
@@ -68,7 +90,7 @@ exports.config = {
   //
   // Set a base URL in order to shorten url command calls. If your url parameter starts
   // with "/", then the base url gets prepended.
-  baseUrl: 'http://10.0.0.228:3000',
+  baseUrl: 'http://localhost:8000',
   //
   // Default timeout for all waitFor* commands.
   waitforTimeout: 10000,
@@ -120,7 +142,8 @@ exports.config = {
   // Options to be passed to Mocha.
   // See the full list at http://mochajs.org/
   mochaOpts: {
-    ui: 'bdd'
+    ui: 'bdd',
+    timeout: 3000000
   },
   //
   // =====
@@ -183,4 +206,7 @@ exports.config = {
   // possible to defer the end of the process using a promise.
   // onComplete: function(exitCode) {
   // }
-}
+};
+
+// Allow tests to be written in es6
+require('babel-core/register');

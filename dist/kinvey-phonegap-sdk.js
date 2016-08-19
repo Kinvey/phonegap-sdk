@@ -1676,10 +1676,11 @@ return /******/ (function(modules) { // webpackBootstrap
 		"_args": [
 			[
 				{
-					"name": "kinvey-javascript-sdk-core",
 					"raw": "kinvey-javascript-sdk-core@../../Core/SDK",
-					"rawSpec": "../../Core/SDK",
 					"scope": null,
+					"escapedName": "kinvey-javascript-sdk-core",
+					"name": "kinvey-javascript-sdk-core",
+					"rawSpec": "../../Core/SDK",
 					"spec": "/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/Core/SDK",
 					"type": "directory"
 				},
@@ -1693,10 +1694,11 @@ return /******/ (function(modules) { // webpackBootstrap
 		"_location": "/kinvey-javascript-sdk-core",
 		"_phantomChildren": {},
 		"_requested": {
-			"name": "kinvey-javascript-sdk-core",
 			"raw": "kinvey-javascript-sdk-core@../../Core/SDK",
-			"rawSpec": "../../Core/SDK",
 			"scope": null,
+			"escapedName": "kinvey-javascript-sdk-core",
+			"name": "kinvey-javascript-sdk-core",
+			"rawSpec": "../../Core/SDK",
 			"spec": "/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/Core/SDK",
 			"type": "directory"
 		},
@@ -1705,7 +1707,7 @@ return /******/ (function(modules) { // webpackBootstrap
 			"/kinvey-html5-sdk"
 		],
 		"_resolved": "file:../../Core/SDK",
-		"_shasum": "fec4584f69c8815e5162e53601947cfeb3950e56",
+		"_shasum": "63912be2ebdead12dc6cf670795a41f1af0c6dad",
 		"_shrinkwrap": null,
 		"_spec": "kinvey-javascript-sdk-core@../../Core/SDK",
 		"_where": "/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK",
@@ -1769,7 +1771,7 @@ return /******/ (function(modules) { // webpackBootstrap
 			"sinon-chai": "^2.8.0",
 			"yargs": "^4.7.1"
 		},
-		"gitHead": "76bda357c92a3411b10238da0fa3f2721cfa0ee5",
+		"gitHead": "7b79b8c6308df44a474e2e8cf5e8b952e47e6086",
 		"homepage": "https://github.com/Kinvey/javascript-sdk-core#readme",
 		"license": "Apache-2.0",
 		"main": "./dist/kinvey.js",
@@ -20828,9 +20830,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  }, {
 	    key: 'logout',
-	    value: function logout() {
+	    value: function logout(user, options) {
 	      var social = new this();
-	      return social.logout();
+	      return social.logout(user, options);
 	    }
 	  }, {
 	    key: 'identity',
@@ -26871,6 +26873,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _es6Promise = __webpack_require__(190);
 
+	var _regeneratorRuntime = __webpack_require__(165);
+
+	var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
+
 	var _path = __webpack_require__(236);
 
 	var _path2 = _interopRequireDefault(_path);
@@ -26885,14 +26891,18 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new _es6Promise.Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return _es6Promise.Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
+
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } // eslint-disable-line no-unused-vars
+
 
 	var authPathname = process.env.KINVEY_MIC_AUTH_PATHNAME || '/oauth/auth';
 	var tokenPathname = process.env.KINVEY_MIC_TOKEN_PATHNAME || '/oauth/token';
+	var invalidatePathname = process.env.KINVEY_MIC_INVALIDATE_PATHNAME || '/oauth/invalidate';
 
 	/**
 	 * Enum for Mobile Identity Connect authorization grants.
@@ -27142,6 +27152,51 @@ return /******/ (function(modules) { // webpackBootstrap
 	      });
 	      return promise;
 	    }
+	  }, {
+	    key: 'logout',
+	    value: function () {
+	      var _ref = _asyncToGenerator(_regeneratorRuntime2.default.mark(function _callee(user) {
+	        var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	        var request, response;
+	        return _regeneratorRuntime2.default.wrap(function _callee$(_context) {
+	          while (1) {
+	            switch (_context.prev = _context.next) {
+	              case 0:
+	                request = new _request.KinveyRequest({
+	                  method: _request.RequestMethod.GET,
+	                  headers: {
+	                    'Content-Type': 'application/x-www-form-urlencoded'
+	                  },
+	                  authType: _request.AuthType.App,
+	                  url: _url2.default.format({
+	                    protocol: this.client.micProtocol,
+	                    host: this.client.micHost,
+	                    pathname: invalidatePathname,
+	                    query: { user: user._id }
+	                  }),
+	                  properties: options.properties
+	                });
+	                _context.next = 3;
+	                return request.execute();
+
+	              case 3:
+	                response = _context.sent;
+	                return _context.abrupt('return', response.data);
+
+	              case 5:
+	              case 'end':
+	                return _context.stop();
+	            }
+	          }
+	        }, _callee, this);
+	      }));
+
+	      function logout(_x7, _x8) {
+	        return _ref.apply(this, arguments);
+	      }
+
+	      return logout;
+	    }()
 	  }, {
 	    key: 'identity',
 	    get: function get() {
@@ -32744,7 +32799,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }
 
 	                _context11.next = 4;
-	                return _social.Facebook.logout();
+	                return _social.Facebook.logout(this, options);
 
 	              case 4:
 	                _context11.next = 19;
@@ -32757,7 +32812,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }
 
 	                _context11.next = 9;
-	                return _social.Google.logout();
+	                return _social.Google.logout(this, options);
 
 	              case 9:
 	                _context11.next = 19;
@@ -32770,7 +32825,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }
 
 	                _context11.next = 14;
-	                return _social.LinkedIn.logout();
+	                return _social.LinkedIn.logout(this, options);
 
 	              case 14:
 	                _context11.next = 19;
@@ -32783,7 +32838,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }
 
 	                _context11.next = 19;
-	                return _social.MobileIdentityConnect.logout();
+	                return _social.MobileIdentityConnect.logout(this, options);
 
 	              case 19:
 
@@ -32881,7 +32936,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	              case 9:
 	                _context12.prev = 9;
-	                identities = Object.keys(this._socialIdentity);
+	                identities = Object.keys(this._socialIdentity || {});
 	                promises = identities.map(function (identity) {
 	                  return _this.disconnectIdentity(identity, options);
 	                });
@@ -36084,8 +36139,7 @@ return /******/ (function(modules) { // webpackBootstrap
 			"test:unit": "mocha --compilers js:babel-core/register -r babel-polyfill -s 100 --recursive test/unit/index test/unit",
 			"test:unit:watch": "mocha -w --compilers js:babel-core/register -r babel-polyfill -s 100 --recursive test/unit/index test/unit",
 			"test:jenkins": "istanbul cover _mocha -- --reporter tap --compilers js:babel-core/register -r babel-polyfill -s 100 --recursive test > test.tap && istanbul report clover",
-			"e2e:app": "node test/e2e",
-			"test:e2e": "wdio ./test/e2e/test/wdio.conf.js"
+			"test:e2e": "gulp bundle && wdio ./test/e2e/test/wdio.conf.js"
 		},
 		"dependencies": {
 			"es6-promise": "^3.2.1",
@@ -36102,7 +36156,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		"devDependencies": {
 			"babel-core": "^6.9.0",
 			"babel-eslint": "^6.0.0",
-			"babel-polyfill": "^6.9.0",
+			"babel-polyfill": "^6.13.0",
 			"babel-preset-es2015": "^6.9.0",
 			"babel-preset-stage-2": "^6.0.15",
 			"babel-register": "^6.9.0",
@@ -36114,6 +36168,7 @@ return /******/ (function(modules) { // webpackBootstrap
 			"eslint-plugin-react": "^5.1.1",
 			"expect": "^1.20.2",
 			"express": "^4.14.0",
+			"fs-extra": "^0.30.0",
 			"gulp": "^3.9.0",
 			"gulp-babel": "^6.1.2",
 			"gulp-banner": "^0.1.3",
@@ -36135,8 +36190,10 @@ return /******/ (function(modules) { // webpackBootstrap
 			"mocha": "^2.5.3",
 			"mocha-jsdom": "^1.1.0",
 			"nock": "^8.0.0",
+			"selenium-webdriver": "^3.0.0-beta-2",
 			"vinyl-buffer": "^1.0.0",
 			"vinyl-source-stream": "^1.1.0",
+			"wd": "^0.4.0",
 			"wdio-dot-reporter": "0.0.6",
 			"wdio-mocha-framework": "^0.4.0",
 			"wdio-spec-reporter": "0.0.3",
@@ -39956,7 +40013,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // xhr.responseType = request.responseType;
 
 	        // Append request headers
-	        var names = Object.keys(headers.toJSON());
+	        var names = Object.keys(headers);
 	        var _iteratorNormalCompletion = true;
 	        var _didIteratorError = false;
 	        var _iteratorError = undefined;
@@ -39965,7 +40022,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          for (var _iterator = names[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
 	            var name = _step.value;
 
-	            xhr.setRequestHeader(name, headers.get(name));
+	            xhr.setRequestHeader(name, headers[name]);
 	          }
 	        } catch (err) {
 	          _didIteratorError = true;
