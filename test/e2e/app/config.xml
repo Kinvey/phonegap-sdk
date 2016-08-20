@@ -24,6 +24,7 @@
         <allow-intent href="itms-apps:*" />
     </platform>
     <hook src="scripts/copySDK.js" type="before_emulate" />
+    <hook src="scripts/copySDK.js" type="before_build" />
     <engine name="ios" spec="~4.2.0" />
     <engine name="android" spec="~5.2.1" />
 </widget>

@@ -36135,11 +36135,16 @@ return /******/ (function(modules) { // webpackBootstrap
 			"url": "git@github.com:Kinvey/phonegap-sdk"
 		},
 		"scripts": {
+			"build": "gulp build",
+			"bundle": "gulp bundle",
+			"clean": "gulp clean",
+			"lint": "gulp lint",
 			"test": "npm run test:unit",
 			"test:unit": "mocha --compilers js:babel-core/register -r babel-polyfill -s 100 --recursive test/unit/index test/unit",
 			"test:unit:watch": "mocha -w --compilers js:babel-core/register -r babel-polyfill -s 100 --recursive test/unit/index test/unit",
-			"test:jenkins": "istanbul cover _mocha -- --reporter tap --compilers js:babel-core/register -r babel-polyfill -s 100 --recursive test > test.tap && istanbul report clover",
-			"test:e2e": "gulp bundle && wdio ./test/e2e/test/wdio.conf.js"
+			"test:jenkins": "npm run test:unit:jenkins",
+			"test:unit:jenkins": "istanbul cover _mocha -- --reporter tap --compilers js:babel-core/register -r babel-polyfill -s 100 --recursive test/unit/index test/unit > test.tap && istanbul report clover",
+			"test:e2e": "wdio ./test/e2e/test/wdio.conf.js"
 		},
 		"dependencies": {
 			"es6-promise": "^3.2.1",

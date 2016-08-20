@@ -24,7 +24,13 @@ describe('User Login', function() {
     // Get the active user
     const notification = browser.element('#notify');
     notification.waitForExist(5000);
-    const result = browser.execute('localStorage.getItem(\'kid_HkTD2CJckinvey_user\')');
+    const result = browser.execute(function() {
+      try {
+        return JSON.parse(this.localStorage.getItem('kid_HkTD2CJckinvey_user'));
+      } catch (error) {
+        return null;
+      }
+    });
     expect(result.value).toEqual(null);
   });
 
@@ -44,7 +50,13 @@ describe('User Login', function() {
     // Get the active user
     const notification = browser.element('#notify');
     notification.waitForExist(5000);
-    const result = browser.execute('localStorage.getItem(\'kid_HkTD2CJckinvey_user\')');
+    const result = browser.execute(function() {
+      try {
+        return JSON.parse(this.localStorage.getItem('kid_HkTD2CJckinvey_user'));
+      } catch (error) {
+        return null;
+      }
+    });
     expect(result.value).toEqual(null);
   });
 
@@ -64,9 +76,14 @@ describe('User Login', function() {
     // Get the active user
     const notification = browser.element('#notify');
     notification.waitForExist(5000);
-    const result = browser.execute('localStorage.getItem(\'kid_HkTD2CJckinvey_user\')');
-    console.log(result);
-    // expect(result.value.username).toEqual(username);
-    // expect(result.value._kmd).toIncludeKey('authtoken');
+    const result = browser.execute(function() {
+      try {
+        return JSON.parse(this.localStorage.getItem('kid_HkTD2CJckinvey_user'));
+      } catch (error) {
+        return null;
+      }
+    });
+    expect(result.value.username).toEqual(username);
+    expect(result.value._kmd).toIncludeKey('authtoken');
   });
 });

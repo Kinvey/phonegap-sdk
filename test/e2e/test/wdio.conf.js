@@ -12,7 +12,7 @@ exports.config = {
   // according to your user and key information. However if you are using a private Selenium
   // backend you should define the host address, port, and path here.
   //
-  host: '127.0.0.1',
+  host: '0.0.0.0',
   port: 4723,
   path: '/wd/hub',
   //
@@ -61,12 +61,11 @@ exports.config = {
     // maxInstances: 5,
     //
     launchTimeout: 30000,
-    deviceName: 'iPhone 6s Plus',
+    deviceName: 'iPhone 6',
     platformName: 'iOS',
-    platformVersion: '9.3',
     app: app,
     nativeInstrumentsLib: true,
-    noReset: true
+    webStorageEnabled: true
   }],
   //
   // ===================
@@ -80,13 +79,13 @@ exports.config = {
   sync: true,
   //
   // Level of logging verbosity: silent | verbose | command | data | result | error
-  logLevel: 'silent',
+  logLevel: 'error',
   //
   // Enables colors for log output.
   coloredLogs: true,
   //
   // Saves a screenshot to a given path if a command fails.
-  screenshotPath: './test/e2e/test/errorShots/',
+  screenshotPath: './test/e2e/test/screenshots/',
   //
   // Set a base URL in order to shorten url command calls. If your url parameter starts
   // with "/", then the base url gets prepended.

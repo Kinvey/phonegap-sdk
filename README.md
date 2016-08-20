@@ -60,14 +60,14 @@ Kinvey.ping().then(function(response) {
 You are now ready to start building your awesome apps! Next we recommend diving into the [User guide](http://devcenter.kinvey.com/phonegap-v3.0/guides/users) or [Data store guide](http://devcenter.kinvey.com/phonegap-v3.0/guides/datastore) to learn more about our service, or explore the [sample apps](http://devcenter.kinvey.com/phonegap-v3.0/samples) to go straight to working projects.
 
 ## Building
-The simplest way to build the sdk is by running `gulp`. More advanced tasks are available.
+The simplest way to build the sdk is by running `npm run bundle`. More advanced tasks are available.
 
-* `gulp clean`: remove files created by the build process
-* `gulp lint`: lint the src files
-* `gulp bump`: bump the pacakge version
-* `gulp build`: build the sdk
-* `gulp bundle`: bundle the sdk for dist
-* `gulp upload`: upload dist files to AWS S3
+_Note: Before running any tasks you will need to run `npm install` to install any dependencies required._
+
+* `npm run clean`: remove files created by the build process
+* `npm run lint`: lint the src files
+* `npm run build`: build the sdk
+* `npm run bundle`: bundle the sdk for dist
 
 ### Flags
 The following flags are available when running `gulp bump`:
@@ -76,34 +76,29 @@ The following flags are available when running `gulp bump`:
 * `--version <version>`: Sets the package version to the provided version.
 
 ## Testing
+The Kinvey-PhoneGap-SDK is setup to run unit and end to end tests.
 
-You can run the tests using `npm test`.
+_Note: Before running any tests you will need to run `npm install` to install any dependencies required._
 
-## Releasing
-The workflow for releasing a new version of the sdk is as follows:
+### Unit Tests
+The steps for running the unit tests is as follows:
 
-1. Commit all changes on the develop branch.
-2. Checkout the master branch and merge the develop branch.
-3. Update the [Changelog](CHANGELOG.md).
-4. Run `gulp bump --type <type>` replacing `<type>` with major, minor, patch, or prerelease. See [Flags](#Flags) above.
-5. Run `gulp bundle` and commit changes.
-6. Run `gulp tag`.
-7. Make sure all changes are committed on the master branch and push.
-8. Checkout the develop branch and merge the master branch.
-9. __Optional:__ Update Dev Center and Sample apps.
+1. Open a terminal window and execute `npm test`.
 
-## License
+### End to End Tests
+The steps for runnin the end to end tests is as follows:
 
-    Copyright 2016 Kinvey, Inc.
+1. Open a terminal window and install the [Appium](https://www.npmjs.com/package/appium) and [Cordova](https://www.npmjs.com/package/cordova) packages globally by executing `npm install -g cordova appium`. Skip this step if you have already installed `Appium` and `Cordova`.
+2. Change directory to the location of the project and bundle the project by executing `npm run bundle`.
+3. Change directory to `./test/e2e/app' and execute `cordova prepare`.
 
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
+#### To run End to End Tests for iOS
+Make sure you have the latest version of XCode installed and the iPhone 6 Simulator. Please visit [Apple Developer Downloads](https://developer.apple.com/download/) to download the latest version of XCode if you haven't already.
 
-       http://www.apache.org/licenses/LICENSE-2.0
+1. Open a terminal window and execute `appium`.
+2. Open another terminal window and change directory to the location of the project.
+3. Change directory to `./test/e2e/app' and execute `cordova build ios`.
+4. Execute `npm run test:e2e`.
 
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
+#### To run End to End Tests for Android
+_Coming soon..._
