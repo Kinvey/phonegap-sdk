@@ -1,15 +1,27 @@
-$('#loginForm').on('submit', function(event) {
-  // Prevent the form submission
-  event.preventDefault();
+(function(root, Kinvey) {
+  root.LoginView = {
+    login: function() {
+      // Get username and password
+      var username = document.getElementById('username').value;
+      var password = document.getElementById('password').value;
 
-  // Get username and password
-  var username = $('#username').val();
-  var password = $('#password').val();
+      // Login
+      Kinvey.User.login(username, password);
 
-  // Login with Kinvey
-  Kinvey.User.login(username, password).then(function(user) {
-    $('body').append('<div id="notify" style="display: none;"></div>');
-  }).catch(function(error) {
-    $('body').append('<div id="notify" style="display: none;"></div>');
-  });
-});
+      // Return false to prevent form submission
+      return false;
+    },
+
+    loginWithMIC: function() {
+      // Login with MIC
+      Kinvey.User.loginWithMIC('http://localhost:3000').then(function(user) {
+        console.log(user);
+      }).catch(function(error) {
+        console.log(error);
+      });
+
+      // Return false to prevent form submission
+      return false;
+    }
+  };
+})(window, window.Kinvey);

@@ -1,7 +1,6 @@
 import gulp from 'gulp';
 import eslint from 'gulp-eslint';
 import util from 'gulp-util';
-import plumber from 'gulp-plumber';
 import uglify from 'gulp-uglify';
 import rename from 'gulp-rename';
 import babel from 'gulp-babel';
@@ -9,11 +8,9 @@ import buffer from 'gulp-buffer';
 import del from 'del';
 import webpack from 'webpack';
 import gulpWebpack from 'webpack-stream';
-import s3Upload from 'gulp-s3-upload';
 import banner from 'gulp-banner';
 import pkg from './package.json';
 import bump from 'gulp-bump';
-import tag from 'gulp-tag-version';
 import { argv as args } from 'yargs';
 
 function errorHandler(err) {
@@ -29,7 +26,11 @@ gulp.task('lint', () => {
   return stream;
 });
 
-gulp.task('clean', (done) => del(['dist'], done));
+gulp.task('clean', (done) => del([
+  'coverage',
+  'dist',
+  'test.tap'
+], done));
 
 gulp.task('build', ['clean', 'lint'], () => {
   const stream = gulp.src('src/**/*.js')
@@ -92,38 +93,6 @@ gulp.task('bump', () => {
       version: args.version
     }))
     .pipe(gulp.dest(`${__dirname}/`))
-    .on('error', errorHandler);
-  return stream;
-});
-
-gulp.task('tag', () => {
-  const stream = gulp.src('./package.json')
-    .pipe(tag())
-    .on('error', errorHandler);
-  return stream;
-});
-
-gulp.task('upload', ['bundle'], () => {
-  const s3 = s3Upload({
-    accessKeyId: process.env.S3_ACCESSKEYID,
-    secretAccessKey: process.env.S3_SECRETACCESSKEY
-  });
-
-  const stream = gulp.src([
-    `dist/kinvey-phonegap-sdk-${pkg.version}.js`,
-    `dist/kinvey-phonegap-sdk-${pkg.version}.min.js`
-  ])
-    .pipe(plumber())
-    .pipe(s3({
-      Bucket: 'kinvey-downloads/js',
-      uploadNewFilesOnly: true
-    }, (error, data) => {
-      if (error) {
-        return errorHandler(error);
-      }
-
-      return data;
-    }))
     .on('error', errorHandler);
   return stream;
 });
