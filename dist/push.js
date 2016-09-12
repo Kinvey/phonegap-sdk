@@ -7,19 +7,11 @@ exports.Push = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _kinveyJavascriptSdkCore = require('kinvey-javascript-sdk-core');
+
 var _device = require('./device');
 
-var _errors = require('kinvey-javascript-sdk-core/dist/errors');
-
 var _events = require('events');
-
-var _request = require('kinvey-javascript-sdk-core/dist/requests/request');
-
-var _user = require('kinvey-javascript-sdk-core/dist/user');
-
-var _network = require('kinvey-javascript-sdk-core/dist/requests/network');
-
-var _client = require('kinvey-javascript-sdk-core/dist/client');
 
 var _es6Promise = require('es6-promise');
 
@@ -52,23 +44,22 @@ var Push = exports.Push = function (_EventEmitter) {
   function Push() {
     _classCallCheck(this, Push);
 
-    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Push).call(this));
+    var _this = _possibleConstructorReturn(this, (Push.__proto__ || Object.getPrototypeOf(Push)).call(this));
 
-    _this.client = _client.Client.sharedInstance();
+    _this.client = _kinveyJavascriptSdkCore.Client.sharedInstance();
     notificationEventListener = (0, _bind2.default)(_this.notificationListener, _this);
 
     _device.Device.ready().then(function () {
       try {
-        if (_this.isSupported()) {
-          var pushOptions = JSON.parse(storage.getItem(pushSettingsCollectionName));
-          if (pushOptions) {
-            _this.phonegapPush = global.PushNotification.init(pushOptions);
-            _this.phonegapPush.on(notificationEvent, notificationEventListener);
-          }
+        var pushOptions = JSON.parse(storage.getItem(pushSettingsCollectionName));
+        if (pushOptions) {
+          return _this.register(pushOptions);
         }
       } catch (error) {
         // Cactch the JSON parsing error
       }
+
+      return null;
     });
     return _this;
   }
@@ -102,11 +93,11 @@ var Push = exports.Push = function (_EventEmitter) {
 
       return _device.Device.ready().then(function () {
         if (!_this2.isSupported()) {
-          return _es6Promise.Promise.reject(new _errors.KinveyError('Kinvey currently only supports ' + 'push notifications on iOS and Android platforms.'));
+          return _es6Promise.Promise.reject(new _kinveyJavascriptSdkCore.KinveyError('Kinvey currently only supports ' + 'push notifications on iOS and Android platforms.'));
         }
 
         if (typeof global.PushNotification === 'undefined') {
-          throw new _errors.KinveyError('PhoneGap Push Notification Plugin is not installed.', 'Please refer to http://devcenter.kinvey.com/phonegap-v3.0/guides/push#ProjectSetUp for help with ' + 'setting up your project.');
+          throw new _kinveyJavascriptSdkCore.KinveyError('PhoneGap Push Notification Plugin is not installed.', 'Please refer to http://devcenter.kinvey.com/phonegap/guides/push#ProjectSetUp for help with ' + 'setting up your project.');
         }
 
         return _this2.unregister().catch(function () {
@@ -122,25 +113,25 @@ var Push = exports.Push = function (_EventEmitter) {
           });
 
           _this2.phonegapPush.on('error', function (error) {
-            reject(new _errors.KinveyError('An error occurred registering this device for push notifications.', error));
+            reject(new _kinveyJavascriptSdkCore.KinveyError('An error occurred registering this device for push notifications.', error));
           });
 
           return _this2.phonegapPush;
         }).then(function (deviceId) {
           if (!deviceId) {
-            throw new _errors.KinveyError('Unable to retrieve the device id to register this device for push notifications.');
+            throw new _kinveyJavascriptSdkCore.KinveyError('Unable to retrieve the device id to register this device for push notifications.');
           }
 
-          var user = _user.User.getActiveUser(_this2.client);
-          var request = new _network.NetworkRequest({
-            method: _request.RequestMethod.POST,
+          var user = _kinveyJavascriptSdkCore.User.getActiveUser(_this2.client);
+          var request = new _kinveyJavascriptSdkCore.NetworkRequest({
+            method: _kinveyJavascriptSdkCore.RequestMethod.POST,
             url: _url2.default.format({
               protocol: _this2.client.protocol,
               host: _this2.client.host,
               pathname: _this2.pathname + '/register-device'
             }),
             properties: options.properties,
-            authType: user ? _request.AuthType.Session : _request.AuthType.Master,
+            authType: user ? _kinveyJavascriptSdkCore.AuthType.Session : _kinveyJavascriptSdkCore.AuthType.Master,
             data: {
               platform: global.device.platform.toLowerCase(),
               framework: 'phonegap',
@@ -170,7 +161,7 @@ var Push = exports.Push = function (_EventEmitter) {
 
       return _device.Device.ready().then(function () {
         if (!_this3.isSupported()) {
-          return _es6Promise.Promise.reject(new _errors.KinveyError('Kinvey currently only supports ' + 'push notifications on iOS and Android platforms.'));
+          return _es6Promise.Promise.reject(new _kinveyJavascriptSdkCore.KinveyError('Kinvey currently only supports ' + 'push notifications on iOS and Android platforms.'));
         }
 
         var promise = new _es6Promise.Promise(function (resolve, reject) {
@@ -180,7 +171,7 @@ var Push = exports.Push = function (_EventEmitter) {
               _this3.phonegapPush = null;
               resolve();
             }, function () {
-              reject(new _errors.KinveyError('Unable to unregister with the PhoneGap Push Plugin.'));
+              reject(new _kinveyJavascriptSdkCore.KinveyError('Unable to unregister with the PhoneGap Push Plugin.'));
             });
           }
 
@@ -191,19 +182,19 @@ var Push = exports.Push = function (_EventEmitter) {
           return _es6Promise.Promise.resolve(storage.getItem(deviceIdCollectionName));
         }).then(function (deviceId) {
           if (!deviceId) {
-            throw new _errors.KinveyError('This device has not been registered for push notifications.');
+            throw new _kinveyJavascriptSdkCore.KinveyError('This device has not been registered for push notifications.');
           }
 
-          var user = _user.User.getActiveUser(_this3.client);
-          var request = new _network.NetworkRequest({
-            method: _request.RequestMethod.POST,
+          var user = _kinveyJavascriptSdkCore.User.getActiveUser(_this3.client);
+          var request = new _kinveyJavascriptSdkCore.NetworkRequest({
+            method: _kinveyJavascriptSdkCore.RequestMethod.POST,
             url: _url2.default.format({
               protocol: _this3.client.protocol,
               host: _this3.client.host,
               pathname: _this3.pathname + '/unregister-device'
             }),
             properties: options.properties,
-            authType: user ? _request.AuthType.Session : _request.AuthType.Master,
+            authType: user ? _kinveyJavascriptSdkCore.AuthType.Session : _kinveyJavascriptSdkCore.AuthType.Master,
             data: {
               platform: global.device.platform.toLowerCase(),
               framework: 'phonegap',
@@ -235,7 +226,7 @@ var Push = exports.Push = function (_EventEmitter) {
     },
     set: function set(client) {
       if (!client) {
-        throw new _errors.KinveyError('Kinvey.Push much have a client defined.');
+        throw new _kinveyJavascriptSdkCore.KinveyError('Kinvey.Push much have a client defined.');
       }
 
       this.pushClient = client;

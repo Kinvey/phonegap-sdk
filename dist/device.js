@@ -47,12 +47,20 @@ var Device = exports.Device = function () {
   }, {
     key: 'isPhoneGap',
     value: function isPhoneGap() {
-      return document.URL.indexOf('http://') === -1 && document.URL.indexOf('https://') === -1;
+      if (typeof document !== 'undefined') {
+        return document.URL.indexOf('http://') === -1 && document.URL.indexOf('https://') === -1;
+      }
+
+      return false;
     }
   }, {
     key: 'isBrowser',
     value: function isBrowser() {
-      return document.URL.indexOf('http://') !== -1 || document.URL.indexOf('https://') !== -1;
+      if (typeof document !== 'undefined') {
+        return document.URL.indexOf('http://') !== -1 || document.URL.indexOf('https://') !== -1;
+      }
+
+      return false;
     }
   }, {
     key: 'isiOS',
@@ -92,3 +100,12 @@ var Device = exports.Device = function () {
 
   return Device;
 }();
+
+// Check that cordova plugins are installed
+
+
+Device.ready().then(function () {
+  if (typeof global.device === 'undefined') {
+    throw new Error('Cordova Device Plugin is not installed.' + ' Please refer to devcenter.kinvey.com/phonegap-v3.0/guides/getting-started for help with' + ' setting up your project.');
+  }
+});
