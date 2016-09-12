@@ -37,8 +37,7 @@ var Popup = exports.Popup = function (_EventEmitter) {
     _classCallCheck(this, Popup);
 
     // Create some event listeners
-
-    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Popup).call(this));
+    var _this = _possibleConstructorReturn(this, (Popup.__proto__ || Object.getPrototypeOf(Popup)).call(this));
 
     _this.eventListeners = {
       loadStartCallback: (0, _bind2.default)(_this.loadStartCallback, _this),

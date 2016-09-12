@@ -29,14 +29,14 @@ var Kinvey = function (_Html5Kinvey) {
   function Kinvey() {
     _classCallCheck(this, Kinvey);
 
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(Kinvey).apply(this, arguments));
+    return _possibleConstructorReturn(this, (Kinvey.__proto__ || Object.getPrototypeOf(Kinvey)).apply(this, arguments));
   }
 
   _createClass(Kinvey, null, [{
     key: 'init',
     value: function init(options) {
       // Initialize Kinvey
-      var client = _get(Object.getPrototypeOf(Kinvey), 'init', this).call(this, options);
+      var client = _get(Kinvey.__proto__ || Object.getPrototypeOf(Kinvey), 'init', this).call(this, options);
 
       // Add Push module to Kinvey
       this.Push = new _push.Push();

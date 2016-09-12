@@ -7,7 +7,7 @@ Object.defineProperty(exports, "__esModule", {
 var _device = require('./device');
 
 Object.keys(_device).forEach(function (key) {
-  if (key === "default") return;
+  if (key === "default" || key === "__esModule") return;
   Object.defineProperty(exports, key, {
     enumerable: true,
     get: function get() {
@@ -19,7 +19,7 @@ Object.keys(_device).forEach(function (key) {
 var _kinvey = require('./kinvey');
 
 Object.keys(_kinvey).forEach(function (key) {
-  if (key === "default") return;
+  if (key === "default" || key === "__esModule") return;
   Object.defineProperty(exports, key, {
     enumerable: true,
     get: function get() {
@@ -31,7 +31,7 @@ Object.keys(_kinvey).forEach(function (key) {
 var _popup = require('./popup');
 
 Object.keys(_popup).forEach(function (key) {
-  if (key === "default") return;
+  if (key === "default" || key === "__esModule") return;
   Object.defineProperty(exports, key, {
     enumerable: true,
     get: function get() {
@@ -43,7 +43,7 @@ Object.keys(_popup).forEach(function (key) {
 var _push = require('./push');
 
 Object.keys(_push).forEach(function (key) {
-  if (key === "default") return;
+  if (key === "default" || key === "__esModule") return;
   Object.defineProperty(exports, key, {
     enumerable: true,
     get: function get() {

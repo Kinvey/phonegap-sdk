@@ -44,7 +44,7 @@ var Push = exports.Push = function (_EventEmitter) {
   function Push() {
     _classCallCheck(this, Push);
 
-    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Push).call(this));
+    var _this = _possibleConstructorReturn(this, (Push.__proto__ || Object.getPrototypeOf(Push)).call(this));
 
     _this.client = _kinveyJavascriptSdkCore.Client.sharedInstance();
     notificationEventListener = (0, _bind2.default)(_this.notificationListener, _this);
