@@ -11,6 +11,7 @@ deploy:
     local_dir: s3
     upload-dir: downloads
     skip_cleanup: true
+    acl: public_read
   - provider: npm
     email: thomas.conner@me.com
     api_key:
