@@ -25,7 +25,7 @@
     "docs": "esdoc -c esdoc.json",
     "e2e:server": "appium",
     "e2e:prepare:app": "cd ./test/e2e/app && cordova prepare",
-    "e2e:build:app:ios": "npm run e2e:prepare:app && npm run bundle && cd ./test/e2e/app && cordova build ios",
+    "e2e:build:app:ios": "npm run e2e:prepare:app && npm run build && cd ./test/e2e/app && cordova build ios",
     "e2e:test:ios": "npm run e2e:build:app:ios && wdio ./test/e2e/test/wdio.conf.js",
     "lint": "npm run lint:src",
     "lint:src": "eslint src/**",
@@ -68,8 +68,7 @@
     "wdio-mocha-framework": "^0.4.0",
     "wdio-spec-reporter": "0.0.3",
     "webdriverio": "^4.2.5",
-    "webpack": "^1.13.0",
-    "yargs": "^4.7.1"
+    "webpack": "^1.13.0"
   },
   "peerDependencies": {
     "kinvey-javascript-sdk-core": "3.1.2",
