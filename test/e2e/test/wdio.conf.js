@@ -61,7 +61,7 @@ exports.config = {
     // maxInstances: 5,
     //
     launchTimeout: 30000,
-    deviceName: 'iPhone 6',
+    deviceName: 'iPhone 7',
     platformName: 'iOS',
     app: app,
     nativeInstrumentsLib: true,
