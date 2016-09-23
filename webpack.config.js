@@ -17,7 +17,7 @@ module.exports = {
   context: path.join(__dirname, 'dist'),
   entry: ['./index.js'],
   output: {
-    filename: 'kinvey-phonegap-sdk.js',
+    filename: pkg.name + '.js',
     libraryTarget: 'umd',
     library: 'Kinvey',
     path: path.join(__dirname, 'dist')
