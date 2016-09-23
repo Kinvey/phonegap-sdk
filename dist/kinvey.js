@@ -3,19 +3,18 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Kinvey = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _kinveyHtml5Sdk = require('kinvey-html5-sdk');
-
-var _device = require('./device');
-
-var _popup = require('./popup');
+var _kinveyJavascriptSdkCore = require('kinvey-javascript-sdk-core');
 
 var _push = require('./push');
+
+var _push2 = _interopRequireDefault(_push);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -23,8 +22,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Kinvey = function (_Html5Kinvey) {
-  _inherits(Kinvey, _Html5Kinvey);
+var Kinvey = function (_CoreKinvey) {
+  _inherits(Kinvey, _CoreKinvey);
 
   function Kinvey() {
     _classCallCheck(this, Kinvey);
@@ -39,7 +38,7 @@ var Kinvey = function (_Html5Kinvey) {
       var client = _get(Kinvey.__proto__ || Object.getPrototypeOf(Kinvey), 'init', this).call(this, options);
 
       // Add Push module to Kinvey
-      this.Push = new _push.Push();
+      this.Push = new _push2.default();
 
       // Return the client
       return client;
@@ -47,13 +46,6 @@ var Kinvey = function (_Html5Kinvey) {
   }]);
 
   return Kinvey;
-}(_kinveyHtml5Sdk.Kinvey);
+}(_kinveyJavascriptSdkCore.Kinvey);
 
-// Add modules
-
-
-Kinvey.Device = _device.Device;
-Kinvey.Popup = _popup.Popup;
-
-// Export
-exports.Kinvey = Kinvey;
+exports.default = Kinvey;

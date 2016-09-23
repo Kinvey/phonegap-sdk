@@ -3,7 +3,6 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Push = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -33,14 +32,14 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var pushNamespace = process && process.env && process.env.KINVEY_PUSH_NAMESPACE || undefined || 'push';
-var notificationEvent = process && process.env && process.env.KINVEY_NOTIFICATION_EVENT || undefined || 'notification';
-var deviceIdCollectionName = process && process.env && process.env.KINVEY_DEVICE_COLLECTION_NAME || undefined || 'kinvey_deviceId';
-var pushSettingsCollectionName = process && process.env && process.env.KINVEY_PUSH_COLLECTION_NAME || undefined || 'kinvey_pushSettings';
+var pushNamespace = process && process.env && process.env.KINVEY_PUSH_NAMESPACE || 'push' || 'push';
+var notificationEvent = process && process.env && process.env.KINVEY_NOTIFICATION_EVENT || 'notification' || 'notification';
+var deviceIdCollectionName = process && process.env && process.env.KINVEY_DEVICE_COLLECTION_NAME || 'kinvey_deviceId' || 'kinvey_deviceId';
+var pushSettingsCollectionName = process && process.env && process.env.KINVEY_PUSH_COLLECTION_NAME || 'kinvey_pushSettings' || 'kinvey_pushSettings';
 var storage = global.localStorage;
 var notificationEventListener = void 0;
 
-var Push = exports.Push = function (_EventEmitter) {
+var Push = function (_EventEmitter) {
   _inherits(Push, _EventEmitter);
 
   function Push() {
@@ -237,3 +236,5 @@ var Push = exports.Push = function (_EventEmitter) {
 
   return Push;
 }(_events.EventEmitter);
+
+exports.default = Push;
