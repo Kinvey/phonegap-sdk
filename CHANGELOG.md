@@ -1,4 +1,9 @@
 # Changelog
+## [v3.2.1](https://github.com/Kinvey/phonegap-sdk/tree/v3.2.1) (2016-10-08)
+
+**Bug Fixes:**
+
+- Fixed bug that prevented device registration for push notifications.
 
 ## [v3.2.0](https://github.com/Kinvey/phonegap-sdk/tree/v3.2.0) (2016-09-23)
 [Full Changelog](https://github.com/Kinvey/phonegap-sdk/compare/3.1.1...3.2.0)<br/>
