@@ -8,11 +8,25 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _kinveyJavascriptSdkCore = require('kinvey-javascript-sdk-core');
+var _kinveyHtml5Sdk = require('kinvey-html5-sdk');
+
+var _kinveyHtml5Sdk2 = _interopRequireDefault(_kinveyHtml5Sdk);
+
+var _device = require('./device');
+
+var _device2 = _interopRequireDefault(_device);
+
+var _popup = require('./popup');
+
+var _popup2 = _interopRequireDefault(_popup);
 
 var _push = require('./push');
 
 var _push2 = _interopRequireDefault(_push);
+
+var _assign = require('lodash/assign');
+
+var _assign2 = _interopRequireDefault(_assign);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -22,8 +36,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Kinvey = function (_CoreKinvey) {
-  _inherits(Kinvey, _CoreKinvey);
+var Kinvey = function (_HTML5Kinvey) {
+  _inherits(Kinvey, _HTML5Kinvey);
 
   function Kinvey() {
     _classCallCheck(this, Kinvey);
@@ -33,12 +47,19 @@ var Kinvey = function (_CoreKinvey) {
 
   _createClass(Kinvey, null, [{
     key: 'init',
-    value: function init(options) {
+    value: function init() {
+      var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+      options = (0, _assign2.default)({
+        deviceClass: _device2.default,
+        popupClass: _popup2.default
+      }, options);
+
       // Initialize Kinvey
       var client = _get(Kinvey.__proto__ || Object.getPrototypeOf(Kinvey), 'init', this).call(this, options);
 
-      // Add Push module to Kinvey
-      this.Push = new _push2.default();
+      // // Add Push module to Kinvey
+      this.Push = new _push2.default({ client: client });
 
       // Return the client
       return client;
@@ -46,6 +67,6 @@ var Kinvey = function (_CoreKinvey) {
   }]);
 
   return Kinvey;
-}(_kinveyJavascriptSdkCore.Kinvey);
+}(_kinveyHtml5Sdk2.default);
 
 exports.default = Kinvey;
