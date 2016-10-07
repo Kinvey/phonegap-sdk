@@ -11,7 +11,7 @@
   "contributors": [
     "Thomas Conner <thomas@kinvey.com>"
   ],
-  "main": "./dist/export.js",
+  "main": "./dist/index.js",
   "repository": {
     "type": "git",
     "url": "git@github.com:Kinvey/phonegap-sdk"
@@ -20,7 +20,7 @@
     "build": "npm run clean && npm run transpile && npm run bundle && npm run minify",
     "bundle": "webpack",
     "clean": "del coverage dist s3",
-    "minify": "uglifyjs --compress warnings=false --comments '/kinvey-phonegap-sdk/' --output ./dist/kinvey-phonegap-sdk.min.js -- ./dist/kinvey-phonegap-sdk.js ",
+    "minify": "uglifyjs --screw-ie8 --compress warnings=false --mangle --comments --output ./dist/kinvey-phonegap-sdk.min.js -- ./dist/kinvey-phonegap-sdk.js ",
     "cover": "istanbul cover _mocha -- --compilers js:babel-core/register -r babel-polyfill -s 100 --recursive test/unit/setup test/unit",
     "docs": "esdoc -c esdoc.json",
     "e2e:server": "appium",
@@ -39,6 +39,21 @@
     "version": "npm run build && git add -A dist"
   },
   "dependencies": {
+    "core-js": "^2.4.1",
+    "es6-promise": "^4.0.5",
+    "kinvey-html5-sdk": "3.2.1",
+    "kinvey-node-sdk": "3.2.1",
+    "lodash": "^4.8.2"
+  },
+  "peerDependencies": {
+    "core-js": "^2.4.1",
+    "es6-promise": "^4.0.5",
+    "kinvey-html5-sdk": "3.2.1",
+    "kinvey-node-sdk": "3.2.1",
+    "lodash": "^4.8.2"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.16.0",
     "babel-core": "^6.9.0",
     "babel-eslint": "^6.0.0",
     "babel-plugin-inline-dotenv": "^1.1.1",
@@ -47,15 +62,14 @@
     "babel-preset-stage-2": "^6.0.15",
     "babel-register": "^6.9.0",
     "cordova": "^6.3.1",
-    "core-js": "^2.4.1",
     "del-cli": "^0.2.0",
     "eslint": "^3.5.0",
     "eslint-config-airbnb-base": "^7.1.0",
     "eslint-plugin-import": "^1.15.0",
     "expect": "^1.20.2",
+    "fs-extra": "^0.30.0",
     "istanbul": "^1.0.0-alpha.2",
-    "kinvey-javascript-sdk-core": "3.2.0",
-    "lodash": "^4.8.2",
+    "json-loader": "^0.5.4",
     "mocha": "^2.5.3",
     "nock": "^8.0.0",
     "regenerator-runtime": "^0.9.5",
