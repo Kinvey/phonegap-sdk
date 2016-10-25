@@ -128,7 +128,7 @@ var Push = function (_EventEmitter) {
         return request.execute().then(function (response) {
           return response.data;
         }).then(function (data) {
-          var request = new _request.CacheReqeust({
+          var request = new _request.CacheRequest({
             method: _request.RequestMethod.PUT,
             url: _url2.default.format({
               protocol: _this2.client.protocol,
@@ -171,7 +171,7 @@ var Push = function (_EventEmitter) {
           resolve();
         });
       }).then(function () {
-        var request = new _request.CacheReqeust({
+        var request = new _request.CacheRequest({
           method: _request.RequestMethod.GET,
           url: _url2.default.format({
             protocol: _this3.client.protocol,
@@ -211,7 +211,7 @@ var Push = function (_EventEmitter) {
         });
         return request.execute();
       }).then(function (data) {
-        var request = new _request.CacheReqeust({
+        var request = new _request.CacheRequest({
           method: _request.RequestMethod.DELETE,
           url: _url2.default.format({
             protocol: _this3.client.protocol,
