@@ -41,16 +41,9 @@
   "dependencies": {
     "core-js": "^2.4.1",
     "es6-promise": "^4.0.5",
-    "kinvey-html5-sdk": "3.2.2",
-    "kinvey-node-sdk": "3.2.2",
+    "kinvey-html5-sdk": "3.3.0",
+    "kinvey-node-sdk": "3.3.0",
     "local-storage": "^1.4.2",
-    "lodash": "^4.8.2"
-  },
-  "peerDependencies": {
-    "core-js": "^2.4.1",
-    "es6-promise": "^4.0.5",
-    "kinvey-html5-sdk": "3.2.2",
-    "kinvey-node-sdk": "3.2.2",
     "lodash": "^4.8.2"
   },
   "devDependencies": {
