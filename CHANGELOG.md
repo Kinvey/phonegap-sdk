@@ -1,4 +1,15 @@
 # Changelog
+## [v3.2.3](https://github.com/Kinvey/phonegap-sdk/tree/v3.2.3) (2016-10-08)
+
+**Enhancements:**
+
+- Make `Kinvey.Push` module a singleton.
+
+**Bug Fixes:**
+
+- Fix bug that prevented registering for push notifications.
+- Unregister from `phonegap-plugin-push` properly.
+
 ## [v3.2.1](https://github.com/Kinvey/phonegap-sdk/tree/v3.2.1) (2016-10-08)
 
 **Bug Fixes:**
