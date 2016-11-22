@@ -37,6 +37,10 @@ module.exports = {
     new webpack.NormalModuleReplacementPlugin(
       /kinvey-node-sdk\/dist\/identity\/src\/popup\.js/,
       require.resolve(path.resolve(__dirname, 'dist/popup.js'))
+    ),
+    new webpack.NormalModuleReplacementPlugin(
+      /kinvey-node-sdk\/dist\/request\/src\/middleware\/src\/cache\.js/,
+      require.resolve(path.resolve(__dirname, 'node_modules/kinvey-html5-sdk/dist/middleware/src/cache.js'))
     )
   ]
 };
