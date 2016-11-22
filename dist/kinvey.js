@@ -56,17 +56,17 @@ var Kinvey = function (_HTML5Kinvey) {
       }, options);
 
       // Initialize Kinvey
-      var client = _get(Kinvey.__proto__ || Object.getPrototypeOf(Kinvey), 'init', this).call(this, options);
-
-      // // Add Push module to Kinvey
-      this.Push = new _push2.default({ client: client });
-
-      // Return the client
-      return client;
+      return _get(Kinvey.__proto__ || Object.getPrototypeOf(Kinvey), 'init', this).call(this, options);
     }
   }]);
 
   return Kinvey;
 }(_kinveyHtml5Sdk2.default);
 
+// Add Push module
+
+
+Kinvey.Push = _push2.default;
+
+// Export
 exports.default = Kinvey;
