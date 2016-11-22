@@ -1,4 +1,4 @@
-import Kinvey from '../../src/kinvey';
+import Kinvey from '../../src/index';
 import nock from 'nock';
 
 // Record for nock
