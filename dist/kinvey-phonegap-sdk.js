@@ -1,6 +1,6 @@
 /**
  * @preserve
- * kinvey-phonegap-sdk v3.2.2
+ * kinvey-phonegap-sdk v3.2.3
  * Kinvey JavaScript SDK for PhoneGap/Cordova applications.
  * http://www.kinvey.com
  *
@@ -1197,19 +1197,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }, options);
 
 	      // Initialize Kinvey
-	      var client = _get(Kinvey.__proto__ || Object.getPrototypeOf(Kinvey), 'init', this).call(this, options);
-
-	      // // Add Push module to Kinvey
-	      this.Push = new _push2.default({ client: client });
-
-	      // Return the client
-	      return client;
+	      return _get(Kinvey.__proto__ || Object.getPrototypeOf(Kinvey), 'init', this).call(this, options);
 	    }
 	  }]);
 
 	  return Kinvey;
 	}(_kinveyHtml5Sdk2.default);
 
+	// Add Push module
+
+
+	Kinvey.Push = _push2.default;
+
+	// Export
 	exports.default = Kinvey;
 
 /***/ },
@@ -37533,7 +37533,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = {
 		"name": "kinvey-phonegap-sdk",
-		"version": "3.2.2",
+		"version": "3.2.3",
 		"description": "Kinvey JavaScript SDK for PhoneGap/Cordova applications.",
 		"homepage": "http://www.kinvey.com",
 		"bugs": {
@@ -37576,6 +37576,7 @@ return /******/ (function(modules) { // webpackBootstrap
 			"es6-promise": "^4.0.5",
 			"kinvey-html5-sdk": "3.2.2",
 			"kinvey-node-sdk": "3.2.2",
+			"local-storage": "^1.4.2",
 			"lodash": "^4.8.2"
 		},
 		"peerDependencies": {
@@ -37797,6 +37798,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _events = __webpack_require__(391);
 
+	var _localStorage = __webpack_require__(282);
+
+	var _localStorage2 = _interopRequireDefault(_localStorage);
+
 	var _es6Promise = __webpack_require__(68);
 
 	var _es6Promise2 = _interopRequireDefault(_es6Promise);
@@ -37820,14 +37825,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  _inherits(Push, _EventEmitter);
 
 	  function Push() {
-	    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
 	    _classCallCheck(this, Push);
 
-	    var _this = _possibleConstructorReturn(this, (Push.__proto__ || Object.getPrototypeOf(Push)).call(this));
-
-	    _this.client = options.client || _client.Client.sharedInstance();
-	    return _this;
+	    return _possibleConstructorReturn(this, (Push.__proto__ || Object.getPrototypeOf(Push)).apply(this, arguments));
 	  }
 
 	  _createClass(Push, [{
@@ -37861,7 +37861,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          throw new Error('PhoneGap Push Notification Plugin is not installed.', 'Please refer to http://devcenter.kinvey.com/phonegap/guides/push#ProjectSetUp for help with' + ' setting up your project.');
 	        }
 
-	        return _this2.unregister().catch(function () {
+	        return _this2.unregister(options).catch(function () {
 	          return null;
 	        });
 	      }).then(function () {
@@ -37907,21 +37907,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return request.execute().then(function (response) {
 	          return response.data;
 	        }).then(function (data) {
-	          var request = new _request.CacheRequest({
-	            method: _request.RequestMethod.PUT,
-	            url: _url2.default.format({
-	              protocol: _this2.client.protocol,
-	              host: _this2.client.host,
-	              pathname: _this2.pathname + '/device'
-	            }),
-	            data: {
-	              deviceId: deviceId
-	            },
-	            client: _this2.client
-	          });
-	          return request.execute().then(function () {
-	            return data;
-	          });
+	          var key = user ? _this2.pathname + '_' + user._id : _this2.pathname + '_' + options.userId;
+	          _localStorage2.default.set(key, { deviceId: deviceId });
+	          return data;
 	        });
 	      });
 	    }
@@ -37937,36 +37925,27 @@ return /******/ (function(modules) { // webpackBootstrap
 	          return null;
 	        }
 
-	        return new _es6Promise2.default(function (resolve, reject) {
+	        return new _es6Promise2.default(function (resolve) {
 	          if (_this3.phonegapPush) {
-	            _this3.phonegapPush.unregister(function () {
+	            return _this3.phonegapPush.unregister(function () {
 	              _this3.phonegapPush = null;
 	              resolve();
 	            }, function () {
-	              reject(new Error('Unable to unregister with the PhoneGap Push Plugin.'));
+	              resolve();
 	            });
 	          }
 
-	          resolve();
+	          return resolve();
 	        });
 	      }).then(function () {
-	        var request = new _request.CacheRequest({
-	          method: _request.RequestMethod.GET,
-	          url: _url2.default.format({
-	            protocol: _this3.client.protocol,
-	            host: _this3.client.host,
-	            pathname: _this3.pathname + '/device'
-	          }),
-	          client: _this3.client
-	        });
-	        return request.execute().then(function (response) {
-	          return response.data;
-	        });
+	        var user = _entity.User.getActiveUser(_this3.client);
+	        var key = user ? _this3.pathname + '_' + user._id : _this3.pathname + '__' + options.userId;
+	        return _localStorage2.default.get(key);
 	      }).then(function (_ref) {
 	        var deviceId = _ref.deviceId;
 
 	        if (typeof deviceId === 'undefined') {
-	          throw new Error('This device has not been registered for push notifications.');
+	          return null;
 	        }
 
 	        var user = _entity.User.getActiveUser(_this3.client);
@@ -37990,18 +37969,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        });
 	        return request.execute();
 	      }).then(function (data) {
-	        var request = new _request.CacheRequest({
-	          method: _request.RequestMethod.DELETE,
-	          url: _url2.default.format({
-	            protocol: _this3.client.protocol,
-	            host: _this3.client.host,
-	            pathname: _this3.pathname + '/device'
-	          }),
-	          client: _this3.client
-	        });
-	        return request.execute().then(function () {
-	          return data;
-	        });
+	        var user = _entity.User.getActiveUser(_this3.client);
+	        var key = user ? _this3.pathname + '_' + user._id : _this3.pathname + '_' + options.userId;
+	        _localStorage2.default.remove(key);
+	        return data;
 	      });
 	    }
 	  }, {
@@ -38012,21 +37983,28 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'client',
 	    get: function get() {
-	      return this.pushClient;
-	    },
-	    set: function set(client) {
-	      if (!client) {
-	        throw new Error('Kinvey.Push must have a client defined.');
+	      if (!this._client) {
+	        return _client.Client.sharedInstance();
 	      }
 
-	      this.pushClient = client;
+	      return this._client;
+	    },
+	    set: function set(client) {
+	      if (!(client instanceof _client.Client)) {
+	        throw new Error('client must be an instance of Client.');
+	      }
+
+	      this._client = client;
 	    }
 	  }]);
 
 	  return Push;
 	}(_events.EventEmitter);
 
-	exports.default = Push;
+	// Export
+
+
+	exports.default = new Push();
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(61), (function() { return this; }())))
 
 /***/ }
