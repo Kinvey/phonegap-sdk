@@ -43,6 +43,7 @@
     "es6-promise": "^4.0.5",
     "kinvey-html5-sdk": "3.2.2",
     "kinvey-node-sdk": "3.2.2",
+    "local-storage": "^1.4.2",
     "lodash": "^4.8.2"
   },
   "peerDependencies": {
