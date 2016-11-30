@@ -41,6 +41,10 @@ module.exports = {
     new webpack.NormalModuleReplacementPlugin(
       /kinvey-node-sdk\/dist\/request\/src\/middleware\/src\/cache\.js/,
       require.resolve(path.resolve(__dirname, 'node_modules/kinvey-html5-sdk/dist/middleware/src/cache.js'))
+    ),
+    new webpack.NormalModuleReplacementPlugin(
+      /kinvey-node-sdk\/dist\/request\/index\.js/,
+      require.resolve(path.resolve(__dirname, 'dist/request/index.js'))
     )
   ]
 };
