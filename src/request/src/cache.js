@@ -9,11 +9,11 @@ export default class CacheRequest extends CoreCacheRequest {
   static loadActiveUser(client = Client.sharedInstance()) {
     return Device.ready()
       .then(() => {
-        if (isDefined(global.KinveySecureStorage)) {
-          const ss = new global.KinveySecureStorage(client.appKey, `${client.appKey}.shared`);
+        if (isDefined(global.SecureStorage)) {
+          const ss = new global.SecureStorage(client.appKey, client.keychainAccessGroup);
 
-          return new Promise((resolve, reject) => {
-            ss.get(resolve, reject, 'activeUser');
+          return new Promise((resolve) => {
+            ss.get(resolve, () => resolve(null), 'activeUser');
           });
         }
 
@@ -24,8 +24,8 @@ export default class CacheRequest extends CoreCacheRequest {
   static setActiveUser(client = Client.sharedInstance(), user) {
     return Device.ready()
       .then(() => {
-        if (isDefined(global.KinveySecureStorage)) {
-          const ss = new global.KinveySecureStorage();
+        if (isDefined(global.SecureStorage)) {
+          const ss = new global.SecureStorage(client.appKey, client.keychainAccessGroup);
 
           return Promise.resolve()
             .then(() => {
