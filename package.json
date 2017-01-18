@@ -1,6 +1,6 @@
 {
   "name": "kinvey-phonegap-sdk",
-  "version": "3.3.0",
+  "version": "3.3.4",
   "description": "Kinvey JavaScript SDK for PhoneGap/Cordova applications.",
   "homepage": "http://www.kinvey.com",
   "bugs": {
@@ -30,7 +30,7 @@
     "lint": "npm run lint:src",
     "lint:src": "eslint src/**",
     "lint:test": "eslint test/unit/**",
-    "preversion": "npm test",
+    "preversion": "del node_modules && npm install && npm test",
     "postversion": "git push && git push --tags",
     "s3": "npm run build && shjs ./scripts/s3.js",
     "test": "mocha --compilers js:babel-core/register -r babel-polyfill -s 100 --recursive test/unit/setup test/unit",
@@ -41,8 +41,8 @@
   "dependencies": {
     "core-js": "^2.4.1",
     "es6-promise": "^4.0.5",
-    "kinvey-html5-sdk": "3.3.0",
-    "kinvey-node-sdk": "3.3.0",
+    "kinvey-html5-sdk": "3.3.4",
+    "kinvey-node-sdk": "3.3.4",
     "local-storage": "^1.4.2",
     "lodash": "^4.8.2"
   },
