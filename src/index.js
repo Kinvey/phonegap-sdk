@@ -1,8 +1,4 @@
-import Kinvey from 'kinvey-html5-sdk';
-import Push from './push';
-
-// Add Push module to Kinvey
-Kinvey.Push = Push;
+import Kinvey from './kinvey';
 
 // Export
 module.exports = Kinvey;
