@@ -69,4 +69,10 @@ export default class Client extends NodeClient {
         return super.setActiveUser(user);
       });
   }
+
+  static initialize(options) {
+    const client = new this(options);
+    NodeClient._sharedInstance = client;
+    return client;
+  }
 }

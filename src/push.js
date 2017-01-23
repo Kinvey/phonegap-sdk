@@ -1,6 +1,6 @@
 import { AuthType, RequestMethod, KinveyRequest } from 'kinvey-node-sdk/dist/request';
-import { Client } from 'kinvey-node-sdk/dist/client';
-import { User } from 'kinvey-node-sdk/dist/entity';
+import { Client } from './client';
+import { User } from './user';
 import Device from './device';
 import { EventEmitter } from 'events';
 import localStorage from 'local-storage';
@@ -17,7 +17,7 @@ class Push extends EventEmitter {
 
   get client() {
     if (!this._client) {
-      return Client.sharedInstance();
+      return Client.sharedInstance;
     }
 
     return this._client;
