@@ -3,6 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.Push = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -11,6 +12,10 @@ var _request = require('kinvey-node-sdk/dist/request');
 var _client = require('kinvey-node-sdk/dist/client');
 
 var _entity = require('kinvey-node-sdk/dist/entity');
+
+var _utils = require('kinvey-node-sdk/dist/utils');
+
+var _errors = require('kinvey-node-sdk/dist/errors');
 
 var _device = require('./device');
 
@@ -74,11 +79,15 @@ var Push = function (_EventEmitter) {
 
       return _device2.default.ready().then(function () {
         if (_this2.isSupported() === false) {
-          throw new Error('Kinvey currently only supports push notifications on iOS and Android platforms.');
+          throw new _errors.KinveyError('Kinvey currently only supports push notifications on iOS and Android platforms.');
         }
 
-        if (typeof global.PushNotification === 'undefined') {
-          throw new Error('PhoneGap Push Notification Plugin is not installed.', 'Please refer to http://devcenter.kinvey.com/phonegap/guides/push#ProjectSetUp for help with' + ' setting up your project.');
+        if ((0, _utils.isDefined)(global.device) === false) {
+          throw new _errors.KinveyError('Cordova Device Plugin is not installed.', 'Please refer to http://devcenter.kinvey.com/phonegap/guides/push#ProjectSetUp for help with' + ' setting up your project.');
+        }
+
+        if ((0, _utils.isDefined)(global.PushNotification) === false) {
+          throw new _errors.KinveyError('PhoneGap Push Notification Plugin is not installed.', 'Please refer to http://devcenter.kinvey.com/phonegap/guides/push#ProjectSetUp for help with' + ' setting up your project.');
         }
 
         return _this2.unregister(options).catch(function () {
@@ -97,12 +106,12 @@ var Push = function (_EventEmitter) {
           });
 
           _this2.phonegapPush.on('error', function (error) {
-            reject(new Error('An error occurred registering this device for push notifications.', error));
+            reject(new _errors.KinveyError('An error occurred registering this device for push notifications.', error));
           });
         });
       }).then(function (deviceId) {
-        if (typeof deviceId === 'undefined') {
-          throw new Error('Unable to retrieve the device id to register this device for push notifications.');
+        if ((0, _utils.isDefined)(deviceId) === false) {
+          throw new _errors.KinveyError('Unable to retrieve the device id to register this device for push notifications.');
         }
 
         var user = _entity.User.getActiveUser(_this2.client);
@@ -159,12 +168,16 @@ var Push = function (_EventEmitter) {
         });
       }).then(function () {
         var user = _entity.User.getActiveUser(_this3.client);
-        var key = user ? _this3.pathname + '_' + user._id : _this3.pathname + '__' + options.userId;
+        var key = user ? _this3.pathname + '_' + user._id : _this3.pathname + '_' + options.userId;
         return _localStorage2.default.get(key);
-      }).then(function (_ref) {
-        var deviceId = _ref.deviceId;
+      }).then(function (pushConfig) {
+        var deviceId = void 0;
 
-        if (typeof deviceId === 'undefined') {
+        if ((0, _utils.isDefined)(pushConfig)) {
+          deviceId = pushConfig.deviceId;
+        }
+
+        if ((0, _utils.isDefined)(deviceId) === false) {
           return null;
         }
 
@@ -182,12 +195,14 @@ var Push = function (_EventEmitter) {
             platform: global.device.platform.toLowerCase(),
             framework: 'phonegap',
             deviceId: deviceId,
-            userId: user ? null : options.userId
+            userId: user ? undefined : options.userId
           },
           timeout: options.timeout,
           client: _this3.client
         });
-        return request.execute();
+        return request.execute().then(function (response) {
+          return response.data;
+        });
       }).then(function (data) {
         var user = _entity.User.getActiveUser(_this3.client);
         var key = user ? _this3.pathname + '_' + user._id : _this3.pathname + '_' + options.userId;
@@ -224,4 +239,5 @@ var Push = function (_EventEmitter) {
 // Export
 
 
+exports.Push = Push;
 exports.default = new Push();
