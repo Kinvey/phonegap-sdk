@@ -1,10 +1,12 @@
 import Push, { PushMock } from 'src/push.mock';
 import { TestUser } from './mocks';
-import localStorage from 'local-storage';
 import { EventEmitter } from 'events';
 import { randomString } from 'kinvey-node-sdk/dist/utils';
+import { CacheRequest, RequestMethod } from 'kinvey-node-sdk/dist/request';
+import { NotFoundError } from 'kinvey-node-sdk/dist/errors';
 import isFunction from 'lodash/isFunction';
 import os from 'os';
+import url from 'url';
 import nock from 'nock';
 import expect from 'expect';
 const PUSH_NAMESPACE = process.env.KINVEY_PUSH_NAMESPACE || 'push';
@@ -77,9 +79,12 @@ describe('Push', function() {
       class CustomPushNotificationPlugin extends PushNotificationPlugin {
         static init() {
           const plugin = super.init();
+
+          // Emit registration error
           setTimeout(() => {
             plugin.emit('error', deviceIdError);
-          }, 500);
+          }, 250);
+
           return plugin;
         }
       }
@@ -98,11 +103,14 @@ describe('Push', function() {
       class CustomPushNotificationPlugin extends PushNotificationPlugin {
         static init() {
           const plugin = super.init();
+
+          // Emit the registration id
           setTimeout(() => {
             plugin.emit('registration', {
               registrationId: deviceId
             });
-          }, 500);
+          }, 250);
+
           return plugin;
         }
       }
@@ -121,11 +129,11 @@ describe('Push', function() {
       return Push
         .register()
         .then((response) => {
-          expect(response).toEqual({});
+          expect(response).toEqual(deviceId);
 
-          const user = TestUser.getActiveUser(Push.client);
-          const key = `/${PUSH_NAMESPACE}/${Push.client.appKey}_${user._id}`;
-          expect(localStorage.get(key)).toEqual({ deviceId: deviceId });
+          // const user = TestUser.getActiveUser(Push.client);
+          // const key = `/${PUSH_NAMESPACE}/${Push.client.appKey}_${user._id}`;
+          // expect(localStorage.get(key)).toEqual({ deviceId: deviceId });
         });
     });
 
@@ -146,17 +154,17 @@ describe('Push', function() {
           static init() {
             const plugin = super.init();
 
-            // Send the registration id
+            // Emit the registration id
             setTimeout(() => {
               plugin.emit('registration', {
                 registrationId: deviceId
               });
-            }, 500);
 
-            // Send a notification
-            setTimeout(() => {
-              plugin.emit('notification', notification);
-            }, 750);
+              // Emmit a notification
+              setTimeout(() => {
+                plugin.emit('notification', notification);
+              }, 250);
+            }, 250);
 
             return plugin;
           }
@@ -193,9 +201,9 @@ describe('Push', function() {
         .then((response) => {
           expect(response).toEqual(null);
 
-          const user = TestUser.getActiveUser(this.client);
-          const key = `/${PUSH_NAMESPACE}/${this.client.appKey}_${user._id}`;
-          expect(localStorage.get(key)).toEqual(null);
+          // const user = TestUser.getActiveUser(this.client);
+          // const key = `/${PUSH_NAMESPACE}/${this.client.appKey}_${user._id}`;
+          // expect(localStorage.get(key)).toEqual(null);
         });
     });
 
@@ -204,11 +212,14 @@ describe('Push', function() {
       class CustomPushNotificationPlugin extends PushNotificationPlugin {
         static init() {
           const plugin = super.init();
+
+          // Emit the registration id
           setTimeout(() => {
             plugin.emit('registration', {
               registrationId: deviceId
             });
-          }, 500);
+          }, 250);
+
           return plugin;
         }
       }
@@ -238,11 +249,27 @@ describe('Push', function() {
         .register()
         .then(() => Push.unregister())
         .then((response) => {
-          expect(response).toEqual({});
+          expect(response).toEqual(null);
 
-          const user = TestUser.getActiveUser(Push.client);
-          const key = `/${PUSH_NAMESPACE}/${Push.client.appKey}_${user._id}`;
-          expect(localStorage.get(key)).toEqual(null);
+          const user = TestUser.getActiveUser(this.client);
+          const request = new CacheRequest({
+            method: RequestMethod.GET,
+            url: url.format({
+              protocol: this.client.protocol,
+              host: this.client.host,
+              pathname: `/${APP_DATA_NAMESPACE}/${this.client.appKey}/__device/${user._id}`
+            }),
+            client: this.client
+          });
+          return request.execute()
+            .catch((error) => {
+              expect(error).toBeA(NotFoundError);
+              return {};
+            })
+            .then(response => response.data)
+            .then((device) => {
+              expect(device).toEqual(null);
+            });
         });
     });
   });
