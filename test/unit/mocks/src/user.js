@@ -1,6 +1,5 @@
 import { User } from 'kinvey-node-sdk/dist/entity';
 import { randomString } from 'kinvey-node-sdk/dist/utils';
-import Promise from 'es6-promise';
 import nock from 'nock';
 
 export default class TestUser extends User {

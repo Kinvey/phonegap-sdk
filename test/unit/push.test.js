@@ -1,4 +1,4 @@
-import Push, { PushMock } from '../../src/push.mock';
+import Push, { PushMock } from 'src/push.mock';
 import { TestUser } from './mocks';
 import localStorage from 'local-storage';
 import { EventEmitter } from 'events';
@@ -7,7 +7,6 @@ import isFunction from 'lodash/isFunction';
 import os from 'os';
 import nock from 'nock';
 import expect from 'expect';
-import Promise from 'es6-promise';
 const PUSH_NAMESPACE = process.env.KINVEY_PUSH_NAMESPACE || 'push';
 
 class DevicePlugin {
