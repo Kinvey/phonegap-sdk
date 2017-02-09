@@ -1,15 +1,12 @@
-import Push, { PushMock } from '../../src/push.mock';
+import Push, { PushMock } from 'src/push.mock';
 import { TestUser } from './mocks';
 import { EventEmitter } from 'events';
-import { randomString } from 'kinvey-node-sdk/dist/utils';
-import { CacheRequest, RequestMethod } from 'kinvey-node-sdk/dist/request';
-import { NotFoundError } from 'kinvey-node-sdk/dist/errors';
+import { CacheRequest, RequestMethod, NotFoundError, randomString } from 'kinvey-node-sdk/dist/export';
 import isFunction from 'lodash/isFunction';
 import os from 'os';
 import url from 'url';
 import nock from 'nock';
 import expect from 'expect';
-import Promise from 'es6-promise';
 const APP_DATA_NAMESPACE = process.env.KINVEY_DATASTORE_NAMESPACE || 'appdata';
 const PUSH_NAMESPACE = process.env.KINVEY_PUSH_NAMESPACE || 'push';
 
