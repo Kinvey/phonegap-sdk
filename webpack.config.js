@@ -34,5 +34,10 @@ module.exports = {
       /kinvey-node-sdk\/dist\/identity\/src\/popup\.js/,
       require.resolve(path.resolve(__dirname, './dist/popup.js'))
     )
-  ]
+  ],
+  resolve: {
+    alias: {
+      request$: 'xhr'
+    }
+  }
 };
