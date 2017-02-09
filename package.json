@@ -43,8 +43,8 @@
     "es6-promise": "4.0.5",
     "kinvey-html5-sdk": "file:///Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/HTML5/SDK",
     "kinvey-node-sdk": "file:///Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/Node/SDK",
-    "local-storage": "1.4.2",
-    "lodash": "4.17.4"
+    "lodash": "4.17.4",
+    "xhr": "2.3.3"
   },
   "devDependencies": {
     "babel-cli": "^6.16.0",
