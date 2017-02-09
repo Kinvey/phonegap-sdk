@@ -41,8 +41,8 @@
   "dependencies": {
     "core-js": "2.4.1",
     "es6-promise": "4.0.5",
-    "kinvey-html5-sdk": "file:///Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/HTML5/SDK",
-    "kinvey-node-sdk": "file:///Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/Node/SDK",
+    "kinvey-html5-sdk": "3.4.0",
+    "kinvey-node-sdk": "3.4.0",
     "lodash": "4.17.4",
     "xhr": "2.3.3"
   },
