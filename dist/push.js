@@ -7,29 +7,13 @@ exports.Push = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _request = require('kinvey-node-sdk/dist/request');
-
-var _client = require('kinvey-node-sdk/dist/client');
-
-var _entity = require('kinvey-node-sdk/dist/entity');
-
-var _utils = require('kinvey-node-sdk/dist/utils');
-
-var _errors = require('kinvey-node-sdk/dist/errors');
+var _export = require('kinvey-node-sdk/dist/export');
 
 var _device = require('./device');
 
 var _device2 = _interopRequireDefault(_device);
 
 var _events = require('events');
-
-var _localStorage = require('local-storage');
-
-var _localStorage2 = _interopRequireDefault(_localStorage);
-
-var _es6Promise = require('es6-promise');
-
-var _es6Promise2 = _interopRequireDefault(_es6Promise);
 
 var _url = require('url');
 
@@ -43,8 +27,11 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var pushNamespace = process && process.env && process.env.KINVEY_PUSH_NAMESPACE || 'push' || 'push';
-var notificationEvent = process && process.env && process.env.KINVEY_NOTIFICATION_EVENT || 'notification' || 'notification';
+var APP_DATA_NAMESPACE = process && process.env && process.env.KINVEY_DATASTORE_NAMESPACE || undefined || 'appdata';
+var PUSH_NAMESPACE = process && process.env && process.env.KINVEY_PUSH_NAMESPACE || 'push' || 'push';
+var NOTIFICATION_EVENT = process && process.env && process.env.KINVEY_NOTIFICATION_EVENT || 'notification' || 'notification';
+var DEVICE_COLLECTION = '__device';
+var phonegapPush = void 0;
 
 var Push = function (_EventEmitter) {
   _inherits(Push, _EventEmitter);
@@ -63,12 +50,12 @@ var Push = function (_EventEmitter) {
   }, {
     key: 'onNotification',
     value: function onNotification(listener) {
-      return this.on(notificationEvent, listener);
+      return this.on(NOTIFICATION_EVENT, listener);
     }
   }, {
     key: 'onceNotification',
     value: function onceNotification(listener) {
-      return this.once(notificationEvent, listener);
+      return this.once(NOTIFICATION_EVENT, listener);
     }
   }, {
     key: 'register',
@@ -79,51 +66,64 @@ var Push = function (_EventEmitter) {
 
       return _device2.default.ready().then(function () {
         if (_this2.isSupported() === false) {
-          throw new _errors.KinveyError('Kinvey currently only supports push notifications on iOS and Android platforms.');
+          throw new _export.KinveyError('Kinvey currently only supports push notifications on iOS and Android platforms.');
         }
 
-        if ((0, _utils.isDefined)(global.device) === false) {
-          throw new _errors.KinveyError('Cordova Device Plugin is not installed.', 'Please refer to http://devcenter.kinvey.com/phonegap/guides/push#ProjectSetUp for help with' + ' setting up your project.');
+        if ((0, _export.isDefined)(global.device) === false) {
+          throw new _export.KinveyError('Cordova Device Plugin is not installed.', 'Please refer to http://devcenter.kinvey.com/phonegap/guides/push#ProjectSetUp for help with' + ' setting up your project.');
         }
 
-        if ((0, _utils.isDefined)(global.PushNotification) === false) {
-          throw new _errors.KinveyError('PhoneGap Push Notification Plugin is not installed.', 'Please refer to http://devcenter.kinvey.com/phonegap/guides/push#ProjectSetUp for help with' + ' setting up your project.');
+        if ((0, _export.isDefined)(global.PushNotification) === false) {
+          throw new _export.KinveyError('PhoneGap Push Notification Plugin is not installed.', 'Please refer to http://devcenter.kinvey.com/phonegap/guides/push#ProjectSetUp for help with' + ' setting up your project.');
         }
 
-        return _this2.unregister(options).catch(function () {
-          return null;
+        return new Promise(function (resolve) {
+          if (phonegapPush) {
+            return phonegapPush.unregister(function () {
+              resolve();
+            }, function () {
+              resolve();
+            });
+          }
+
+          return resolve();
         });
       }).then(function () {
-        return new _es6Promise2.default(function (resolve, reject) {
-          _this2.phonegapPush = global.PushNotification.init(options);
+        return new Promise(function (resolve, reject) {
+          phonegapPush = global.PushNotification.init(options);
 
-          _this2.phonegapPush.on(notificationEvent, function (data) {
-            _this2.emit(notificationEvent, data);
+          phonegapPush.on(NOTIFICATION_EVENT, function (data) {
+            _this2.emit(NOTIFICATION_EVENT, data);
           });
 
-          _this2.phonegapPush.on('registration', function (data) {
+          phonegapPush.on('registration', function (data) {
             resolve(data.registrationId);
           });
 
-          _this2.phonegapPush.on('error', function (error) {
-            reject(new _errors.KinveyError('An error occurred registering this device for push notifications.', error));
+          phonegapPush.on('error', function (error) {
+            reject(new _export.KinveyError('An error occurred registering this device for push notifications.', error));
           });
         });
       }).then(function (deviceId) {
-        if ((0, _utils.isDefined)(deviceId) === false) {
-          throw new _errors.KinveyError('Unable to retrieve the device id to register this device for push notifications.');
+        var user = _export.User.getActiveUser(_this2.client);
+
+        if ((0, _export.isDefined)(deviceId) === false) {
+          throw new _export.KinveyError('Unable to retrieve the device id to register this device for push notifications.');
         }
 
-        var user = _entity.User.getActiveUser(_this2.client);
-        var request = new _request.KinveyRequest({
-          method: _request.RequestMethod.POST,
+        if ((0, _export.isDefined)(user) === false && (0, _export.isDefined)(options.userId) === false) {
+          throw new _export.KinveyError('Unable to register this device for push notifications.', 'You must login a user or provide a userId to assign the device token.');
+        }
+
+        var request = new _export.KinveyRequest({
+          method: _export.RequestMethod.POST,
           url: _url2.default.format({
             protocol: _this2.client.protocol,
             host: _this2.client.host,
             pathname: _this2.pathname + '/register-device'
           }),
           properties: options.properties,
-          authType: user ? _request.AuthType.Session : _request.AuthType.Master,
+          authType: user ? _export.AuthType.Session : _export.AuthType.Master,
           data: {
             platform: global.device.platform.toLowerCase(),
             framework: 'phonegap',
@@ -133,12 +133,32 @@ var Push = function (_EventEmitter) {
           timeout: options.timeout,
           client: _this2.client
         });
-        return request.execute().then(function (response) {
-          return response.data;
-        }).then(function (data) {
-          var key = user ? _this2.pathname + '_' + user._id : _this2.pathname + '_' + options.userId;
-          _localStorage2.default.set(key, { deviceId: deviceId });
-          return data;
+        return request.execute().then(function () {
+          return deviceId;
+        });
+      }).then(function (deviceId) {
+        var user = _export.User.getActiveUser(_this2.client);
+        var _id = options.userId;
+
+        if ((0, _export.isDefined)(user)) {
+          _id = user._id;
+        }
+
+        var request = new _export.CacheRequest({
+          method: _export.RequestMethod.PUT,
+          url: _url2.default.format({
+            protocol: _this2.client.protocol,
+            host: _this2.client.host,
+            pathname: '/' + APP_DATA_NAMESPACE + '/' + _this2.client.appKey + '/' + DEVICE_COLLECTION
+          }),
+          data: {
+            _id: _id,
+            deviceId: deviceId
+          },
+          client: _this2.client
+        });
+        return request.execute().then(function () {
+          return deviceId;
         });
       });
     }
@@ -154,10 +174,9 @@ var Push = function (_EventEmitter) {
           return null;
         }
 
-        return new _es6Promise2.default(function (resolve) {
-          if (_this3.phonegapPush) {
-            return _this3.phonegapPush.unregister(function () {
-              _this3.phonegapPush = null;
+        return new Promise(function (resolve) {
+          if (phonegapPush) {
+            return phonegapPush.unregister(function () {
               resolve();
             }, function () {
               resolve();
@@ -167,30 +186,60 @@ var Push = function (_EventEmitter) {
           return resolve();
         });
       }).then(function () {
-        var user = _entity.User.getActiveUser(_this3.client);
-        var key = user ? _this3.pathname + '_' + user._id : _this3.pathname + '_' + options.userId;
-        return _localStorage2.default.get(key);
-      }).then(function (pushConfig) {
-        var deviceId = void 0;
+        var user = _export.User.getActiveUser(_this3.client);
+        var _id = options.userId;
 
-        if ((0, _utils.isDefined)(pushConfig)) {
-          deviceId = pushConfig.deviceId;
+        if ((0, _export.isDefined)(user) === false && (0, _export.isDefined)(options.userId) === false) {
+          throw new _export.KinveyError('Unable to unregister this device for push notificaitons.', 'You must login a user or provide a userId to unassign the device token.');
         }
 
-        if ((0, _utils.isDefined)(deviceId) === false) {
+        if ((0, _export.isDefined)(user)) {
+          _id = user._id;
+        }
+
+        var request = new _export.CacheRequest({
+          method: _export.RequestMethod.GET,
+          url: _url2.default.format({
+            protocol: _this3.client.protocol,
+            host: _this3.client.host,
+            pathname: '/' + APP_DATA_NAMESPACE + '/' + _this3.client.appKey + '/' + DEVICE_COLLECTION + '/' + _id
+          }),
+          client: _this3.client
+        });
+        return request.execute().catch(function (error) {
+          if (error instanceof _export.NotFoundError) {
+            return {};
+          }
+
+          throw error;
+        }).then(function (response) {
+          if ((0, _export.isDefined)(response)) {
+            return response.data;
+          }
+
+          return null;
+        });
+      }).then(function (device) {
+        var user = _export.User.getActiveUser(_this3.client);
+        var deviceId = void 0;
+
+        if ((0, _export.isDefined)(device)) {
+          deviceId = device.deviceId;
+        }
+
+        if ((0, _export.isDefined)(deviceId) === false) {
           return null;
         }
 
-        var user = _entity.User.getActiveUser(_this3.client);
-        var request = new _request.KinveyRequest({
-          method: _request.RequestMethod.POST,
+        var request = new _export.KinveyRequest({
+          method: _export.RequestMethod.POST,
           url: _url2.default.format({
             protocol: _this3.client.protocol,
             host: _this3.client.host,
             pathname: _this3.pathname + '/unregister-device'
           }),
           properties: options.properties,
-          authType: user ? _request.AuthType.Session : _request.AuthType.Master,
+          authType: user ? _export.AuthType.Session : _export.AuthType.Master,
           data: {
             platform: global.device.platform.toLowerCase(),
             framework: 'phonegap',
@@ -203,29 +252,51 @@ var Push = function (_EventEmitter) {
         return request.execute().then(function (response) {
           return response.data;
         });
-      }).then(function (data) {
-        var user = _entity.User.getActiveUser(_this3.client);
-        var key = user ? _this3.pathname + '_' + user._id : _this3.pathname + '_' + options.userId;
-        _localStorage2.default.remove(key);
-        return data;
+      }).then(function () {
+        var user = _export.User.getActiveUser(_this3.client);
+        var _id = options.userId;
+
+        if ((0, _export.isDefined)(user)) {
+          _id = user._id;
+        }
+
+        var request = new _export.CacheRequest({
+          method: _export.RequestMethod.DELETE,
+          url: _url2.default.format({
+            protocol: _this3.client.protocol,
+            host: _this3.client.host,
+            pathname: '/' + APP_DATA_NAMESPACE + '/' + _this3.client.appKey + '/' + DEVICE_COLLECTION + '/' + _id
+          }),
+          client: _this3.client
+        });
+
+        return request.execute().catch(function (error) {
+          if (error instanceof _export.NotFoundError) {
+            return {};
+          }
+
+          throw error;
+        }).then(function () {
+          return null;
+        });
       });
     }
   }, {
     key: 'pathname',
     get: function get() {
-      return '/' + pushNamespace + '/' + this.client.appKey;
+      return '/' + PUSH_NAMESPACE + '/' + this.client.appKey;
     }
   }, {
     key: 'client',
     get: function get() {
       if (!this._client) {
-        return _client.Client.sharedInstance();
+        return _export.Client.sharedInstance();
       }
 
       return this._client;
     },
     set: function set(client) {
-      if (!(client instanceof _client.Client)) {
+      if (!(client instanceof _export.Client)) {
         throw new Error('client must be an instance of Client.');
       }
 
