@@ -75,6 +75,7 @@
     "mocha": "3.2.0",
     "nock": "9.0.7",
     "regenerator-runtime": "^0.9.5",
+    "request": "2.79.0",
     "shelljs": "^0.7.4",
     "uglify-js": "^2.7.3",
     "wdio-dot-reporter": "0.0.7",
