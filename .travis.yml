@@ -1,24 +1,16 @@
 language: node_js
 node_js:
 - '6'
-before_deploy: "npm run s3"
+before_deploy: npm run build
 deploy:
-  - provider: s3
-    access_key_id: AKIAIPVRCRWUL6EE627A
-    secret_access_key:
-      secure: R86FgXPJokdqhYknKf76wFligHBBKMnaoEFjdtNFfxZeC+VvPtzgUq+BeG5EynFARj5u0mW1qX7l8QynF2QEBzVuFhmjVlj0k1F36qAVu6hKCx5uc1wUQHsE6q5/qQugw0PngYx6bc2f7dPteV8EU5sayF+cqeFkJ7Tmsa7PuQpa7fi7jS15XbqjTlfxp/EeE44cL/TN/Xv8jqTfAz9GbnGKSt/olp2iUGAmf/sTK4FKur3V9p86+Z5lRHiboQUHgC6kVIPdZ3EqDrABLS51Az/FUlmd9CDDvuZ1PaCMOQ0Zp1bsvl6AoC5PQQanCGVWMLMj/NEOQ5w5jhe6n3TfJnwaKK0LTKCo4sN6xNd2dCgFF5s5njzDxzM/esmH3TESzdJsY7ZZPmPE0HqfrbwUJhkhSRjRociAd87UIy9yIBWlOhqgKM/QK414r4hmG7AIe1ZIzeFLuCeG5AJeKAMb73YMtxe+QOcKfsHCT9mJ9OTMu+vRDJMe5Gy0n8CS9DPaaDeQMv/ugnRtHEE9SWP5hvN3/SZObmk+/QDsJ8qGWrycKkk7uLpi+gAJI6WK7u7bHsteyMzoqlF9+3XCmtyueL95uTQZk8yECdqpR/hLC1dJI8KXZeQa5S8i4QfaKfGirBT6LDtRSN0L6yZUzYZPzM5BrTFZUlmrgsbHofcbnsg=
-    bucket: "kinvey"
-    local_dir: s3
-    upload-dir: downloads
-    skip_cleanup: true
-    acl: public_read
-  - provider: npm
-    email: thomas.conner@me.com
-    api_key:
-      secure: RO17BY33RQvUO6ipym4xgR3hAgUNZWoR2YPV3ocAvt/LrDyseHysZlc6VwK1U79ZmFbFXNGgkLEotUHSlY4uyvPogozZwxkaS1XSjJ8GGVQL9yOS9/frnjo/aoGkoqgHK0vkwk6fqbTRTS74WI6pJZ5AJ5sTpvY9sdqpGyJDiuIYgu7Kn1MpZi5q5RRknFH3NebKGs4ecTnApBRhpWYs6ak1+1QROUCqbLi6Fv8OmecjMtcdV+xQiCb2zd2xUnuSpf7bJ0XWLZXpVXD9A5egvRxSZYZgxRgmVSL4xd8eV3J++9sCJg1GKYmJS1ACOiSlRsPDV3o6jONUUO5wrbsZopJjnxLoQc8sXAB9I8/A7jHizIZi3r4VNV0xriBUpkgckn56WtEH9igWclLOOwnL3QTB52BCOMcdzPw4H89mgNXFfmOvIasca8wLe1t/YRolks8wwJ9HzGCbJqEOMXab+EevNwH7GrydlCQpIYv9yJcOeWdO3+KHNTBHF53RU9bz1LDLYEmdRXgjURrBnAaGA8Vv+oo1c0YBNexwumrjqiE/+L4pCIjMc0Zz/51MG+QHel0v2GHxpjggapfNnRqr/uFZBnRp4HUwy+gEFvf75zZWAEWpur0jcPnO5GCObBGb5qYG7kaYu4uegdVVnLcqfmazIX/0RAtgS1CzP7sWo1Q=
-    on:
-      tags: true
-      repo: Kinvey/phonegap-sdk
+  skip_cleanup: true
+  provider: npm
+  email: thomas.conner@me.com
+  api_key:
+    secure: RO17BY33RQvUO6ipym4xgR3hAgUNZWoR2YPV3ocAvt/LrDyseHysZlc6VwK1U79ZmFbFXNGgkLEotUHSlY4uyvPogozZwxkaS1XSjJ8GGVQL9yOS9/frnjo/aoGkoqgHK0vkwk6fqbTRTS74WI6pJZ5AJ5sTpvY9sdqpGyJDiuIYgu7Kn1MpZi5q5RRknFH3NebKGs4ecTnApBRhpWYs6ak1+1QROUCqbLi6Fv8OmecjMtcdV+xQiCb2zd2xUnuSpf7bJ0XWLZXpVXD9A5egvRxSZYZgxRgmVSL4xd8eV3J++9sCJg1GKYmJS1ACOiSlRsPDV3o6jONUUO5wrbsZopJjnxLoQc8sXAB9I8/A7jHizIZi3r4VNV0xriBUpkgckn56WtEH9igWclLOOwnL3QTB52BCOMcdzPw4H89mgNXFfmOvIasca8wLe1t/YRolks8wwJ9HzGCbJqEOMXab+EevNwH7GrydlCQpIYv9yJcOeWdO3+KHNTBHF53RU9bz1LDLYEmdRXgjURrBnAaGA8Vv+oo1c0YBNexwumrjqiE/+L4pCIjMc0Zz/51MG+QHel0v2GHxpjggapfNnRqr/uFZBnRp4HUwy+gEFvf75zZWAEWpur0jcPnO5GCObBGb5qYG7kaYu4uegdVVnLcqfmazIX/0RAtgS1CzP7sWo1Q=
+  on:
+    tags: true
+    repo: Kinvey/phonegap-sdk
 notifications:
   email:
     on_success: change
