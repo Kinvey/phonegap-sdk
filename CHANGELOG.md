@@ -1,5 +1,11 @@
 # Changelog
-## [v3.4.0](https://github.com/Kinvey/html5-sdk/tree/v3.4.0) (2016-02-09)
+## [v3.4.1](https://github.com/Kinvey/phonegap-sdk/tree/v3.4.1) (2016-02-24)
+[Full Changelog](https://github.com/Kinvey/phonegap-sdk/compare/v3.4.0...v3.4.1)<br/>
+
+**Changes**
+- Replace package `kinvey-node-sdk` with `kinvey-js-sdk`.
+
+## [v3.4.0](https://github.com/Kinvey/phonegap-sdk/tree/v3.4.0) (2016-02-09)
 [Full Changelog](https://github.com/Kinvey/phonegap-sdk/compare/v3.3.5...v3.4.0)<br/>
 
 **Changes**
