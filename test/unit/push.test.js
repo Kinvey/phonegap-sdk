@@ -1,7 +1,7 @@
 import Push, { PushMock } from 'src/push.mock';
 import { TestUser } from './mocks';
 import { EventEmitter } from 'events';
-import { CacheRequest, RequestMethod, NotFoundError, randomString } from 'kinvey-node-sdk/dist/export';
+import { CacheRequest, RequestMethod, NotFoundError, randomString } from 'kinvey-js-sdk/dist/export';
 import isFunction from 'lodash/isFunction';
 import os from 'os';
 import url from 'url';

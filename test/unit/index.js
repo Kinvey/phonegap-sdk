@@ -1,6 +1,6 @@
 import { TestUser as User } from './mocks';
 import Kinvey from '../../src';
-import { randomString } from 'kinvey-node-sdk/dist/utils';
+import { randomString } from 'kinvey-js-sdk/dist/utils';
 import nock from 'nock';
 
 // Record for nock
