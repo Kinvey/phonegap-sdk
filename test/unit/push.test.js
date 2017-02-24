@@ -1,5 +1,3 @@
-import Push, { PushMock } from 'src/push.mock';
-import { TestUser } from './mocks';
 import { EventEmitter } from 'events';
 import { CacheRequest, RequestMethod, NotFoundError, randomString } from 'kinvey-js-sdk/dist/export';
 import isFunction from 'lodash/isFunction';
@@ -7,6 +5,7 @@ import os from 'os';
 import url from 'url';
 import nock from 'nock';
 import expect from 'expect';
+import { PushMock, PushMockClass, UserMock } from './mocks';
 const APP_DATA_NAMESPACE = process.env.KINVEY_DATASTORE_NAMESPACE || 'appdata';
 const PUSH_NAMESPACE = process.env.KINVEY_PUSH_NAMESPACE || 'push';
 
@@ -36,7 +35,7 @@ describe('Push', function() {
 
   describe('register()', function() {
     it('should fail if the platform does not support push notifications', function() {
-      class CustomPush extends PushMock {
+      class CustomPush extends PushMockClass {
         isSupported() {
           return false;
         }
@@ -52,7 +51,7 @@ describe('Push', function() {
     it('should fail if the Cordova Device plugin is not installed', function() {
       delete global.device;
 
-      return Push
+      return PushMock
         .register()
         .catch((error) => {
           expect(error.message).toEqual('Cordova Device Plugin is not installed.');
@@ -64,7 +63,7 @@ describe('Push', function() {
     it('should fail if the PhoneGap Push Notification Plugin is not installed', function() {
       delete global.PushNotification;
 
-      return Push
+      return PushMock
         .register()
         .catch((error) => {
           expect(error.message).toEqual('PhoneGap Push Notification Plugin is not installed.');
@@ -89,7 +88,7 @@ describe('Push', function() {
       }
       global.PushNotification = CustomPushNotificationPlugin;
 
-      return Push
+      return PushMock
         .register()
         .catch((error) => {
           expect(error.message).toEqual('An error occurred registering this device for push notifications.');
@@ -125,7 +124,7 @@ describe('Push', function() {
         })
         .reply(204);
 
-      return Push
+      return PushMock
         .register()
         .then((response) => {
           expect(response).toEqual(deviceId);
@@ -146,7 +145,7 @@ describe('Push', function() {
 
         // Create onNotification spy function
         const onNotificationSpy = expect.createSpy();
-        Push.onNotification(onNotificationSpy);
+        PushMock.onNotification(onNotificationSpy);
 
         // Custom Push Notification Plugin
         class CustomPushNotificationPlugin extends PushNotificationPlugin {
@@ -180,7 +179,7 @@ describe('Push', function() {
           })
           .reply(204);
 
-        return Push
+        return PushMock
           .register()
           .then(() => {
             return new Promise((resolve) => {
@@ -195,7 +194,7 @@ describe('Push', function() {
 
   describe('unregister()', function() {
     it('should not fail if the device has not been registered', function() {
-      return Push
+      return PushMock
         .unregister()
         .then((response) => {
           expect(response).toEqual(null);
@@ -244,13 +243,13 @@ describe('Push', function() {
         })
         .reply(204);
 
-      return Push
+      return PushMock
         .register()
-        .then(() => Push.unregister())
+        .then(() => PushMock.unregister())
         .then((response) => {
           expect(response).toEqual(null);
 
-          const user = TestUser.getActiveUser(this.client);
+          const user = UserMock.getActiveUser(this.client);
           const request = new CacheRequest({
             method: RequestMethod.GET,
             url: url.format({

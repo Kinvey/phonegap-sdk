@@ -2,12 +2,12 @@ import { User } from 'kinvey-js-sdk/dist/entity';
 import { randomString } from 'kinvey-js-sdk/dist/utils';
 import nock from 'nock';
 
-export default class TestUser extends User {
+export default class UserMock extends User {
   static getActiveUser(client) {
     const activeUser = super.getActiveUser(client);
 
     if (activeUser) {
-      return new TestUser(activeUser.data);
+      return new UserMock(activeUser.data);
     }
 
     return Promise.resolve(null);

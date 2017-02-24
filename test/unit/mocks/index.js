@@ -1,6 +1,11 @@
-import TestUser from './src/user';
+import HttpMiddlewareMock from './src/http.mock';
+import PushMock, { PushMockClass } from './src/push.mock';
+import UserMock from './src/user.mock';
 
 // Export
 export {
-  TestUser
+  HttpMiddlewareMock,
+  PushMock,
+  PushMockClass,
+  UserMock
 };

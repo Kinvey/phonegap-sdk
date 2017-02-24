@@ -1,7 +1,14 @@
-import { TestUser as User } from './mocks';
-import Kinvey from '../../src';
+import Kinvey from 'src/index.js';
 import { randomString } from 'kinvey-js-sdk/dist/utils';
+import { NetworkRack, SerializeMiddleware, ParseMiddleware } from 'kinvey-js-sdk/dist/request';
 import nock from 'nock';
+import { UserMock, HttpMiddlewareMock } from './mocks';
+
+// Setup network rack
+NetworkRack.reset();
+NetworkRack.use(new SerializeMiddleware());
+NetworkRack.use(new HttpMiddlewareMock());
+NetworkRack.use(new ParseMiddleware());
 
 // Record for nock
 // nock.recorder.rec();
@@ -29,10 +36,10 @@ after(function() {
 });
 
 // Login a user
-beforeEach(() => User.login('test', 'test'));
+beforeEach(() => UserMock.login('test', 'test'));
 
 // Logout the active user
-afterEach(() => User.logout());
+afterEach(() => UserMock.logout());
 
 // Clean up nock
 afterEach(function() {

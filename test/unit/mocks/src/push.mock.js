@@ -1,4 +1,4 @@
-import { Push } from './push';
+import { Push } from 'src/push';
 
 class PushMock extends Push {
   isSupported() {
@@ -7,5 +7,5 @@ class PushMock extends Push {
 }
 
 // Export
-export { PushMock };
+export { PushMock as PushMockClass };
 export default new PushMock();
