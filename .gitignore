@@ -11,8 +11,8 @@ docs
 tmp
 s3
 dist/*
-!dist/kinvey-html5-sdk.js
-!dist/kinvey-html5-sdk.min.js
+!dist/kinvey-phonegap-sdk.js
+!dist/kinvey-phonegap-sdk.min.js
 
 # Test Files
 coverage
