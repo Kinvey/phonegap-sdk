@@ -40,13 +40,13 @@
   "dependencies": {
     "core-js": "2.4.1",
     "es6-promise": "4.1.0",
-    "kinvey-html5-sdk": "3.4.2",
-    "kinvey-js-sdk": "3.4.3",
+    "kinvey-html5-sdk": "3.4.4",
+    "kinvey-js-sdk": "3.4.4",
     "lodash": "4.17.4"
   },
   "peerDependencies": {
-    "kinvey-html5-sdk": "3.4.2",
-    "kinvey-js-sdk": "3.4.3"
+    "kinvey-html5-sdk": "3.4.4",
+    "kinvey-js-sdk": "3.4.4"
   },
   "devDependencies": {
     "babel-cli": "6.24.0",
