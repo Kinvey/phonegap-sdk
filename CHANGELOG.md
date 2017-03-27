@@ -1,4 +1,10 @@
 # Changelog
+## [v3.4.4](https://github.com/Kinvey/phonegap-sdk/tree/v3.4.4) (2016-03-27)
+[Full Changelog](https://github.com/Kinvey/phonegap-sdk/compare/v3.4.2...v3.4.4)<br/>
+
+**Changes**
+- Update package dependencies.
+
 ## [v3.4.2](https://github.com/Kinvey/phonegap-sdk/tree/v3.4.2) (2016-03-16)
 [Full Changelog](https://github.com/Kinvey/phonegap-sdk/compare/v3.4.1...v3.4.2)<br/>
 
