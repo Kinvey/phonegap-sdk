@@ -1,23 +1,29 @@
 # Changelog
-## [v3.4.4](https://github.com/Kinvey/phonegap-sdk/tree/v3.4.4) (2016-03-27)
+## [v3.4.5](https://github.com/Kinvey/phonegap-sdk/tree/v3.4.4) (2017-04-13)
+[Full Changelog](https://github.com/Kinvey/phonegap-sdk/compare/v3.4.4...v3.4.5)<br/>
+
+**Changes**
+- Update package dependencies.
+
+## [v3.4.4](https://github.com/Kinvey/phonegap-sdk/tree/v3.4.4) (2017-03-27)
 [Full Changelog](https://github.com/Kinvey/phonegap-sdk/compare/v3.4.2...v3.4.4)<br/>
 
 **Changes**
 - Update package dependencies.
 
-## [v3.4.2](https://github.com/Kinvey/phonegap-sdk/tree/v3.4.2) (2016-03-16)
+## [v3.4.2](https://github.com/Kinvey/phonegap-sdk/tree/v3.4.2) (2017-03-16)
 [Full Changelog](https://github.com/Kinvey/phonegap-sdk/compare/v3.4.1...v3.4.2)<br/>
 
 **Changes**
 - Update package dependencies.
 
-## [v3.4.1](https://github.com/Kinvey/phonegap-sdk/tree/v3.4.1) (2016-02-24)
+## [v3.4.1](https://github.com/Kinvey/phonegap-sdk/tree/v3.4.1) (2017-02-24)
 [Full Changelog](https://github.com/Kinvey/phonegap-sdk/compare/v3.4.0...v3.4.1)<br/>
 
 **Changes**
 - Replace package `kinvey-node-sdk` with `kinvey-js-sdk`.
 
-## [v3.4.0](https://github.com/Kinvey/phonegap-sdk/tree/v3.4.0) (2016-02-09)
+## [v3.4.0](https://github.com/Kinvey/phonegap-sdk/tree/v3.4.0) (2017-02-09)
 [Full Changelog](https://github.com/Kinvey/phonegap-sdk/compare/v3.3.5...v3.4.0)<br/>
 
 **Changes**
@@ -27,7 +33,7 @@
 - Updated `kinvey-html5-sdk` to `v3.4.0`.
 - Updated `kinvey-node-sdk` to `v3.4.0`.
 
-## [v3.3.5](https://github.com/Kinvey/phonegap-sdk/tree/v3.3.5) (2016-01-25)
+## [v3.3.5](https://github.com/Kinvey/phonegap-sdk/tree/v3.3.5) (2017-01-25)
 [Full Changelog](https://github.com/Kinvey/phonegap-sdk/compare/v3.3.4...v3.3.5)<br/>
 
 **Changes:**
@@ -37,7 +43,7 @@
 - Updated `kinvey-html5-sdk` to `v3.3.5`.
 - Updated `kinvey-node-sdk` to `v3.3.5`.
 
-## [3.3.4](https://github.com/Kinvey/phonegap-sdk/tree/v3.3.4) (2016-01-12)
+## [3.3.4](https://github.com/Kinvey/phonegap-sdk/tree/v3.3.4) (2017-01-12)
 [Full Changelog](https://github.com/Kinvey/phonegap-sdk/compare/v3.3.3...v3.3.4)<br/>
 
 **Updated Dependencies:**
