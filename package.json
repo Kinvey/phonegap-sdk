@@ -32,7 +32,7 @@
     "lint": "npm run lint:src",
     "lint:src": "eslint src/**",
     "lint:test": "eslint test/unit/**",
-    "preversion": "del node_modules && npm install && npm test && npm build && git add dist/kinvey-phonegap-sdk.js && git add dist/kinvey-phonegap-sdk.min.js && git commit -m 'Update dist bundle.'",
+    "preversion": "del node_modules && npm install && npm test && npm run build && git add dist/kinvey-phonegap-sdk.js && git add dist/kinvey-phonegap-sdk.min.js && git commit -m 'Update dist bundle.'",
     "postversion": "git push && git push --tags",
     "s3": "npm run build && shjs ./scripts/s3.js",
     "test": "mocha --compilers js:babel-core/register -r babel-polyfill -s 100 --recursive test/unit/index test/unit",
