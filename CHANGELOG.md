@@ -14,7 +14,7 @@ _None_
 - Update [kinvey-html5-sdk](https://www.npmjs.com/package/kinvey-html5-sdk) dependency to [v3.5.0](https://github.com/Kinvey/html5-sdk/tree/v3.5.0).
 
 ### Merged Pull Requests
-_None_
+- Register Popup [#11](https://github.com/Kinvey/phonegap-sdk/pull/11)
 
 ### Closed Issues
 _None_
