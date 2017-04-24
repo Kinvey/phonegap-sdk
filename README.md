@@ -2,94 +2,54 @@
 
 [Kinvey](http://www.kinvey.com) (pronounced Kin-vey, like convey) makes it ridiculously easy for developers to setup, use and operate a cloud backend for their mobile apps. They don't have to worry about connecting to various cloud services, setting up servers for their backend, or maintaining and scaling them.
 
-This npm package makes it very easy to connect your Cordova/Phonegap app with Kinvey.
+## Installation
 
-## How to use
-
-### 1. Sign up for Kinvey
-To use the SDK, sign up for Kinvey if you have not already done so. Go to the [sign up](https://console.kinvey.com/#signup) page, and follow the steps provided.
-
-### 2. Install the SDK
-You can install the module using npm:
-
-```bash
-npm install kinvey-phonegap-sdk --save
-```
-
-or
-
-use our [DevCenter Download Page](http://devcenter.kinvey.com/phonegap/downloads) to download the SDK and save it to a file name `kinvey-phonegap-sdk.js` in your project.
-
-### 3. Configure the SDK
-If you installed the SDK with npm, include the sdk in your code using `require`.
+#### Using npm
+Install and save the Kinvey PhoneGap SDK:
 
 ```javascript
-var Kinvey = require('kinvey-phonegap-sdk');
+npm install --save kinvey-phonegap-sdk
 ```
 
-If you downloaded the SDK and saved it to a file, add a script tag to your main html file to load the SDK.
+Import the Kinvey PhoneGap SDK (ES6/TypeScript):
+
+```javascript
+import Kinvey from 'kinvey-phonegap-sdk';
+```
+
+A [TypeScript](https://www.typescriptlang.org/) type definition file is included in the distribution and will automatically be picked up by the TypeScript compiler.
+
+#### Using the Kinvey CDN
 
 ```html
-<script src="path/to/kinvey-phonegap-sdk.js"></script>
+<script src="https://download.kinvey.com/js/kinvey-phonegap-sdk-3.5.0.min.js"></script>
 ```
 
-Next, use `Kinvey.initialize` to configure your app. Replace `<appKey>` and `<appSecret>` with your apps app key and secret. You can find these for your app using the [Kinvey Console App](https://console.kinvey.com).
+A [TypeScript](https://www.typescriptlang.org/) type definition file is available at
 
-```javascript
-Kinvey.initialize({
-    appKey: '<appKey>',
-    appSecret: '<appSecret>'
-})
-  .then(function(activeUser) {
-    // ...
-  });
+```html
+https://download.kinvey.com/js/kinvey-3.5.0.d.ts
 ```
 
-## What’s next?
-You are now ready to start building your awesome apps! Next we recommend diving into the [User guide](http://devcenter.kinvey.com/phonegap/guides/users) or [Data store guide](http://devcenter.kinvey.com/phonegap/guides/datastore) to learn more about our service, or explore the [sample apps](http://devcenter.kinvey.com/phonegap/samples) to go straight to working projects.
+You will then be able to access Kinvey PhoneGap SDK via `window.Kinvey`.
 
-## Build
-Execute `npm run build` to build the package.
+## Browser Compatibility
 
-## Release
-[TravisCI](https://travis-ci.org/Kinvey/phonegap-sdk) will deploy the pacakge to [NPM](https://www.npmjs.com/package/kinvey-phonegap-sdk).
+The Kinvey PhoneGap SDK supports the following browsers and versions of PhoneGap/Cordova:
 
-1. Checkout the master branch.
-2. Update the CHANGELOG.md.
-3. Execute `npm version [<newversion> | major | minor | patch | premajor | preminor | prepatch | prerelease | from-git]`. See [Version Management](#version-management) for more info on incrementing the version.
-4. Done.
+- On macOS: Safari, Chrome, Firefox
+- On iOS: Safari, Chrome
+- On Windows: Chrome, Firefox, Edge, Internet Explorer 11
+- On Android: Chrome (Performance depends on device)
+- On PhoneGap/Cordova: 5.x+
 
-### Version Management
-Updating the package version should follow [Semantic Version 2.0.0](http://semver.org/):
+## Documentation
 
-* Major (x.0.0): when making an incompatible API changes.
-* Minor (3.x.0): when adding functionality in a backwards-compatible manner.
-* Patch (3.0.x): when making backwards-compatible bug fixes or enhancements.
+For more detailed documentation, see http://devcenter.kinvey.com/phonegap
 
-## Test
-The Kinvey-PhoneGap-SDK is setup to run unit and end to end tests.
+## License
+See [LICENSE](LICENSE) for details.
 
-_Note: Before running any tests you will need to run `npm install` to install any dependencies required._
+## Contributing
+See [CONTRIBUTING.md](CONTRIBUTING.md) for details on reporting bugs and making contributions.
 
-### Unit Tests
-The steps for running the unit tests is as follows:
-
-1. Open a terminal window and execute `npm test`.
-
-### End to End Tests
-The steps for running the end to end tests is as follows:
-
-#### Start Appium Web Server
-1. Open a terminal window.
-2. Change directory to the location of the project.
-3. Execute `npm run e2e:server`. __Keep this terminal window open.__
-
-#### Run End to End Tests for iOS
-Make sure you have the latest version of XCode installed and the iPhone 6 Simulator. Please visit [Apple Developer Downloads](https://developer.apple.com/download/) to download the latest version of XCode if you haven't already.
-
-1. Open a terminal window.
-2. Change directory to the location of the project.
-3. Execute `npm run e2e:test:ios`.
-
-#### To run End to End Tests for Android
-_Coming soon..._
