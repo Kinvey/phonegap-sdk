@@ -12,6 +12,8 @@
     "Thomas Conner <thomas@kinvey.com>"
   ],
   "main": "./dist/index.js",
+  "module": "./src/index.js",
+  "typings": "./src/kinvey.d.ts",
   "repository": {
     "type": "git",
     "url": "git@github.com:Kinvey/phonegap-sdk"
@@ -30,7 +32,7 @@
     "lint": "npm run lint:src",
     "lint:src": "eslint src/**",
     "lint:test": "eslint test/unit/**",
-    "preversion": "del node_modules && npm install && npm test",
+    "preversion": "del node_modules && npm install && npm test && npm build && git add dist/kinvey-phonegap-sdk.js && git add dist/kinvey-phonegap-sdk.min.js && git commit -m 'Update dist bundle.'",
     "postversion": "git push && git push --tags",
     "s3": "npm run build && shjs ./scripts/s3.js",
     "test": "mocha --compilers js:babel-core/register -r babel-polyfill -s 100 --recursive test/unit/index test/unit",
@@ -40,13 +42,13 @@
   "dependencies": {
     "core-js": "2.4.1",
     "es6-promise": "4.1.0",
-    "kinvey-html5-sdk": "3.4.5",
-    "kinvey-js-sdk": "3.4.5",
+    "kinvey-html5-sdk": "3.5.0",
+    "kinvey-js-sdk": "3.5.0",
     "lodash": "4.17.4"
   },
   "peerDependencies": {
-    "kinvey-html5-sdk": "3.4.5",
-    "kinvey-js-sdk": "3.4.5"
+    "kinvey-html5-sdk": "3.5.0",
+    "kinvey-js-sdk": "3.5.0"
   },
   "devDependencies": {
     "babel-cli": "6.24.0",
