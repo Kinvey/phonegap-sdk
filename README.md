@@ -28,7 +28,7 @@ A [TypeScript](https://www.typescriptlang.org/) type definition file is included
 A [TypeScript](https://www.typescriptlang.org/) type definition file is available at
 
 ```html
-https://download.kinvey.com/js/kinvey-3.5.0.d.ts
+https://download.kinvey.com/js/kinvey.d.ts
 ```
 
 You will then be able to access Kinvey PhoneGap SDK via `window.Kinvey`.
