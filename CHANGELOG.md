@@ -1,4 +1,26 @@
-# Changelog
+# Change Log
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](http://keepachangelog.com/)
+and this project adheres to [Semantic Versioning](http://semver.org/).
+
+## [3.5.1](https://github.com/Kinvey/phonegap-sdk/tree/v3.5.1) (2017-06-30)
+[Full Changelog](https://github.com/Kinvey/phonegap-sdk/compare/v3.5.0...v3.5.1)<br/>
+
+### Added
+_None_
+
+### Removed
+_None_
+
+### Changed
+- Updated `kinvey-js-sdk` to `3.5.1`
+
+### Merged Pull Requests
+_None_
+
+### Closed Issues
+_None_
 ## [3.5.0](https://github.com/Kinvey/phonegap-sdk/tree/v3.5.0) (2017-04-24)
 [Full Changelog](https://github.com/Kinvey/phonegap-sdk/compare/v3.4.5...v3.5.0)<br/>
 
