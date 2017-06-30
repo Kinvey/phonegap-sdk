@@ -1,6 +1,6 @@
 /**
  * @preserve
- * kinvey-phonegap-sdk v3.4.5
+ * kinvey-phonegap-sdk v3.5.1
  * Kinvey JavaScript SDK for PhoneGap/Cordova applications.
  * http://www.kinvey.com
  *
@@ -139,7 +139,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _entity = __webpack_require__(342);
 
-	var _identity = __webpack_require__(328);
+	var _identity = __webpack_require__(325);
 
 	var _request = __webpack_require__(235);
 
@@ -3540,6 +3540,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	process.removeListener = noop;
 	process.removeAllListeners = noop;
 	process.emit = noop;
+	process.prependListener = noop;
+	process.prependOnceListener = noop;
+
+	process.listeners = function (name) { return [] }
 
 	process.binding = function (name) {
 	    throw new Error('process.binding is not supported');
@@ -12295,7 +12299,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _cache2 = _interopRequireDefault(_cache);
 
-	var _deltafetch = __webpack_require__(318);
+	var _deltafetch = __webpack_require__(315);
 
 	var _deltafetch2 = _interopRequireDefault(_deltafetch);
 
@@ -12303,7 +12307,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _headers2 = _interopRequireDefault(_headers);
 
-	var _network = __webpack_require__(320);
+	var _network = __webpack_require__(317);
 
 	var _network2 = _interopRequireDefault(_network);
 
@@ -12368,17 +12372,17 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _es6Promise2 = _interopRequireDefault(_es6Promise);
 
-	var _urlPattern = __webpack_require__(237);
+	var _promiseQueue = __webpack_require__(237);
+
+	var _promiseQueue2 = _interopRequireDefault(_promiseQueue);
+
+	var _urlPattern = __webpack_require__(240);
 
 	var _urlPattern2 = _interopRequireDefault(_urlPattern);
 
 	var _url = __webpack_require__(229);
 
 	var _url2 = _interopRequireDefault(_url);
-
-	var _localStorage = __webpack_require__(239);
-
-	var _localStorage2 = _interopRequireDefault(_localStorage);
 
 	var _cloneDeep = __webpack_require__(242);
 
@@ -12400,9 +12404,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _utils = __webpack_require__(41);
 
-	var _request = __webpack_require__(285);
+	var _request2 = __webpack_require__(285);
 
-	var _request2 = _interopRequireDefault(_request);
+	var _request3 = _interopRequireDefault(_request2);
 
 	var _response = __webpack_require__(293);
 
@@ -12419,6 +12423,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	var usersNamespace = process && process.env && process.env.KINVEY_USERS_NAMESPACE || 'user' || 'user';
 	var activeUserCollectionName = process && process.env && process.env.KINVEY_USER_ACTIVE_COLLECTION_NAME || undefined || 'kinvey_active_user';
 	var activeUsers = {};
+
+	_promiseQueue2.default.configure(_es6Promise2.default);
+	var queue = new _promiseQueue2.default(1, Infinity);
 
 	var CacheRequest = function (_Request) {
 	  _inherits(CacheRequest, _Request);
@@ -12531,43 +12538,28 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function loadActiveUser() {
 	      var client = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : _client2.default.sharedInstance();
 
-	      var request = new CacheRequest({
-	        method: _request.RequestMethod.GET,
-	        url: _url2.default.format({
-	          protocol: client.apiProtocol,
-	          host: client.apiHost,
-	          pathname: '/' + usersNamespace + '/' + client.appKey + '/' + activeUserCollectionName
-	        })
+	      return queue.add(function () {
+	        var request = new CacheRequest({
+	          method: _request2.RequestMethod.GET,
+	          url: _url2.default.format({
+	            protocol: client.apiProtocol,
+	            host: client.apiHost,
+	            pathname: '/' + usersNamespace + '/' + client.appKey + '/' + activeUserCollectionName
+	          })
+	        });
+	        return request.execute().then(function (response) {
+	          return response.data;
+	        }).then(function (users) {
+	          if (users.length > 0) {
+	            return users[0];
+	          }
+
+	          return null;
+	        }).then(function (activeUser) {
+	          activeUsers[client.appKey] = activeUser;
+	          return activeUser;
+	        });
 	      });
-	      return request.execute().then(function (response) {
-	        return response.data;
-	      }).then(function (users) {
-	        if (users.length > 0) {
-	          return users[0];
-	        }
-
-	        return null;
-	      }).then(function (activeUser) {
-	        if ((0, _utils.isDefined)(activeUser) === false) {
-	          return CacheRequest.loadActiveUserLegacy(client);
-	        }
-
-	        return activeUser;
-	      }).then(function (activeUser) {
-	        return CacheRequest.setActiveUser(client, activeUser);
-	      }).then(function (activeUser) {
-	        activeUsers[client.appKey] = activeUser;
-	        return activeUser;
-	      });
-	    }
-	  }, {
-	    key: 'loadActiveUserLegacy',
-	    value: function loadActiveUserLegacy() {
-	      var client = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : _client2.default.sharedInstance();
-
-	      var activeUser = CacheRequest.getActiveUserLegacy(client);
-	      activeUsers[client.appKey] = activeUser;
-	      return activeUser;
 	    }
 	  }, {
 	    key: 'getActiveUser',
@@ -12577,98 +12569,61 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return activeUsers[client.appKey];
 	    }
 	  }, {
-	    key: 'getActiveUserLegacy',
-	    value: function getActiveUserLegacy() {
-	      var client = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : _client2.default.sharedInstance();
-
-	      try {
-	        return _localStorage2.default.get(client.appKey + 'kinvey_user');
-	      } catch (error) {
-	        return null;
-	      }
-	    }
-	  }, {
 	    key: 'setActiveUser',
 	    value: function setActiveUser() {
 	      var client = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : _client2.default.sharedInstance();
-	      var user = arguments[1];
+	      var activeUser = arguments[1];
 
-	      var promise = _es6Promise2.default.resolve(null);
-	      var activeUser = CacheRequest.getActiveUser(client);
+	      return queue.add(function () {
+	        var promise = _es6Promise2.default.resolve(null);
+	        var prevActiveUser = CacheRequest.getActiveUser(client);
 
-	      if ((0, _utils.isDefined)(activeUser)) {
-	        CacheRequest.setActiveUserLegacy(client, null);
+	        if ((0, _utils.isDefined)(activeUser)) {
+	          delete activeUser.password;
 
-	        activeUsers[client.appKey] = null;
+	          activeUsers[client.appKey] = activeUser;
 
-	        var request = new CacheRequest({
-	          method: _request.RequestMethod.DELETE,
-	          url: _url2.default.format({
-	            protocol: client.apiProtocol,
-	            host: client.apiHost,
-	            pathname: '/' + usersNamespace + '/' + client.appKey + '/' + activeUserCollectionName + '/' + activeUser._id
-	          })
-	        });
-	        promise = request.execute().then(function (response) {
-	          return response.data;
-	        }).catch(function (error) {
-	          if (error instanceof _errors.NotFoundError) {
-	            return null;
+	          var request = new CacheRequest({
+	            method: _request2.RequestMethod.POST,
+	            url: _url2.default.format({
+	              protocol: client.apiProtocol,
+	              host: client.apiHost,
+	              pathname: '/' + usersNamespace + '/' + client.appKey + '/' + activeUserCollectionName
+	            }),
+	            body: activeUser
+	          });
+	          promise = request.execute().then(function (response) {
+	            return response.data;
+	          });
+	        } else {
+	          delete activeUsers[client.appKey];
+	        }
+
+	        return promise.then(function () {
+	          if ((0, _utils.isDefined)(prevActiveUser) && ((0, _utils.isDefined)(activeUser) === false || prevActiveUser._id !== activeUser._id)) {
+	            var _request = new CacheRequest({
+	              method: _request2.RequestMethod.DELETE,
+	              url: _url2.default.format({
+	                protocol: client.apiProtocol,
+	                host: client.apiHost,
+	                pathname: '/' + usersNamespace + '/' + client.appKey + '/' + activeUserCollectionName + '/' + prevActiveUser._id
+	              })
+	            });
+	            return _request.execute().catch(function () {
+	              return activeUser;
+	            });
 	          }
 
-	          throw error;
+	          return activeUser;
+	        }).then(function () {
+	          return activeUser;
 	        });
-	      }
-
-	      return promise.then(function () {
-	        if ((0, _utils.isDefined)(user) === false) {
-	          return null;
-	        }
-
-	        delete user.password;
-
-	        activeUsers[client.appKey] = user;
-
-	        CacheRequest.setActiveUserLegacy(client, user);
-
-	        var request = new CacheRequest({
-	          method: _request.RequestMethod.POST,
-	          url: _url2.default.format({
-	            protocol: client.apiProtocol,
-	            host: client.apiHost,
-	            pathname: '/' + usersNamespace + '/' + client.appKey + '/' + activeUserCollectionName
-	          }),
-	          body: user
-	        });
-	        return request.execute().then(function (response) {
-	          return response.data;
-	        });
-	      }).then(function () {
-	        return user;
 	      });
-	    }
-	  }, {
-	    key: 'setActiveUserLegacy',
-	    value: function setActiveUserLegacy() {
-	      var client = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : _client2.default.sharedInstance();
-	      var user = arguments[1];
-
-	      try {
-	        _localStorage2.default.remove(client.appKey + 'kinvey_user');
-
-	        if ((0, _utils.isDefined)(user)) {
-	          _localStorage2.default.set(client.appKey + 'kinvey_user', user);
-	        }
-
-	        return true;
-	      } catch (error) {
-	        return false;
-	      }
 	    }
 	  }]);
 
 	  return CacheRequest;
-	}(_request2.default);
+	}(_request3.default);
 
 	exports.default = CacheRequest;
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(47), (function() { return this; }())))
@@ -12677,11 +12632,211 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 237 */
 /***/ (function(module, exports, __webpack_require__) {
 
+	/* WEBPACK VAR INJECTION */(function(process) {module.exports = process.env.PROMISE_QUEUE_COVERAGE ?
+	    __webpack_require__(238) :
+	    __webpack_require__(239);
+
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(47)))
+
+/***/ }),
+/* 238 */
+/***/ (function(module, exports) {
+
+	
+
+/***/ }),
+/* 239 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/* global define, Promise */
+	(function (root, factory) {
+	    'use strict';
+	    if (typeof module === 'object' && module.exports && "function" === 'function') {
+	        // CommonJS
+	        module.exports = factory();
+	    } else if (true) {
+	        // AMD. Register as an anonymous module.
+	        !(__WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	    } else {
+	        // Browser globals
+	        root.Queue = factory();
+	    }
+	})
+	(this, function () {
+	    'use strict';
+
+	    /**
+	     * @return {Object}
+	     */
+	    var LocalPromise = typeof Promise !== 'undefined' ? Promise : function () {
+	        return {
+	            then: function () {
+	                throw new Error('Queue.configure() before use Queue');
+	            }
+	        };
+	    };
+
+	    var noop = function () {};
+
+	    /**
+	     * @param {*} value
+	     * @returns {LocalPromise}
+	     */
+	    var resolveWith = function (value) {
+	        if (value && typeof value.then === 'function') {
+	            return value;
+	        }
+
+	        return new LocalPromise(function (resolve) {
+	            resolve(value);
+	        });
+	    };
+
+	    /**
+	     * It limits concurrently executed promises
+	     *
+	     * @param {Number} [maxPendingPromises=Infinity] max number of concurrently executed promises
+	     * @param {Number} [maxQueuedPromises=Infinity]  max number of queued promises
+	     * @constructor
+	     *
+	     * @example
+	     *
+	     * var queue = new Queue(1);
+	     *
+	     * queue.add(function () {
+	     *     // resolve of this promise will resume next request
+	     *     return downloadTarballFromGithub(url, file);
+	     * })
+	     * .then(function (file) {
+	     *     doStuffWith(file);
+	     * });
+	     *
+	     * queue.add(function () {
+	     *     return downloadTarballFromGithub(url, file);
+	     * })
+	     * // This request will be paused
+	     * .then(function (file) {
+	     *     doStuffWith(file);
+	     * });
+	     */
+	    function Queue(maxPendingPromises, maxQueuedPromises) {
+	        this.pendingPromises = 0;
+	        this.maxPendingPromises = typeof maxPendingPromises !== 'undefined' ? maxPendingPromises : Infinity;
+	        this.maxQueuedPromises = typeof maxQueuedPromises !== 'undefined' ? maxQueuedPromises : Infinity;
+	        this.queue = [];
+	    }
+
+	    /**
+	     * Defines promise promiseFactory
+	     * @param {Function} GlobalPromise
+	     */
+	    Queue.configure = function (GlobalPromise) {
+	        LocalPromise = GlobalPromise;
+	    };
+
+	    /**
+	     * @param {Function} promiseGenerator
+	     * @return {LocalPromise}
+	     */
+	    Queue.prototype.add = function (promiseGenerator) {
+	        var self = this;
+	        return new LocalPromise(function (resolve, reject, notify) {
+	            // Do not queue to much promises
+	            if (self.queue.length >= self.maxQueuedPromises) {
+	                reject(new Error('Queue limit reached'));
+	                return;
+	            }
+
+	            // Add to queue
+	            self.queue.push({
+	                promiseGenerator: promiseGenerator,
+	                resolve: resolve,
+	                reject: reject,
+	                notify: notify || noop
+	            });
+
+	            self._dequeue();
+	        });
+	    };
+
+	    /**
+	     * Number of simultaneously running promises (which are resolving)
+	     *
+	     * @return {number}
+	     */
+	    Queue.prototype.getPendingLength = function () {
+	        return this.pendingPromises;
+	    };
+
+	    /**
+	     * Number of queued promises (which are waiting)
+	     *
+	     * @return {number}
+	     */
+	    Queue.prototype.getQueueLength = function () {
+	        return this.queue.length;
+	    };
+
+	    /**
+	     * @returns {boolean} true if first item removed from queue
+	     * @private
+	     */
+	    Queue.prototype._dequeue = function () {
+	        var self = this;
+	        if (this.pendingPromises >= this.maxPendingPromises) {
+	            return false;
+	        }
+
+	        // Remove from queue
+	        var item = this.queue.shift();
+	        if (!item) {
+	            return false;
+	        }
+
+	        try {
+	            this.pendingPromises++;
+
+	            resolveWith(item.promiseGenerator())
+	            // Forward all stuff
+	                .then(function (value) {
+	                    // It is not pending now
+	                    self.pendingPromises--;
+	                    // It should pass values
+	                    item.resolve(value);
+	                    self._dequeue();
+	                }, function (err) {
+	                    // It is not pending now
+	                    self.pendingPromises--;
+	                    // It should not mask errors
+	                    item.reject(err);
+	                    self._dequeue();
+	                }, function (message) {
+	                    // It should pass notifications
+	                    item.notify(message);
+	                });
+	        } catch (err) {
+	            self.pendingPromises--;
+	            item.reject(err);
+	            self._dequeue();
+
+	        }
+
+	        return true;
+	    };
+
+	    return Queue;
+	});
+
+
+/***/ }),
+/* 240 */
+/***/ (function(module, exports, __webpack_require__) {
+
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Generated by CoffeeScript 1.10.0
 	var slice = [].slice;
 
 	(function(root, factory) {
-	  if (('function' === "function") && (__webpack_require__(238) != null)) {
+	  if (('function' === "function") && (__webpack_require__(241) != null)) {
 	    return !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	  } else if (typeof exports !== "undefined" && exports !== null) {
 	    return module.exports = factory();
@@ -13116,159 +13271,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 238 */
+/* 241 */
 /***/ (function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(__webpack_amd_options__) {module.exports = __webpack_amd_options__;
 
 	/* WEBPACK VAR INJECTION */}.call(exports, {}))
-
-/***/ }),
-/* 239 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(global) {'use strict';
-
-	var stub = __webpack_require__(240);
-	var tracking = __webpack_require__(241);
-	var ls = 'localStorage' in global && global.localStorage ? global.localStorage : stub;
-
-	function accessor (key, value) {
-	  if (arguments.length === 1) {
-	    return get(key);
-	  }
-	  return set(key, value);
-	}
-
-	function get (key) {
-	  return JSON.parse(ls.getItem(key));
-	}
-
-	function set (key, value) {
-	  try {
-	    ls.setItem(key, JSON.stringify(value));
-	    return true;
-	  } catch (e) {
-	    return false;
-	  }
-	}
-
-	function remove (key) {
-	  return ls.removeItem(key);
-	}
-
-	function clear () {
-	  return ls.clear();
-	}
-
-	accessor.set = set;
-	accessor.get = get;
-	accessor.remove = remove;
-	accessor.clear = clear;
-	accessor.on = tracking.on;
-	accessor.off = tracking.off;
-
-	module.exports = accessor;
-
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
-
-/***/ }),
-/* 240 */
-/***/ (function(module, exports) {
-
-	'use strict';
-
-	var ms = {};
-
-	function getItem (key) {
-	  return key in ms ? ms[key] : null;
-	}
-
-	function setItem (key, value) {
-	  ms[key] = value;
-	  return true;
-	}
-
-	function removeItem (key) {
-	  var found = key in ms;
-	  if (found) {
-	    return delete ms[key];
-	  }
-	  return false;
-	}
-
-	function clear () {
-	  ms = {};
-	  return true;
-	}
-
-	module.exports = {
-	  getItem: getItem,
-	  setItem: setItem,
-	  removeItem: removeItem,
-	  clear: clear
-	};
-
-
-/***/ }),
-/* 241 */
-/***/ (function(module, exports) {
-
-	/* WEBPACK VAR INJECTION */(function(global) {'use strict';
-
-	var listeners = {};
-	var listening = false;
-
-	function listen () {
-	  if (global.addEventListener) {
-	    global.addEventListener('storage', change, false);
-	  } else if (global.attachEvent) {
-	    global.attachEvent('onstorage', change);
-	  } else {
-	    global.onstorage = change;
-	  }
-	}
-
-	function change (e) {
-	  if (!e) {
-	    e = global.event;
-	  }
-	  var all = listeners[e.key];
-	  if (all) {
-	    all.forEach(fire);
-	  }
-
-	  function fire (listener) {
-	    listener(JSON.parse(e.newValue), JSON.parse(e.oldValue), e.url || e.uri);
-	  }
-	}
-
-	function on (key, fn) {
-	  if (listeners[key]) {
-	    listeners[key].push(fn);
-	  } else {
-	    listeners[key] = [fn];
-	  }
-	  if (listening === false) {
-	    listen();
-	  }
-	}
-
-	function off (key, fn) {
-	  var ns = listeners[key];
-	  if (ns.length > 1) {
-	    ns.splice(ns.indexOf(fn), 1);
-	  } else {
-	    listeners[key] = [];
-	  }
-	}
-
-	module.exports = {
-	  on: on,
-	  off: off
-	};
-
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ }),
 /* 242 */
@@ -14262,15 +14270,31 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, options);
 
 	    if (options.apiHostname && (0, _isString2.default)(options.apiHostname)) {
-	      var apiHostnameParsed = _url2.default.parse(options.apiHostname);
-	      options.apiProtocol = apiHostnameParsed.protocol || 'https:';
-	      options.apiHost = apiHostnameParsed.host;
+	      var apiHostname = options.apiHostname;
+
+	      if (/^https?:\/\//i.test(apiHostname) === false) {
+	        apiHostname = 'https://' + apiHostname;
+	      }
+
+	      var apiHostnameParsed = _url2.default.parse(apiHostname);
+
+	      this.apiProtocol = apiHostnameParsed.protocol;
+
+	      this.apiHost = apiHostnameParsed.host;
 	    }
 
 	    if (options.micHostname && (0, _isString2.default)(options.micHostname)) {
-	      var micHostnameParsed = _url2.default.parse(options.micHostname);
-	      options.micProtocol = micHostnameParsed.protocol || 'https:';
-	      options.micHost = micHostnameParsed.host;
+	      var micHostname = options.micHostname;
+
+	      if (/^https?:\/\//i.test(micHostname) === false) {
+	        micHostname = 'https://' + micHostname;
+	      }
+
+	      var micHostnameParsed = _url2.default.parse(micHostname);
+
+	      this.micProtocol = micHostnameParsed.protocol;
+
+	      this.micHost = micHostnameParsed.host;
 	    }
 
 	    if (options.liveServiceHostname && (0, _isString2.default)(options.liveServiceHostname)) {
@@ -14278,14 +14302,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	      options.liveServiceProtocol = liveServiceHostnameParsed.protocol || 'https:';
 	      options.liveServiceHost = liveServiceHostnameParsed.host;
 	    }
-
-	    this.apiProtocol = options.apiProtocol;
-
-	    this.apiHost = options.apiHost;
-
-	    this.micProtocol = options.micProtocol;
-
-	    this.micHost = options.micHost;
 
 	    this.liveServiceProtocol = options.liveServiceProtocol;
 
@@ -14396,7 +14412,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'sharedInstance',
 	    value: function sharedInstance() {
-	      if (!_sharedInstance) {
+	      if ((0, _utils.isDefined)(_sharedInstance) === false) {
 	        throw new _errors.KinveyError('You have not initialized the library. ' + 'Please call Kinvey.init() to initialize the library.');
 	      }
 
@@ -17954,7 +17970,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _cache2 = _interopRequireDefault(_cache);
 
-	var _http = __webpack_require__(315);
+	var _http = __webpack_require__(312);
 
 	var _http2 = _interopRequireDefault(_http);
 
@@ -17962,11 +17978,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _middleware2 = _interopRequireDefault(_middleware);
 
-	var _parse = __webpack_require__(316);
+	var _parse = __webpack_require__(313);
 
 	var _parse2 = _interopRequireDefault(_parse);
 
-	var _serialize = __webpack_require__(317);
+	var _serialize = __webpack_require__(314);
 
 	var _serialize2 = _interopRequireDefault(_serialize);
 
@@ -18247,7 +18263,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _es6Promise2 = _interopRequireDefault(_es6Promise);
 
-	var _promiseQueue = __webpack_require__(304);
+	var _promiseQueue = __webpack_require__(237);
 
 	var _promiseQueue2 = _interopRequireDefault(_promiseQueue);
 
@@ -18263,7 +18279,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _errors = __webpack_require__(2);
 
-	var _memory = __webpack_require__(307);
+	var _memory = __webpack_require__(304);
 
 	var _memory2 = _interopRequireDefault(_memory);
 
@@ -18446,206 +18462,6 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 304 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(process) {module.exports = process.env.PROMISE_QUEUE_COVERAGE ?
-	    __webpack_require__(305) :
-	    __webpack_require__(306);
-
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(47)))
-
-/***/ }),
-/* 305 */
-/***/ (function(module, exports) {
-
-	
-
-/***/ }),
-/* 306 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/* global define, Promise */
-	(function (root, factory) {
-	    'use strict';
-	    if (typeof module === 'object' && module.exports && "function" === 'function') {
-	        // CommonJS
-	        module.exports = factory();
-	    } else if (true) {
-	        // AMD. Register as an anonymous module.
-	        !(__WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	    } else {
-	        // Browser globals
-	        root.Queue = factory();
-	    }
-	})
-	(this, function () {
-	    'use strict';
-
-	    /**
-	     * @return {Object}
-	     */
-	    var LocalPromise = typeof Promise !== 'undefined' ? Promise : function () {
-	        return {
-	            then: function () {
-	                throw new Error('Queue.configure() before use Queue');
-	            }
-	        };
-	    };
-
-	    var noop = function () {};
-
-	    /**
-	     * @param {*} value
-	     * @returns {LocalPromise}
-	     */
-	    var resolveWith = function (value) {
-	        if (value && typeof value.then === 'function') {
-	            return value;
-	        }
-
-	        return new LocalPromise(function (resolve) {
-	            resolve(value);
-	        });
-	    };
-
-	    /**
-	     * It limits concurrently executed promises
-	     *
-	     * @param {Number} [maxPendingPromises=Infinity] max number of concurrently executed promises
-	     * @param {Number} [maxQueuedPromises=Infinity]  max number of queued promises
-	     * @constructor
-	     *
-	     * @example
-	     *
-	     * var queue = new Queue(1);
-	     *
-	     * queue.add(function () {
-	     *     // resolve of this promise will resume next request
-	     *     return downloadTarballFromGithub(url, file);
-	     * })
-	     * .then(function (file) {
-	     *     doStuffWith(file);
-	     * });
-	     *
-	     * queue.add(function () {
-	     *     return downloadTarballFromGithub(url, file);
-	     * })
-	     * // This request will be paused
-	     * .then(function (file) {
-	     *     doStuffWith(file);
-	     * });
-	     */
-	    function Queue(maxPendingPromises, maxQueuedPromises) {
-	        this.pendingPromises = 0;
-	        this.maxPendingPromises = typeof maxPendingPromises !== 'undefined' ? maxPendingPromises : Infinity;
-	        this.maxQueuedPromises = typeof maxQueuedPromises !== 'undefined' ? maxQueuedPromises : Infinity;
-	        this.queue = [];
-	    }
-
-	    /**
-	     * Defines promise promiseFactory
-	     * @param {Function} GlobalPromise
-	     */
-	    Queue.configure = function (GlobalPromise) {
-	        LocalPromise = GlobalPromise;
-	    };
-
-	    /**
-	     * @param {Function} promiseGenerator
-	     * @return {LocalPromise}
-	     */
-	    Queue.prototype.add = function (promiseGenerator) {
-	        var self = this;
-	        return new LocalPromise(function (resolve, reject, notify) {
-	            // Do not queue to much promises
-	            if (self.queue.length >= self.maxQueuedPromises) {
-	                reject(new Error('Queue limit reached'));
-	                return;
-	            }
-
-	            // Add to queue
-	            self.queue.push({
-	                promiseGenerator: promiseGenerator,
-	                resolve: resolve,
-	                reject: reject,
-	                notify: notify || noop
-	            });
-
-	            self._dequeue();
-	        });
-	    };
-
-	    /**
-	     * Number of simultaneously running promises (which are resolving)
-	     *
-	     * @return {number}
-	     */
-	    Queue.prototype.getPendingLength = function () {
-	        return this.pendingPromises;
-	    };
-
-	    /**
-	     * Number of queued promises (which are waiting)
-	     *
-	     * @return {number}
-	     */
-	    Queue.prototype.getQueueLength = function () {
-	        return this.queue.length;
-	    };
-
-	    /**
-	     * @returns {boolean} true if first item removed from queue
-	     * @private
-	     */
-	    Queue.prototype._dequeue = function () {
-	        var self = this;
-	        if (this.pendingPromises >= this.maxPendingPromises) {
-	            return false;
-	        }
-
-	        // Remove from queue
-	        var item = this.queue.shift();
-	        if (!item) {
-	            return false;
-	        }
-
-	        try {
-	            this.pendingPromises++;
-
-	            resolveWith(item.promiseGenerator())
-	            // Forward all stuff
-	                .then(function (value) {
-	                    // It is not pending now
-	                    self.pendingPromises--;
-	                    // It should pass values
-	                    item.resolve(value);
-	                    self._dequeue();
-	                }, function (err) {
-	                    // It is not pending now
-	                    self.pendingPromises--;
-	                    // It should not mask errors
-	                    item.reject(err);
-	                    self._dequeue();
-	                }, function (message) {
-	                    // It should pass notifications
-	                    item.notify(message);
-	                });
-	        } catch (err) {
-	            self.pendingPromises--;
-	            item.reject(err);
-	            self._dequeue();
-
-	        }
-
-	        return true;
-	    };
-
-	    return Queue;
-	});
-
-
-/***/ }),
-/* 307 */
-/***/ (function(module, exports, __webpack_require__) {
-
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
@@ -18658,7 +18474,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _es6Promise2 = _interopRequireDefault(_es6Promise);
 
-	var _fastMemoryCache = __webpack_require__(308);
+	var _fastMemoryCache = __webpack_require__(305);
 
 	var _fastMemoryCache2 = _interopRequireDefault(_fastMemoryCache);
 
@@ -18674,7 +18490,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _values2 = _interopRequireDefault(_values);
 
-	var _find = __webpack_require__(309);
+	var _find = __webpack_require__(306);
 
 	var _find2 = _interopRequireDefault(_find);
 
@@ -18818,7 +18634,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(47)))
 
 /***/ }),
-/* 308 */
+/* 305 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -18898,11 +18714,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 309 */
+/* 306 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	var createFind = __webpack_require__(310),
-	    findIndex = __webpack_require__(311);
+	var createFind = __webpack_require__(307),
+	    findIndex = __webpack_require__(308);
 
 	/**
 	 * Iterates over elements of `collection`, returning the first element
@@ -18946,7 +18762,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 310 */
+/* 307 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var baseIteratee = __webpack_require__(128),
@@ -18977,12 +18793,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 311 */
+/* 308 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var baseFindIndex = __webpack_require__(114),
 	    baseIteratee = __webpack_require__(128),
-	    toInteger = __webpack_require__(312);
+	    toInteger = __webpack_require__(309);
 
 	/* Built-in method references for those with the same name as other `lodash` methods. */
 	var nativeMax = Math.max;
@@ -19038,10 +18854,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 312 */
+/* 309 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	var toFinite = __webpack_require__(313);
+	var toFinite = __webpack_require__(310);
 
 	/**
 	 * Converts `value` to an integer.
@@ -19080,10 +18896,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 313 */
+/* 310 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	var toNumber = __webpack_require__(314);
+	var toNumber = __webpack_require__(311);
 
 	/** Used as references for various `Number` constants. */
 	var INFINITY = 1 / 0,
@@ -19128,7 +18944,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 314 */
+/* 311 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var isObject = __webpack_require__(86),
@@ -19200,7 +19016,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 315 */
+/* 312 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -19258,7 +19074,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = HttpMiddleware;
 
 /***/ }),
-/* 316 */
+/* 313 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -19323,7 +19139,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = ParseMiddleware;
 
 /***/ }),
-/* 317 */
+/* 314 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {'use strict';
@@ -19396,7 +19212,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ }),
-/* 318 */
+/* 315 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -19423,7 +19239,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _reduce2 = _interopRequireDefault(_reduce);
 
-	var _result = __webpack_require__(319);
+	var _result = __webpack_require__(316);
 
 	var _result2 = _interopRequireDefault(_result);
 
@@ -19453,7 +19269,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _request3 = __webpack_require__(285);
 
-	var _network = __webpack_require__(320);
+	var _network = __webpack_require__(317);
 
 	var _cache = __webpack_require__(236);
 
@@ -19652,7 +19468,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = DeltaFetchRequest;
 
 /***/ }),
-/* 319 */
+/* 316 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var castPath = __webpack_require__(178),
@@ -19714,7 +19530,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 320 */
+/* 317 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process, Buffer) {'use strict';
@@ -19750,7 +19566,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _assign2 = _interopRequireDefault(_assign);
 
-	var _defaults = __webpack_require__(325);
+	var _defaults = __webpack_require__(322);
 
 	var _defaults2 = _interopRequireDefault(_defaults);
 
@@ -19770,7 +19586,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _errors = __webpack_require__(2);
 
-	var _identity = __webpack_require__(328);
+	var _identity = __webpack_require__(325);
 
 	var _request = __webpack_require__(285);
 
@@ -20217,10 +20033,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  return KinveyRequest;
 	}(NetworkRequest);
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(47), __webpack_require__(321).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(47), __webpack_require__(318).Buffer))
 
 /***/ }),
-/* 321 */
+/* 318 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {/*!
@@ -20233,9 +20049,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict'
 
-	var base64 = __webpack_require__(322)
-	var ieee754 = __webpack_require__(323)
-	var isArray = __webpack_require__(324)
+	var base64 = __webpack_require__(319)
+	var ieee754 = __webpack_require__(320)
+	var isArray = __webpack_require__(321)
 
 	exports.Buffer = Buffer
 	exports.SlowBuffer = SlowBuffer
@@ -22016,7 +21832,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ }),
-/* 322 */
+/* 319 */
 /***/ (function(module, exports) {
 
 	'use strict'
@@ -22054,22 +21870,22 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function byteLength (b64) {
 	  // base64 is 4/3 + up to two characters of the original data
-	  return b64.length * 3 / 4 - placeHoldersCount(b64)
+	  return (b64.length * 3 / 4) - placeHoldersCount(b64)
 	}
 
 	function toByteArray (b64) {
-	  var i, j, l, tmp, placeHolders, arr
+	  var i, l, tmp, placeHolders, arr
 	  var len = b64.length
 	  placeHolders = placeHoldersCount(b64)
 
-	  arr = new Arr(len * 3 / 4 - placeHolders)
+	  arr = new Arr((len * 3 / 4) - placeHolders)
 
 	  // if there are placeholders, only get up to the last complete 4 chars
 	  l = placeHolders > 0 ? len - 4 : len
 
 	  var L = 0
 
-	  for (i = 0, j = 0; i < l; i += 4, j += 3) {
+	  for (i = 0; i < l; i += 4) {
 	    tmp = (revLookup[b64.charCodeAt(i)] << 18) | (revLookup[b64.charCodeAt(i + 1)] << 12) | (revLookup[b64.charCodeAt(i + 2)] << 6) | revLookup[b64.charCodeAt(i + 3)]
 	    arr[L++] = (tmp >> 16) & 0xFF
 	    arr[L++] = (tmp >> 8) & 0xFF
@@ -22136,7 +21952,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 323 */
+/* 320 */
 /***/ (function(module, exports) {
 
 	exports.read = function (buffer, offset, isLE, mLen, nBytes) {
@@ -22226,7 +22042,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 324 */
+/* 321 */
 /***/ (function(module, exports) {
 
 	var toString = {}.toString;
@@ -22237,13 +22053,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 325 */
+/* 322 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var apply = __webpack_require__(196),
-	    assignInWith = __webpack_require__(326),
+	    assignInWith = __webpack_require__(323),
 	    baseRest = __webpack_require__(194),
-	    customDefaultsAssignIn = __webpack_require__(327);
+	    customDefaultsAssignIn = __webpack_require__(324);
 
 	/**
 	 * Assigns own and inherited enumerable string keyed properties of source
@@ -22275,7 +22091,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 326 */
+/* 323 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var copyObject = __webpack_require__(207),
@@ -22319,7 +22135,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 327 */
+/* 324 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var eq = __webpack_require__(99);
@@ -22354,7 +22170,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 328 */
+/* 325 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -22363,7 +22179,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  value: true
 	});
 
-	var _enums = __webpack_require__(329);
+	var _enums = __webpack_require__(326);
 
 	Object.keys(_enums).forEach(function (key) {
 	  if (key === "default" || key === "__esModule") return;
@@ -22375,7 +22191,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  });
 	});
 
-	var _facebook = __webpack_require__(330);
+	var _facebook = __webpack_require__(327);
 
 	Object.keys(_facebook).forEach(function (key) {
 	  if (key === "default" || key === "__esModule") return;
@@ -22436,7 +22252,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 
 /***/ }),
-/* 329 */
+/* 326 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -22458,7 +22274,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(47)))
 
 /***/ }),
-/* 330 */
+/* 327 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {'use strict';
@@ -22490,15 +22306,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _utils = __webpack_require__(41);
 
-	var _popup = __webpack_require__(331);
+	var _popup = __webpack_require__(328);
 
 	var _popup2 = _interopRequireDefault(_popup);
 
-	var _identity = __webpack_require__(333);
+	var _identity = __webpack_require__(330);
 
 	var _identity2 = _interopRequireDefault(_identity);
 
-	var _enums = __webpack_require__(329);
+	var _enums = __webpack_require__(326);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -22673,7 +22489,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ }),
-/* 331 */
+/* 328 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -22684,7 +22500,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _events = __webpack_require__(332);
+	var _events = __webpack_require__(329);
 
 	var _errors = __webpack_require__(2);
 
@@ -22726,7 +22542,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = Popup;
 
 /***/ }),
-/* 332 */
+/* 329 */
 /***/ (function(module, exports) {
 
 	// Copyright Joyent, Inc. and other Node contributors.
@@ -23034,7 +22850,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 333 */
+/* 330 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {'use strict';
@@ -23049,7 +22865,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _es6Promise2 = _interopRequireDefault(_es6Promise);
 
-	var _localStorage = __webpack_require__(239);
+	var _localStorage = __webpack_require__(331);
 
 	var _localStorage2 = _interopRequireDefault(_localStorage);
 
@@ -23196,6 +23012,153 @@ return /******/ (function(modules) { // webpackBootstrap
 	}();
 
 	exports.default = Identity;
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
+
+/***/ }),
+/* 331 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(global) {'use strict';
+
+	var stub = __webpack_require__(332);
+	var tracking = __webpack_require__(333);
+	var ls = 'localStorage' in global && global.localStorage ? global.localStorage : stub;
+
+	function accessor (key, value) {
+	  if (arguments.length === 1) {
+	    return get(key);
+	  }
+	  return set(key, value);
+	}
+
+	function get (key) {
+	  return JSON.parse(ls.getItem(key));
+	}
+
+	function set (key, value) {
+	  try {
+	    ls.setItem(key, JSON.stringify(value));
+	    return true;
+	  } catch (e) {
+	    return false;
+	  }
+	}
+
+	function remove (key) {
+	  return ls.removeItem(key);
+	}
+
+	function clear () {
+	  return ls.clear();
+	}
+
+	accessor.set = set;
+	accessor.get = get;
+	accessor.remove = remove;
+	accessor.clear = clear;
+	accessor.on = tracking.on;
+	accessor.off = tracking.off;
+
+	module.exports = accessor;
+
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
+
+/***/ }),
+/* 332 */
+/***/ (function(module, exports) {
+
+	'use strict';
+
+	var ms = {};
+
+	function getItem (key) {
+	  return key in ms ? ms[key] : null;
+	}
+
+	function setItem (key, value) {
+	  ms[key] = value;
+	  return true;
+	}
+
+	function removeItem (key) {
+	  var found = key in ms;
+	  if (found) {
+	    return delete ms[key];
+	  }
+	  return false;
+	}
+
+	function clear () {
+	  ms = {};
+	  return true;
+	}
+
+	module.exports = {
+	  getItem: getItem,
+	  setItem: setItem,
+	  removeItem: removeItem,
+	  clear: clear
+	};
+
+
+/***/ }),
+/* 333 */
+/***/ (function(module, exports) {
+
+	/* WEBPACK VAR INJECTION */(function(global) {'use strict';
+
+	var listeners = {};
+	var listening = false;
+
+	function listen () {
+	  if (global.addEventListener) {
+	    global.addEventListener('storage', change, false);
+	  } else if (global.attachEvent) {
+	    global.attachEvent('onstorage', change);
+	  } else {
+	    global.onstorage = change;
+	  }
+	}
+
+	function change (e) {
+	  if (!e) {
+	    e = global.event;
+	  }
+	  var all = listeners[e.key];
+	  if (all) {
+	    all.forEach(fire);
+	  }
+
+	  function fire (listener) {
+	    listener(JSON.parse(e.newValue), JSON.parse(e.oldValue), e.url || e.uri);
+	  }
+	}
+
+	function on (key, fn) {
+	  if (listeners[key]) {
+	    listeners[key].push(fn);
+	  } else {
+	    listeners[key] = [fn];
+	  }
+	  if (listening === false) {
+	    listen();
+	  }
+	}
+
+	function off (key, fn) {
+	  var ns = listeners[key];
+	  if (ns.length > 1) {
+	    ns.splice(ns.indexOf(fn), 1);
+	  } else {
+	    listeners[key] = [];
+	  }
+	}
+
+	module.exports = {
+	  on: on,
+	  off: off
+	};
+
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ }),
@@ -29296,11 +29259,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _identity = __webpack_require__(333);
+	var _identity = __webpack_require__(330);
 
 	var _identity2 = _interopRequireDefault(_identity);
 
-	var _enums = __webpack_require__(329);
+	var _enums = __webpack_require__(326);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -29347,11 +29310,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _identity = __webpack_require__(333);
+	var _identity = __webpack_require__(330);
 
 	var _identity2 = _interopRequireDefault(_identity);
 
-	var _enums = __webpack_require__(329);
+	var _enums = __webpack_require__(326);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -29420,15 +29383,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _utils = __webpack_require__(41);
 
-	var _popup = __webpack_require__(331);
+	var _popup = __webpack_require__(328);
 
 	var _popup2 = _interopRequireDefault(_popup);
 
-	var _identity = __webpack_require__(333);
+	var _identity = __webpack_require__(330);
 
 	var _identity2 = _interopRequireDefault(_identity);
 
-	var _enums = __webpack_require__(329);
+	var _enums = __webpack_require__(326);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -29971,11 +29934,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _identity = __webpack_require__(333);
+	var _identity = __webpack_require__(330);
 
 	var _identity2 = _interopRequireDefault(_identity);
 
-	var _enums = __webpack_require__(329);
+	var _enums = __webpack_require__(326);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -30398,7 +30361,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _datastore2 = _interopRequireDefault(_datastore);
 
-	var _identity = __webpack_require__(328);
+	var _identity = __webpack_require__(325);
 
 	var _utils = __webpack_require__(41);
 
@@ -31638,7 +31601,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _map2 = _interopRequireDefault(_map);
 
-	var _result = __webpack_require__(319);
+	var _result = __webpack_require__(316);
 
 	var _result2 = _interopRequireDefault(_result);
 
@@ -33219,7 +33182,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _entity = __webpack_require__(342);
 
-	var _identity = __webpack_require__(328);
+	var _identity = __webpack_require__(325);
 
 	var _request = __webpack_require__(235);
 
@@ -34214,11 +34177,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _forEach2 = _interopRequireDefault(_forEach);
 
-	var _findIndex = __webpack_require__(311);
+	var _findIndex = __webpack_require__(308);
 
 	var _findIndex2 = _interopRequireDefault(_findIndex);
 
-	var _find2 = __webpack_require__(309);
+	var _find2 = __webpack_require__(306);
 
 	var _find3 = _interopRequireDefault(_find2);
 
@@ -35550,25 +35513,25 @@ return /******/ (function(modules) { // webpackBootstrap
 		"_args": [
 			[
 				{
-					"raw": "kinvey-html5-sdk@3.5.0",
+					"raw": "kinvey-html5-sdk@3.5.1",
 					"scope": null,
 					"escapedName": "kinvey-html5-sdk",
 					"name": "kinvey-html5-sdk",
-					"rawSpec": "3.5.0",
-					"spec": "3.5.0",
+					"rawSpec": "3.5.1",
+					"spec": "3.5.1",
 					"type": "version"
 				},
 				"/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK"
 			]
 		],
-		"_from": "kinvey-html5-sdk@3.5.0",
-		"_id": "kinvey-html5-sdk@3.5.0",
+		"_from": "kinvey-html5-sdk@3.5.1",
+		"_id": "kinvey-html5-sdk@3.5.1",
 		"_inCache": true,
 		"_location": "/kinvey-html5-sdk",
-		"_nodeVersion": "6.10.2",
+		"_nodeVersion": "6.11.0",
 		"_npmOperationalInternal": {
-			"host": "packages-12-west.internal.npmjs.com",
-			"tmp": "tmp/kinvey-html5-sdk-3.5.0.tgz_1492702122296_0.1853703400120139"
+			"host": "s3://npm-registry-packages",
+			"tmp": "tmp/kinvey-html5-sdk-3.5.1.tgz_1498846323688_0.7840584691148251"
 		},
 		"_npmUser": {
 			"name": "thomas.conner",
@@ -35577,21 +35540,21 @@ return /******/ (function(modules) { // webpackBootstrap
 		"_npmVersion": "3.10.10",
 		"_phantomChildren": {},
 		"_requested": {
-			"raw": "kinvey-html5-sdk@3.5.0",
+			"raw": "kinvey-html5-sdk@3.5.1",
 			"scope": null,
 			"escapedName": "kinvey-html5-sdk",
 			"name": "kinvey-html5-sdk",
-			"rawSpec": "3.5.0",
-			"spec": "3.5.0",
+			"rawSpec": "3.5.1",
+			"spec": "3.5.1",
 			"type": "version"
 		},
 		"_requiredBy": [
 			"/"
 		],
-		"_resolved": "https://registry.npmjs.org/kinvey-html5-sdk/-/kinvey-html5-sdk-3.5.0.tgz",
-		"_shasum": "24b2b2ac725eeaee0e25314450c1b3fd3bb1f0bd",
+		"_resolved": "https://registry.npmjs.org/kinvey-html5-sdk/-/kinvey-html5-sdk-3.5.1.tgz",
+		"_shasum": "83b7fc78ec9c8c0ac188395df33bb8101d46617c",
 		"_shrinkwrap": null,
-		"_spec": "kinvey-html5-sdk@3.5.0",
+		"_spec": "kinvey-html5-sdk@3.5.1",
 		"_where": "/Users/Thomas/Documents/Kinvey/Development/SDKs/JavaScript/PhoneGap/SDK",
 		"author": {
 			"name": "Kinvey"
@@ -35608,7 +35571,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		"dependencies": {
 			"core-js": "2.4.1",
 			"es6-promise": "4.1.0",
-			"kinvey-js-sdk": "3.5.0",
+			"kinvey-js-sdk": "3.5.1",
 			"lodash": "4.17.4",
 			"xhr": "2.3.3"
 		},
@@ -35646,13 +35609,13 @@ return /******/ (function(modules) { // webpackBootstrap
 		},
 		"directories": {},
 		"dist": {
-			"shasum": "24b2b2ac725eeaee0e25314450c1b3fd3bb1f0bd",
-			"tarball": "https://registry.npmjs.org/kinvey-html5-sdk/-/kinvey-html5-sdk-3.5.0.tgz"
+			"shasum": "83b7fc78ec9c8c0ac188395df33bb8101d46617c",
+			"tarball": "https://registry.npmjs.org/kinvey-html5-sdk/-/kinvey-html5-sdk-3.5.1.tgz"
 		},
 		"engines": {
 			"node": ">=4.0"
 		},
-		"gitHead": "349608c2e654387f4b4a65446f9b8afd0726f539",
+		"gitHead": "fe6319111dcf6c621686144ec99cb1152cf6f237",
 		"homepage": "http://www.kinvey.com",
 		"keywords": [
 			"Kinvey",
@@ -35676,7 +35639,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		"peerDependencies": {
 			"kinvey-js-sdk": "3.5.0"
 		},
-		"readme": "# Kinvey HTML5 SDK [![Build Status](https://travis-ci.org/Kinvey/html5-sdk.svg?branch=master)](https://travis-ci.org/Kinvey/html5-sdk) [![Code Climate](https://codeclimate.com/github/Kinvey/html5-sdk/badges/gpa.svg)](https://codeclimate.com/github/Kinvey/html5-sdk)\n\n[Kinvey](http://www.kinvey.com) (pronounced Kin-vey, like convey) makes it ridiculously easy for developers to setup, use and operate a cloud backend for their mobile apps. They don't have to worry about connecting to various cloud services, setting up servers for their backend, or maintaining and scaling them.\n\nThis npm package makes it very easy to connect your HTML5 app with Kinvey.\n\n## How to use\n\n### 1. Sign up for Kinvey\nTo use the SDK, sign up for Kinvey if you have not already done so. Go to the [sign up](https://console.kinvey.com/#signup) page, and follow the steps provided.\n\n### 2. Install the SDK\nYou can install the module using npm:\n\n```bash\nnpm install kinvey-html5-sdk --save\n```\n\nor\n\nuse our [DevCenter Download Page](http://devcenter.kinvey.com/html5/downloads) to download the SDK and save it to a file name `kinvey-html5-sdk.js` in your project.\n\n### 3. Configure the SDK\nIf you installed the SDK with npm, include the sdk in your code using `require`.\n\n```javascript\nvar Kinvey = require('kinvey-html5-sdk');\n```\n\nIf you downloaded the SDK and saved it to a file, add a script tag to your main html file to load the SDK.\n\n```html\n<script src=\"path/to/kinvey-html5-sdk.min.js\"></script>\n```\n\nNext, use `Kinvey.initialize` to configure your app. Replace `<appKey>` and `<appSecret>` with your apps app key and secret. You can find these for your app using the [Kinvey Console App](https://console.kinvey.com).\n\n```javascript\nKinvey.initialize({\n    appKey: '<appKey>',\n    appSecret: '<appSecret>'\n})\n  .then(function(activeUser) {\n    // ...\n  });\n```\n\n## What’s next?\nYou are now ready to start building your awesome apps! Next we recommend diving into the [User guide](http://devcenter.kinvey.com/html5/guides/users) or [Data store guide](http://devcenter.kinvey.com/html5/guides/datastore) to learn more about our service, or explore the [sample apps](http://devcenter.kinvey.com/html5/samples) to go straight to working projects.\n\n## Build\nExecute `npm run build` to build the package.\n\n## Release\n[TravisCI](https://travis-ci.org/Kinvey/html5-sdk) will deploy the pacakge to [NPM](https://www.npmjs.com/package/kinvey-html5-sdk).\n\n1. Checkout the master branch.\n2. Update the CHANGELOG.md.\n3. Execute `npm version [<newversion> | major | minor | patch | premajor | preminor | prepatch | prerelease | from-git]`. See [Version Management](#version-management) for more info on incrementing the version.\n4. Done.\n\n### Version Management\nUpdating the package version should follow [Semantic Version 2.0.0](http://semver.org/):\n\n* Major (x.0.0): when making an incompatible API changes.\n* Minor (3.x.0): when adding functionality in a backwards-compatible manner.\n* Patch (3.0.x): when making backwards-compatible bug fixes or enhancements.\n\n## Test\n_Note: Before running any tests you will need to run `npm install` to install any dependencies required._\n\n### Unit Tests\nThe steps for running the unit tests is as follows:\n\n1. Open a terminal window and execute `npm test`.\n\n### End to End Tests\nThe steps for running the end to end tests is as follows:\n\n#### Start Selenium Web Server\n1. Open a terminal window.\n2. Change directory to the location of the project.\n3. Execute `npm run e2e:server`. __Keep this terminal window open.__\n\n#### Start App\n__Requirement:__ Execute `npm install -g yo generator-kinvey-html` to globally install [Yeoman](http://yeoman.io/) and [generator-kinvey-html](https://www.npmjs.com/package/generator-kinvey-html). You only need to do this once.\n\n1. Open a terminal window.\n2. Change directory to the location of the project.\n3. Execute `npm run e2e:app`. __Keep this terminal window open.__\n\n#### Run End to End Tests\n1. Open a terminal window.\n2. Change directory to the location of the project.\n3. Execute `npm run e2e:test`.\n\n## License\nSee [LICENSE](LICENSE) for details.\n\n## Contributing\nSee [CONTRIBUTING.md](CONTRIBUTING.md) for details on reporting bugs and making contributions.\n\n",
+		"readme": "# Overview [![Build Status](https://travis-ci.org/Kinvey/html5-sdk.svg?branch=master)](https://travis-ci.org/Kinvey/html5-sdk) [![Code Climate](https://codeclimate.com/github/Kinvey/html5-sdk/badges/gpa.svg)](https://codeclimate.com/github/Kinvey/html5-sdk)\n\n[Kinvey](http://www.kinvey.com) (pronounced Kin-vey, like convey) makes it ridiculously easy for developers to setup, use and operate a cloud backend for their mobile apps. They don't have to worry about connecting to various cloud services, setting up servers for their backend, or maintaining and scaling them.\n\n## Installation\n\n#### Using npm\nInstall and save the Kinvey HTML5 SDK:\n\n```javascript\nnpm install --save kinvey-html5-sdk\n```\n\nImport the Kinvey HTML5 SDK (ES6/TypeScript):\n\n```javascript\nimport Kinvey from 'kinvey-html5-sdk';\n```\n\nA [TypeScript](https://www.typescriptlang.org/) type definition file is included in the distribution and will automatically be picked up by the TypeScript compiler.\n\n#### Using the Kinvey CDN\n\n```html\n<script src=\"https://download.kinvey.com/js/kinvey-html5-sdk-3.5.0.min.js\"></script>\n```\n\nA [TypeScript](https://www.typescriptlang.org/) type definition file is available at\n\n```html\nhttps://download.kinvey.com/js/kinvey-html5-sdk-3.5.0.d.ts\n```\n\nYou will then be able to access Kinvey HTML5 SDK via `window.Kinvey`.\n\n## Browser Compatibility\n\nThe Kinvey HTML5 SDK supports the following browsers:\n\n- On macOS: Safari, Chrome, Firefox\n- On iOS: Safari, Chrome\n- On Windows: Chrome, Firefox, Edge, Internet Explorer 11\n- On Android: Chrome (Performance depends on device)\n\n## Documentation\n\nFor more detailed documentation, see http://devcenter.kinvey.com/html5\n\n## License\nSee [LICENSE](LICENSE) for details.\n\n## Contributing\nSee [CONTRIBUTING.md](CONTRIBUTING.md) for details on reporting bugs and making contributions.\n",
 		"readmeFilename": "README.md",
 		"repository": {
 			"type": "git",
@@ -35685,7 +35648,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		"scripts": {
 			"build": "npm run clean && npm run transpile && npm run bundle && npm run minify",
 			"bundle": "webpack --config webpack.config.js",
-			"clean": "del coverage dist s3",
+			"clean": "rm -rf dist && rm -rf coverage && rm -rf s3",
 			"cover": "istanbul cover _mocha -- --compilers js:babel-core/register -r babel-polyfill -s 100 --recursive test/unit/setup test/unit",
 			"docs": "esdoc -c esdoc.json",
 			"e2e:app": "npm run build && shjs ./scripts/e2e.js && node ./test/e2e/app",
@@ -35696,14 +35659,15 @@ return /******/ (function(modules) { // webpackBootstrap
 			"lint:src": "eslint src/**",
 			"lint:test": "eslint test/unit/**",
 			"minify": "uglifyjs --screw-ie8 --compress warnings=false --mangle --comments --output ./dist/kinvey-html5-sdk.min.js -- ./dist/kinvey-html5-sdk.js ",
-			"postversion": "git push && git push --tags",
+			"postversion": "git push && git push --tags && rm -rf dist && rm -rf coverage && rm -rf s3",
 			"preversion": "del node_modules && npm install && npm test",
 			"s3": "npm run build && shjs ./scripts/s3.js",
 			"test": "mocha --compilers js:babel-core/register -r babel-polyfill -s 100 --recursive test/unit/setup test/unit",
 			"test:watch": "mocha -w --compilers js:babel-core/register -r babel-polyfill -s 100 --recursive test/unit/setup test/unit",
-			"transpile": "babel src --out-dir dist"
+			"transpile": "babel src --out-dir dist",
+			"version": "npm run build && git add dist/kinvey-html5-sdk.js && git add dist/kinvey-html5-sdk.min.js && git commit -m 'Update dist bundle.'"
 		},
-		"version": "3.5.0"
+		"version": "3.5.1"
 	};
 
 /***/ }),
@@ -35718,7 +35682,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _events = __webpack_require__(332);
+	var _events = __webpack_require__(329);
 
 	var _bind = __webpack_require__(376);
 
@@ -35928,7 +35892,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    mergeData = __webpack_require__(407),
 	    setData = __webpack_require__(398),
 	    setWrapToString = __webpack_require__(399),
-	    toInteger = __webpack_require__(312);
+	    toInteger = __webpack_require__(309);
 
 	/** Error message constants. */
 	var FUNC_ERROR_TEXT = 'Expected a function';
@@ -37405,7 +37369,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = {
 		"name": "kinvey-phonegap-sdk",
-		"version": "3.4.5",
+		"version": "3.5.1",
 		"description": "Kinvey JavaScript SDK for PhoneGap/Cordova applications.",
 		"homepage": "http://www.kinvey.com",
 		"bugs": {
@@ -37426,19 +37390,16 @@ return /******/ (function(modules) { // webpackBootstrap
 		"scripts": {
 			"build": "npm run clean && npm run transpile && npm run bundle && npm run minify",
 			"bundle": "webpack",
-			"clean": "del coverage dist s3",
+			"clean": "rm -rf dist && rm -rf coverage && rm -rf s3",
 			"minify": "uglifyjs --screw-ie8 --compress warnings=false --mangle --comments --output ./dist/kinvey-phonegap-sdk.min.js -- ./dist/kinvey-phonegap-sdk.js ",
 			"cover": "istanbul cover _mocha -- --compilers js:babel-core/register -r babel-polyfill -s 100 --recursive test/unit/index test/unit",
 			"docs": "esdoc -c esdoc.json",
-			"e2e:server": "appium",
-			"e2e:prepare:app": "cd ./test/e2e/app && cordova prepare",
-			"e2e:build:app:ios": "npm run e2e:prepare:app && npm run build && cd ./test/e2e/app && cordova build ios",
-			"e2e:test:ios": "npm run e2e:build:app:ios && wdio ./test/e2e/test/wdio.conf.js",
 			"lint": "npm run lint:src",
 			"lint:src": "eslint src/**",
 			"lint:test": "eslint test/unit/**",
-			"preversion": "del node_modules && npm install && npm test && npm run build && git add dist/kinvey-phonegap-sdk.js && git add dist/kinvey-phonegap-sdk.min.js && git commit -m 'Update dist bundle.'",
-			"postversion": "git push && git push --tags",
+			"preversion": "del node_modules && npm install && npm test",
+			"version": "npm run build && git add dist/kinvey-phonegap-sdk.js && git add dist/kinvey-phonegap-sdk.min.js && git commit -m 'Update dist bundle.'",
+			"postversion": "git push && git push --tags && rm -rf dist && rm -rf coverage && rm -rf s3",
 			"s3": "npm run build && shjs ./scripts/s3.js",
 			"test": "mocha --compilers js:babel-core/register -r babel-polyfill -s 100 --recursive test/unit/index test/unit",
 			"test:watch": "mocha -w --compilers js:babel-core/register -r babel-polyfill -s 100 --recursive test/unit/index test/unit",
@@ -37447,13 +37408,13 @@ return /******/ (function(modules) { // webpackBootstrap
 		"dependencies": {
 			"core-js": "2.4.1",
 			"es6-promise": "4.1.0",
-			"kinvey-html5-sdk": "3.5.0",
-			"kinvey-js-sdk": "3.5.0",
+			"kinvey-html5-sdk": "3.5.1",
+			"kinvey-js-sdk": "3.5.1",
 			"lodash": "4.17.4"
 		},
 		"peerDependencies": {
-			"kinvey-html5-sdk": "3.5.0",
-			"kinvey-js-sdk": "3.5.0"
+			"kinvey-html5-sdk": "3.5.1",
+			"kinvey-js-sdk": "3.5.1"
 		},
 		"devDependencies": {
 			"babel-cli": "6.24.0",
@@ -37475,8 +37436,6 @@ return /******/ (function(modules) { // webpackBootstrap
 			"fs-extra": "2.1.1",
 			"istanbul": "1.1.0-alpha.1",
 			"json-loader": "^0.5.4",
-			"kinvey-html5-sdk": "3.4.1",
-			"kinvey-js-sdk": "3.4.2",
 			"mocha": "3.2.0",
 			"nock": "9.0.9",
 			"regenerator-runtime": "0.10.3",
@@ -37751,7 +37710,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _es6Promise2 = _interopRequireDefault(_es6Promise);
 
-	var _events = __webpack_require__(332);
+	var _events = __webpack_require__(329);
 
 	var _url = __webpack_require__(229);
 
