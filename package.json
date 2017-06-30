@@ -39,13 +39,13 @@
   "dependencies": {
     "core-js": "2.4.1",
     "es6-promise": "4.1.0",
-    "kinvey-html5-sdk": "3.5.0",
-    "kinvey-js-sdk": "3.5.0",
+    "kinvey-html5-sdk": "3.5.1",
+    "kinvey-js-sdk": "3.5.1",
     "lodash": "4.17.4"
   },
   "peerDependencies": {
-    "kinvey-html5-sdk": "3.5.0",
-    "kinvey-js-sdk": "3.5.0"
+    "kinvey-html5-sdk": "3.5.1",
+    "kinvey-js-sdk": "3.5.1"
   },
   "devDependencies": {
     "babel-cli": "6.24.0",
@@ -67,8 +67,6 @@
     "fs-extra": "2.1.1",
     "istanbul": "1.1.0-alpha.1",
     "json-loader": "^0.5.4",
-    "kinvey-html5-sdk": "3.4.1",
-    "kinvey-js-sdk": "3.4.2",
     "mocha": "3.2.0",
     "nock": "9.0.9",
     "regenerator-runtime": "0.10.3",
