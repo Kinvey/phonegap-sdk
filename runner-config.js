@@ -4,7 +4,15 @@ const fs = require('fs-extra');
 
 const {
     Runner,
-    tasks: { logServer, copy, copyTestRunner, copyTestLibs, runCommand, remove }
+    tasks: {
+        logServer,
+        copy,
+        copyTestRunner,
+        copyTestLibs,
+        runCommand,
+        remove,
+        processTemplateFile
+    }
 } = require('universal-runner');
 
 const appName = 'KinveyCordovaTestApp';
@@ -26,18 +34,16 @@ const runner = new Runner({
             path.join(__dirname, 'test', 'tests'),
             path.join(appPath, 'tests')
         ),
-        [
-            'createTestsConfig',
-            () => {
-                const testFiles = walk(path.join(appName, 'app', 'tests'), {
+        processTemplateFile(
+            path.join(appPath, 'testConfig.template.hbs'),
+            () => ({
+                tests: walk(path.join(appName, 'app', 'tests'), {
                     nodir: true
-                }).map(f => `./${path.relative(appPath, f.path)}`);
-
-                const config = `module.exports = ${JSON.stringify(testFiles)};`;
-
-                fs.writeFileSync(path.join(appPath, 'testConfig.js'), config);
-            }
-        ],
+                }).map(f => `./${path.relative(appPath, f.path)}`),
+                logServerPort
+            }),
+            path.join(appPath, 'testConfig.js')
+        ),
         copyTestLibs(path.join(appPath, 'libs')),
         copyTestRunner(appPath),
         runCommand({
