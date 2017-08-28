@@ -17,7 +17,7 @@ const {
 
 const appName = 'KinveyCordovaTestApp';
 const appRootPath = path.join(__dirname, appName);
-const appPath = path.join(appRootPath, 'app');
+const appPath = path.join(appRootPath, 'www');
 
 let logServerPort;
 
@@ -35,9 +35,9 @@ const runner = new Runner({
             path.join(appPath, 'tests')
         ),
         processTemplateFile(
-            path.join(appPath, 'testConfig.template.hbs'),
+            path.join(appPath, 'index.template.hbs'),
             () => ({
-                tests: walk(path.join(appName, 'app', 'tests'), {
+                tests: walk(path.join(appName, 'www', 'tests'), {
                     nodir: true
                 }).map(f => `./${path.relative(appPath, f.path)}`),
                 logServerPort
