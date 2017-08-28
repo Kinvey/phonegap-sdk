@@ -1,6 +1,6 @@
 {
   "name": "kinvey-phonegap-sdk",
-  "version": "3.5.2",
+  "version": "3.8.1",
   "description": "Kinvey JavaScript SDK for PhoneGap/Cordova applications.",
   "homepage": "http://www.kinvey.com",
   "bugs": {
@@ -39,13 +39,13 @@
   "dependencies": {
     "core-js": "2.4.1",
     "es6-promise": "4.1.0",
-    "kinvey-html5-sdk": "3.5.2",
-    "kinvey-js-sdk": "3.5.2",
+    "kinvey-html5-sdk": "3.8.1",
+    "kinvey-js-sdk": "3.8.1",
     "lodash": "4.17.4"
   },
   "peerDependencies": {
-    "kinvey-html5-sdk": "3.5.2",
-    "kinvey-js-sdk": "3.5.2"
+    "kinvey-html5-sdk": "3.8.1",
+    "kinvey-js-sdk": "3.8."
   },
   "devDependencies": {
     "babel-cli": "6.24.0",
