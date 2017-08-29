@@ -42,7 +42,7 @@ const runner = new Runner({
                 }).map(f => `./${path.relative(appPath, f.path)}`),
                 logServerPort
             }),
-            path.join(appPath, 'testConfig.js')
+            path.join(appPath, 'index.html')
         ),
         copyTestLibs(path.join(appPath, 'libs')),
         copyTestRunner(appPath),
