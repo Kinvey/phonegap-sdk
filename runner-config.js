@@ -56,7 +56,7 @@ const runner = new Runner({
         }),
         runCommand({
             command: 'cordova',
-            args: ['platform', 'add', 'android'],
+            args: ['platform', 'add', 'android@5.x.x'],
             cwd: appPath
         }),
         ...[
@@ -81,4 +81,7 @@ const runner = new Runner({
 
 runner.on('log.start', port => (logServerPort = port));
 
-runner.run().then(() => console.log('done')).catch(err => console.log(err));
+runner
+    .run()
+    .then(() => console.log('done'))
+    .catch(err => console.log(err));
