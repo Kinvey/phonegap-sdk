@@ -30,6 +30,7 @@ const runner = new Runner({
             args: ['create', appName]
         }),
         copy(path.join(__dirname, 'test', 'template'), appPath),
+        copy(path.join(__dirname, 'dist'), appPath),
         copy(
             path.join(__dirname, 'test', 'tests'),
             path.join(appPath, 'tests')
