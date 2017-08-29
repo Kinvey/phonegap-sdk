@@ -4,6 +4,8 @@
 <head>
     <meta charset="utf-8">
     <title>Kinvey sdk tests</title>
+
+    <script src="cordova.js"></script>
 </head>
 
 <body>
@@ -13,13 +15,12 @@
     <script src="{{.}}"></script>
     {{/each}}
 
-    <script src="../../dist/kinvey-phonegap-sdk.js"></script>
+    <script src="./dist/kinvey-phonegap-sdk.js"></script>
 
     <script>
-        runner.initialize(tests, {
+        runner.initialize(null, {
             logServerPort: '{{logServerPort}}'
         });
-        runner.runAllTests();
     </script>
 </body>
 

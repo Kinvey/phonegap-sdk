@@ -44,7 +44,6 @@ const runner = new Runner({
             }),
             path.join(appPath, 'index.html')
         ),
-        copyTestLibs(path.join(appPath, 'libs')),
         copyTestRunner(appPath),
         runCommand({
             command: 'adb',
