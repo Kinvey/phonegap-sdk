@@ -16,9 +16,10 @@
     <script src="../../dist/kinvey-phonegap-sdk.js"></script>
 
     <script>
-        runner.initialize(null, {
+        runner.initialize(tests, {
             logServerPort: '{{logServerPort}}'
         });
+        runner.runAllTests();
     </script>
 </body>
 

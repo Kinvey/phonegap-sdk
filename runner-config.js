@@ -67,17 +67,13 @@ const runner = new Runner({
         ].map(p => {
             return runCommand({
                 command: 'cordova',
-                args: ['plugin', 'add', p]
+                args: ['plugin', 'add', p],
+                cwd: appPath
             });
         }),
         runCommand({
             command: 'cordova',
-            args: ['build'],
-            cwd: appPath
-        }),
-        runCommand({
-            command: 'cordova',
-            args: ['run android'],
+            args: ['run', 'android'],
             cwd: appPath
         })
     ]
