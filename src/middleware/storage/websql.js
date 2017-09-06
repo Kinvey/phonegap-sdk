@@ -12,7 +12,7 @@ export class WebSQLAdapter extends HTML5WebSQLAdapter {
     return new Promise((resolve, reject) => {
       try {
         const db = global.sqlitePlugin.openDatabase({ name: this.name, key: this.key });
-        super(collection, query, parameters, write, db)
+        super.openTransaction(collection, query, parameters, write, db)
           .then((response) => {
             if (db && isFunction(db.close)) {
               db.close(() => resolve(response), reject);
