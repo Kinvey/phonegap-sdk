@@ -78,7 +78,7 @@ export function deviceInformation() {
   }).join(' ');
 }
 
-export default class HttpMiddleware extends HTML5HttpMiddleware {
+export class HttpMiddleware extends HTML5HttpMiddleware {
   get deviceInformation() {
     return deviceInformation();
   }
