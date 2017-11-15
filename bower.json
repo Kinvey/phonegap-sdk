@@ -1,24 +1,11 @@
 {
   "name": "kinvey-phonegap-sdk",
-  "description": "Kinvey JavaScript SDK for PhoneGap/Cordova applications.",
+  "description": "Kinvey JavaScript SDK for Cordova/Phonegap applications.",
   "homepage": "https://www.kinvey.com",
   "license": "Apache-2.0",
-  "authors": [
-    "Kinvey, Inc."
-  ],
-  "main": "./dist/kinvey-phonegap-sdk.min.js",
-  "keywords": [
-    "Kinvey",
-    "JavaScript",
-    "PhoneGap",
-    "Cordova"
-  ],
+  "author": "Kinvey, Inc.",
+  "main": "kinvey-phonegap-sdk.min.js",
   "ignore": [
-    "**/.*",
-    "package.json",
-    "webpack.config.js",
-    "CHANGELOG.md",
-    "CONTRIBUTING.md",
-    "README.md"
+    ".travis.yml"
   ]
 }
