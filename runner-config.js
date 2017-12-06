@@ -67,9 +67,9 @@ const runner = new Runner({
             cwd: appPath
         }),
         ...[
-            'https://github.com/apache/cordova-plugin-file.git',
+            //'https://github.com/apache/cordova-plugin-file.git',
             'https://github.com/apache/cordova-plugin-whitelist',
-            'https://github.com/apache/cordova-plugin-file-transfer.git',
+            //'https://github.com/apache/cordova-plugin-file-transfer.git',
             'cordova-sqlite-storage'
         ].map(p => {
             return runCommand({
