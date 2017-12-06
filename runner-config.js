@@ -13,7 +13,7 @@ const {
         remove,
         processTemplateFile
     }
-} = require('universal-runner');
+} = require('kinvey-universal-runner');
 
 const appName = 'KinveyCordovaTestApp';
 const appRootPath = path.join(__dirname, appName);
