@@ -1,5 +1,5 @@
 {
-  "version": "3.11.4",
+  "version": "3.11.5",
   "name": "kinvey-phonegap-sdk",
   "description": "Kinvey JavaScript SDK for Cordova/PhoneGap applications.",
   "author": "Kinvey, Inc.",
